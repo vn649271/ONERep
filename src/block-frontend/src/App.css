@@ -1,0 +1,128 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.header-1 {
+  font-size: 2rem;
+  color: #ffffff;
+}
+.header-small {
+  font-size: 1.2rem;
+}
+.v-link {
+  list-style: none;
+  display: inline-block;
+}
+.v-link li {
+  margin: 0px 6px;
+  display: inline-block;
+}
+.text-muted-dark {
+  color: #828CAE;
+}
+.btn-connect, ._2pGos._hsN1w, .btn-dropdown {
+  border: 1px solid #828CAE !important;
+  color: #f5f3f3 !important;
+  background: transparent !important;
+  padding: 8px 15px !important;
+  border-radius: 5px !important;
+  justify-content: space-between !important;
+}
+.btn-connect img {
+  height: 20px; width: 20px;
+}
+.modal-content{
+  background-color: rgb(40 41 44) !important;
+}
+.zl_transaction_list_table th {
+  color: #CAD3F2;
+  text-transform: uppercase;
+}
+.zl_transaction_list_table td {
+  text-align: left !important;
+}
+FaTrashAlt, FaPencilAlt {
+  cursor: pointer !important;
+}
+._2pGos._3CDiP{
+  display: none;
+}
+._3uApM {
+  justify-content: center;
+}
+._2_g61  {
+  display: flex;
+  justify-content: center;
+}
+.kiHXWb {
+  height: 95px !important;
+  border: dashed 2px #CAD3F2 !important;
+  color: #CAD3F2 !important;
+}
+.fVfcRr > span {
+  color: #CAD3F2 !important;
+}
+._2Jtxm._35Ago ._2kL0S {
+  background-color: #53B9EA;
+}
+._53Ji7 {
+  padding: 0px;
+}
+._2_g61 {
+  padding: 0px;
+}
+._1hzhf {
+  display: none;
+}
+.text-sm {
+  font-size: .8rem;
+}
+.lh-2 {
+  line-height: 25px;
+}
+
+.wallet-address {
+  /*width: 120px;*/
+  padding: 5px;
+  display: inline-block;
+  float: right;
+  cursor: pointer;
+  color: #eee;
+}
+.wallet-address:hover {
+  opacity: 35%;
+}

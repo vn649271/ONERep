@@ -1,0 +1,3 @@
+- Add token to the wallet
+- Clear all accounts and users
+- Add the given wallet as super admin contributor
