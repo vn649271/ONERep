@@ -65,7 +65,7 @@ const HomePageModule = (props) => {
       .post(SERVER_URL + "/users/login", { wallet: account })
       .then((response) => {
         if (response.data.success == true) {
-          localStorage.setItem("username", response.data.username);
+          localStorage.setItem("user", response.data.username);
           localStorage.setItem("wallet", account);
           localStorage.setItem("isAdmin", response.data.isAdmin || false);
           localStorage.setItem("parent",response.data.parent);

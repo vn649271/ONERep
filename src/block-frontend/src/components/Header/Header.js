@@ -3,21 +3,18 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import "./css/Header.css";
 import BasicModal from '../Modals/BasicModal';
+import { orAlert } from "../../service/utils";
 import axios from "axios";
 const {SERVER_URL} = require('../../conf');
 
 const Header = (props) => {
-
-    const { wallet, userName, isAdmin } = props;
 
     const [showMessage, setShowMessage] = useState(false);
     const [messageType, setMessageType] = useState("error");
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [metaMaskAccessible, setMetaMaskAccessible] = useState(true);
-    const [walletAddress, setWalletAddress] = useState(null);
-    const [_userName, setUserName] = useState(null);
-    const [_isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     let connected = false;
     let installed = false;
@@ -36,9 +33,24 @@ const Header = (props) => {
                 logout();
             });            
         }
-        setWalletAddress(wallet);
-        setUserName(userName);
-        setIsAdmin(isAdmin);
+        let wallet = localStorage.getItem("wallet");
+        if (wallet !== undefined && wallet !== null && wallet !== "") {
+            axios.post(
+                SERVER_URL + '/users/loggedinuserbywallet', 
+                {
+                    wallet: wallet
+                }
+            ).then(ret => {
+                if (ret.data === undefined || ret.data.isAdmin === undefined) {
+                    orAlert("Failed to get information for logged in user");
+                    return;
+                }
+                setIsAdmin(ret.data.isAdmin);
+            })
+            .catch(error => {
+                orAlert("Error occurred in getting information for logged in user");
+            })            
+        }
     });
 
     const showMessageBox = (title, content, _type = "error") => {
@@ -135,7 +147,7 @@ const Header = (props) => {
                         </li>
                         <li className="zl_page_sidebar_items" title="onerepfile">
                            {
-                               !_isAdmin ?
+                               !isAdmin ?
                                     <Link  to={'/onerepfile'}  className="zl_page_sidebar_link position-relative">
                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
@@ -164,7 +176,7 @@ const Header = (props) => {
                                     <rect x="6.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
                                     <rect x="6.10527" y="6.10527" width="7" height="7" rx="1.4" fill="#828CAE" />
                                 </svg>
-                                <span className="zl_pagesidebar_text">ONERep Board</span>
+                                <span className="zl_pagesidebar_text second-main-text-color">ONERep Board</span>
                             </Link>
                         </li>
                         <li className="zl_page_sidebar_items" title="logout">
@@ -175,7 +187,7 @@ const Header = (props) => {
                                     <rect x="6.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
                                     <rect x="6.10527" y="6.10527" width="7" height="7" rx="1.4" fill="#828CAE" />
                                 </svg>
-                                <span className="zl_pagesidebar_text">Logout</span>
+                                <span className="zl_pagesidebar_text second-main-text-color">Logout</span>
                             </a>
                         </li>
                         {/* <li className="zl_page_sidebar_items" title="portfolio">
@@ -300,11 +312,6 @@ const Header = (props) => {
 }
 
 function mapStoreToProps(state) {
-    return { 
-        userName: state.userAction.user,
-        wallet: state.userAction.wallet,
-        isAdmin: state.userAction.isAdmin
-    };
 }
 
 export default connect(mapStoreToProps)(Header);

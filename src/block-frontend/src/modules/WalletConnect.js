@@ -57,8 +57,9 @@ const WalletConnectModule = (props) => {
             stopWait();
             return;
         }
-        localStorage.setItem("username", userName);
-        let wallet1 = document.getElementsByName("wallet");;
+
+        let wallet1 = document.getElementsByName("wallet");
+
         let badge1 = document.getElementsByName("badge");;
         let badgeName = badge1[0].value;
         if (badgeName == '') {
@@ -66,6 +67,7 @@ const WalletConnectModule = (props) => {
             stopWait();
             return;
         }
+
         let dao1 = document.getElementsByName("dao");
         let daoName = dao1[0].value;
         if (daoName == '') {
@@ -96,33 +98,14 @@ const WalletConnectModule = (props) => {
                 return;
             }
             document.getElementsByName("tokenaddress")[0].value = badgeTokenAddress;
+
+            localStorage.setItem("user", userName);
+            localStorage.setItem("badge", badgeName);
             localStorage.setItem("badgeTokenAddress", badgeTokenAddress);
+            localStorage.setItem("dao", daoName);
+            localStorage.setItem("wallet", wallet1[0].value);
             inform("Success", "DAO Token deployed, please proceed to launch ONERep Account");
             console.log(">>>>>>>>>>>>>>>>>>>>> New deployed badge token address:", badgeTokenAddress);
-            /////////////////////////////////// Adding token ///////////////////////////////
-            // window.ethereum
-            // .request({
-            //     method: 'wallet_watchAsset',
-            //     params: {
-            //         type: 'ERC20',
-            //         options: {
-            //             address: badgeTokenAddress,
-            //             symbol: badgeName,
-            //             decimals: "0",
-            //             image: 'assets/image/badge-token-image.png',
-            //         },
-            //     },
-            // })
-            // .then((success) => {
-            //     stopWait();
-            //     setStatus(IDLE);
-            //     if (success) {
-            //         console.log(badgeName, 'token successfully added to wallet!');
-            //     } else {
-            //         throw new Error('Something went wrong.');
-            //     }
-            // })
-            // .catch(console.error);            
         } catch (error) {
             console.log("!!!!!!!!!!!!! Error occurred in onSubmitHandler(): ", error);
         }
