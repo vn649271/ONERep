@@ -1,13 +1,13 @@
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const auth=require('./config/passport')();
+const auth=require('./src/config/passport')();
 const passport = require("passport");
 const bodyParser = require('body-parser');
-const User = require("./models/user");
+const User = require("./src/models/user");
 const localStrategy = require("passport-local");
-const mongoose = require('./db/connection');
-const {SERVER_URL} = require('./config/conf');
+const mongoose = require('./src/db/connection');
+const {SERVER_URL} = require('./src/config/conf');
 const http = require('http');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));

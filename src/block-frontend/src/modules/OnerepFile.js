@@ -60,6 +60,7 @@ const OneRepFileModule = (props) => {
   const [showMessageBox, setShowMessageBox] = useState(false);
   const [messageBoxTitle, setMessageBoxTitle] = useState(false);
   const [messageBoxContent, setMessageBoxContent] = useState(false);
+  const [userName, setUserName] = useState(null);
 
   let badgeTokenAddress = '';
   let web3 = null;
@@ -71,13 +72,20 @@ const OneRepFileModule = (props) => {
   let step1Completed = false;
 
   useEffect(() => {
+    let _userName = localStorage.getItem('username');
+    setUserName(userName);
     dispatch({
       type: USERS.CONNECT_WALLET, 
       payload: { 
         wallet: localStorage.getItem('wallet'),
-        user: localStorage.getItem('username'),
+        user: _userName,
       }
     });
+    axios.post(SERVER_URL + "/users/loggedinuser",{
+         user: _userName
+    }).then(ret => {
+      
+    }).catch(error => {});
     badgeTokenAddress = localStorage.getItem('badgeTokenAddress');
     chainId = localStorage.getItem('chainId');
   });
@@ -135,11 +143,10 @@ const OneRepFileModule = (props) => {
     }
     setShowMintWizard(false);
     setTotalMint(reputation);
-    let username = localStorage.getItem("username")
 
     /********************************Get Information of the current logged in user *******************/
     let response = await axios.post(SERVER_URL + "/users/loggedinuser",{
-         user: username
+         user: userName
     });
 
     badgeTokenAddress = response.data.badgeAddress;

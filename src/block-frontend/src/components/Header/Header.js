@@ -1,16 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import "./css/Header.css";
 import BasicModal from '../Modals/BasicModal';
+import axios from "axios";
 const {SERVER_URL} = require('../../conf');
 
 const Header = (props) => {
+
+    const { wallet, userName } = props;
 
     const [showMessage, setShowMessage] = useState(false);
     const [messageType, setMessageType] = useState("error");
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [metaMaskAccessible, setMetaMaskAccessible] = useState(true);
+    const [walletAddress, setWalletAddress] = useState(null);
+    const [_userName, setUserName] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    let connected = false;
+    let installed = false;
 
     useEffect(() => {
         if (metaMaskAccessible && window.ethereum === undefined) {
@@ -26,11 +36,19 @@ const Header = (props) => {
                 logout();
             });            
         }
+        if (userName !== undefined && userName !== null && userName !== "") {
+            setWalletAddress(wallet);
+            setUserName(userName);          
+        }
+        axios.post(SERVER_URL + "/users/loggedinuser",{
+             user: userName
+        }).then(ret => {
+            setIsAdmin(ret.isAdmin);
+        })
+        .catch((error) => {
+            console.log("Header.js: Failed to get information for logined user");
+        });
     });
-
-    let connected = false;
-    let installed = false;
-    let isAdmin = localStorage.getItem('isAdmin');
 
     const showMessageBox = (title, content, _type = "error") => {
         setMessageType(_type);
@@ -290,4 +308,11 @@ const Header = (props) => {
     );
 }
 
-export default Header;
+function mapStoreToProps(state) {
+    return { 
+        userName: state.userAction.user,
+        wallet: state.userAction.wallet
+    };
+}
+
+export default connect(mapStoreToProps)(Header);
