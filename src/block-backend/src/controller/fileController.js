@@ -3,6 +3,7 @@ const fs = require('fs');
 const uploadFile = require("../middleware/upload");
 const fUpload  = require('../models/upload');
 const fAction  = require('../models/action');
+const fUser  = require('../models/user');
 const ipfsAPI = require('ipfs-api');
 
 exports.upload = async (req, res) => {
@@ -23,16 +24,11 @@ exports.upload = async (req, res) => {
 
 exports.addFile = async (req, res) => {
   try { 
-    fUpload.findOne({ipfsuri: req.body.ipfsuri}).then((data) => {
-      if (data)
-      {
+    fUpload.findOne({ipfsuri: req.body.ipfsuri}).then(data => {
+      if (data) {
         res.status(200).send({success: false});
-      }
-      else
-      {
-
+      } else {
        /****************creating file object***************************/
-        
        const addfile = new fUpload({
           filename: req.body.filename,
           ipfsuri: req.body.ipfsuri,
@@ -42,11 +38,9 @@ exports.addFile = async (req, res) => {
         });
 
         /***************saving file information in mongodb*************/
-
-        addfile.save().then((result) => {
+        addfile.save().then(result => {
           const data = req.body.data;
           data.map( (row, i) => {
-
             const addAction = new fAction({
               name: row[1],
               wallet: row[2],
@@ -57,32 +51,29 @@ exports.addFile = async (req, res) => {
               parent: req.body.master,
               recipientContractAddress:row[7]
             });
-
-        /***************saving each user information in mongodb***********/
-       
-        addAction.save().then((result) => {
+            /***************saving each user information in mongodb***********/
+            addAction.save().then((result) => {
             }).catch((err) => {
               console.log(err);
             });
-          })
+          });
+          /*************** Update 'sent' field in User *************/
+          fUser.findOne({master: req.body.master}).then(async user => {
+            if (!user) {
+              console.log("Not found the user with the specified wallet", req.body.master);
+              return;
+            }
+            user.sent += req.body.reputation;
+            await user.save().then(ret => {
+            }).catch(error => {
+              console.log("Failed to update 'sent' value in the user", error);
+            });
+          });
+
           res.status(200).send({success: true});
         }).catch((err) => {
           res.status(200).send({success: false});
         });
-        // const addAction = new fAction({
-        //   name: '1',
-        //   wallet: '1',
-        //   received: 0,
-        //   sent: 0,
-        //   epoch_number: '1',
-        //   date: 'asd',
-        //   from: 'a'
-        // });
-        // addAction.save().then((result) => {
-        //   console.log(result);
-        // }).catch((err) => {
-        //   console.log(err);
-        // });
       }
     });
   } catch (err) {

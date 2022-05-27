@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { USERS } from "../store/actionTypes";
 import { useHistory } from "react-router-dom";
 import BasicModal from '../components/Modals/BasicModal';
+import OrSpinButton from '../components/OrSpinButton';
 import axios from "axios";
 import { SERVER_URL } from "../conf";
 import Web3 from "web3";
@@ -43,14 +44,14 @@ const HomePageModule = (props) => {
   const handleCloseMessageBox = () => {
     setShowMessage(false);
   }
-
-  const connectWallet = () => {
+  const connectWallet = async (params) => {
     if (window.ethereum) {
       // res[0] for fetching a first wallet
-      window.ethereum
+      await window.ethereum
         .request({ method: "eth_requestAccounts" })
-        .then((res) => {
-          accountChangeHandler(res[0])
+        .then(async res => {
+          await accountChangeHandler(res[0])
+          params.stopWait();
         });
     } else {
       showMessageBox("Warning", "No wallet installed. You should have wallet installed to access the page");
@@ -67,15 +68,16 @@ const HomePageModule = (props) => {
           localStorage.setItem("username", response.data.username);
           localStorage.setItem("wallet", account);
           localStorage.setItem("isAdmin", response.data.isAdmin || false);
-          console.log("parent", response.data.parent);
           localStorage.setItem("parent",response.data.parent);
+          console.log("parent", response.data.parent);
 
           dispatch({
             type: USERS.CONNECT_WALLET, 
             payload: { 
               wallet: account, 
               user: response.data.username,
-              badgeTokenAddress: null,
+              isAdmin: response.data.isAdmin,
+              badgeTokenAddress: response.data.badgeTokenAddress,
               // chainId: chainId
             }
           });
@@ -201,12 +203,16 @@ const HomePageModule = (props) => {
             <br />
             <br />
             <div className="text-center">
-              <button type="button" className="btn-connect">
-                <span color="text-white" onClick={connectWallet}>
+              <OrSpinButton
+                renderMode={'overlapped'}
+                size='large'
+                onClick={connectWallet}
+              >
+                <span color="text-white">
                   Metamask{" "}
-                  <img className="ml-2" src="assets/image/metamask.svg" />
+                  <img className="" src="assets/image/metamask.svg" />
                 </span>
-              </button>
+              </OrSpinButton>
             </div>
             <br />
             <br />

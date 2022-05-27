@@ -26,15 +26,7 @@ const { SERVER_URL } = require("../conf");
 
 
 const OneRepFileModule = (props) => {
-  // let ipfs = IPFSHTTPClient | undefined;
-  // try {
-  //     ipfs = create({
-  //         url: "https://ipfs.infura.io:5001/api/v0",
-  //     });
-  // } catch (error) {
-  //     console.error("IPFS error ", error);
-  //     ipfs = undefined;
-  // }
+  const { _wallet, _userName, _isAdmin, _badgeTokenAddress } = props;
 
   const [showMintWizard, setShowMintWizard] = useState(false);
   const [showSucces, setshowSucces] = useState(false);
@@ -55,39 +47,42 @@ const OneRepFileModule = (props) => {
   //State to store the values
   const [values, setValues] = useState([]);
   const [step, setStep] = useState(0);
-  const [badgeaddress,setBadgeAddress] = useState('');
+  const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
   const [badgecontract,setBadgeContract] = useState(null);
   const [showMessageBox, setShowMessageBox] = useState(false);
   const [messageBoxTitle, setMessageBoxTitle] = useState(false);
   const [messageBoxContent, setMessageBoxContent] = useState(false);
+  const [walletAddress, setWalletAddress] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [chainId, setChainId] = useState(null);
 
-  let badgeTokenAddress = '';
   let web3 = null;
   let rpcProvider = null;
-  let chainId = null;
   let signer = null;
-  const uploadFileInput = useRef(null);
-  const dispatch = useDispatch();
   let step1Completed = false;
 
+  const uploadFileInput = useRef(null);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    let _userName = localStorage.getItem('username');
-    setUserName(userName);
-    dispatch({
-      type: USERS.CONNECT_WALLET, 
-      payload: { 
-        wallet: localStorage.getItem('wallet'),
-        user: _userName,
-      }
-    });
-    axios.post(SERVER_URL + "/users/loggedinuser",{
-         user: _userName
-    }).then(ret => {
-      
-    }).catch(error => {});
-    badgeTokenAddress = localStorage.getItem('badgeTokenAddress');
-    chainId = localStorage.getItem('chainId');
+    setWalletAddress(_wallet);
+    setUserName(_userName);
+    setBadgeTokenAddress(_badgeTokenAddress);
+    let _chainId = localStorage.getItem('chainId');
+    setChainId(_chainId);
+
+    if (!walletAddress) {
+      dispatch({
+        type: USERS.CONNECT_WALLET, 
+        payload: { 
+          wallet: localStorage.getItem('wallet'),
+          user: _userName,
+          isAdmin: _isAdmin,
+          badgeTokenAddress: _badgeTokenAddress
+        }
+      });
+    }
   });
 
   useEffect(() => {
@@ -144,12 +139,6 @@ const OneRepFileModule = (props) => {
     setShowMintWizard(false);
     setTotalMint(reputation);
 
-    /********************************Get Information of the current logged in user *******************/
-    let response = await axios.post(SERVER_URL + "/users/loggedinuser",{
-         user: userName
-    });
-
-    badgeTokenAddress = response.data.badgeAddress;
     if (badgeTokenAddress === undefined ||
         badgeTokenAddress === null ||
         badgeTokenAddress === "") {
@@ -162,7 +151,6 @@ const OneRepFileModule = (props) => {
     const badgeTokenContract = new ethers.Contract(badgeTokenAddress, ONERepDeployedInfo.abi, rpcProvider);
     let wallet = localStorage.getItem('wallet')
     // let recipientcontractadd;
-    let tokenAmount;
 
     /************Preparing an array of recipient contracts**********/
     var recipients = new Array(values.length);
@@ -170,6 +158,8 @@ const OneRepFileModule = (props) => {
       recipients[j] = values[j][2];
     }
     /***************************Mint to each individual Recipient Contract***********/
+    let tokenAmount = 0;
+    let totalTokenAmount = 0;
     for(let i = 0; i < values.length;i++) {
       tokenAmount = values[i][3];
       if (parseInt(tokenAmount) <= 0) {
@@ -197,6 +187,7 @@ const OneRepFileModule = (props) => {
           "https://your-domain-name.com/credentials/tokens/1",
           []
         );
+        totalTokenAmount = tokenAmount;
       } catch (error) {
         let errorCode = error.code ? error.code : 0;
         if (errorCode === 4001) {
@@ -426,5 +417,14 @@ const OneRepFileModule = (props) => {
     </section>
   );
 };
-const mapStoreToProps = ({ userAction }) => ({});
-export default connect(mapStoreToProps, null)(OneRepFileModule);
+
+function mapStoreToProps(state) {
+    return { 
+        _userName: state.userAction.user,
+        _wallet: state.userAction.wallet,
+        _isAdmin: state.userAction.isAdmin,
+        _badgeTokenAddress: state.userAction.badgeTokenAddress
+    };
+}
+
+export default connect(mapStoreToProps)(OneRepFileModule);

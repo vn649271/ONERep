@@ -23,6 +23,7 @@ let routes = (app) => {
   router.post("/users/delete", userController.delete);
   router.post('/getOneRepBoard', userController.getOneRepBoard);
   router.post('/getDaoData', userController.getDaoData);
+  router.post('/getAllDaoData', userController.getAllDaoData);
   router.post('/getSelOpList', userController.getSelOpList);
   router.get('/logout', userController.logout);
   

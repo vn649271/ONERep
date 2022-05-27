@@ -70,6 +70,7 @@ exports.login = async(req, res) => {
                         username: user.username,
                         isAdmin: user.isAdmin,
                         parent: user.parent,
+                        badgeTokenAddress: user.badgeAddress,
                         url: '/onerepboard'
                     });
                 } else {
@@ -79,6 +80,7 @@ exports.login = async(req, res) => {
                         username: "",
                         isAdmin: false,
                         parent:"",
+                        badgeTokenAddress: null,
                         url: '/walletconnect'
                     });
                 }
@@ -123,29 +125,28 @@ exports.getUserList = async(req, res) => {
 }
 
 exports.getOneRepBoard  = async(req, res) => {
-    const result = {};
     let parentAddress = req.body.parent;
     if (parentAddress === undefined || parentAddress === null || parentAddress === '') { // In case of not contributor
         parentAddress = req.body.master;
     }
-    fAction.aggregate([
-        {$match : { parent : parentAddress }}, 
-        {$group:{
-            _id: "$wallet", 
-            name : { $first: '$name' }, 
-            sum: {$sum: "$received"}
-        }}, 
-        {$sort: req.body.sort}
-    ]).then(users => {
-        if (users.length !== undefined && users.length < 1) {
-            User.findOne({wallet: req.body.master}).then(user => {
-                result.users = user;
-                res.status(200).send(result);
-            });
-        } else {
-            result.users = users;
-            res.status(200).send(result);
+    await fAction.aggregate([
+        {
+            $match : { parent : parentAddress }
+        }, 
+        {
+            $group:{
+                _id: "$wallet", 
+                name : { $first: '$name' }, 
+                sum: {$sum: "$received"}
+            }
+        }, 
+        {
+            $sort: req.body.sort
         }
+    ]).then(users => {
+        res.status(200).send({error: 0, data: users});
+    }).catch(error => {
+        res.status(200).send({error: -1, data: error.message})
     });
 }
 /*******************************Get DAO data********************** */
@@ -156,21 +157,22 @@ exports.getDaoData = async(req, res)=> {
             let daos = [];
             try {
                 if (req.body.dao) {
-                    daos = await User.find({dao: req.body.dao}).then(daos => {
+                    daos = await User.find({dao: req.body.dao})
+                    .then(daos => {
                         return res.status(200).send({ error: 0, data: daos });
                     })
                     .catch(error => {
                         return res.status(200).send({ error: -1, data: error.message });
                     });
                 } else {
-                    daos = await User.find({}).then(daos => {
+                    await User.find({})
+                    .then(daos => {
                         return res.status(200).send({ error: 0, data: daos });
                     })
                     .catch(error => {
                         return res.status(200).send({ error: -1, data: error.message });
                     });
                 }
-                return res.status(200).send({ error: 0, data: daos });
             } catch (error) {
                 return res.status(200).send({ error: -1, data: error.message });
             }
@@ -193,6 +195,19 @@ exports.getDaoData = async(req, res)=> {
     }
 }
 
+exports.getAllDaoData = async(req, res)=> {
+    try {
+        let user = await User.findOne({wallet: req.body.master});
+        if (user.isAdmin) {
+            let daos = await User.find({});
+            return res.status(200).send({ error: 0, data: daos });
+        }
+        return res.status(200).send({ error: -2, data: "Only super admin can access this function" });
+    } catch (error) {
+        console.error("UserController.getDaoData():", error);
+        return res.status(200).send({error: -1, data: null});
+    }
+}
 
 // exports.getOneRepBoard  = async(req, res) => {
 //     console.log("enter in api")

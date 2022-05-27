@@ -11,6 +11,8 @@ export const initialState = {
     showLoginModal: false,
     user: null,
     wallet: null,
+    isAdmin: false,
+    badgeTokenAddress: null,
     error: ''
   },
   // commonAction: {

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { USERS } from "../store/actionTypes";
 import Web3 from "web3";
 import { initContractByChainId } from "../service/contractService";
+import { orAlert } from "../service/utils";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
 import "react-step-progress/dist/index.css";
@@ -19,17 +20,18 @@ const OneRepBoardModule = (props) => {
   const [sort_id, setSortId] = useState(1);
   const [sort_sum, setSortSum] = useState(1);
   const [sortOption, setSortOption] = useState({ name: 1 });
-  const [daodata,setDaoData] = useState([]);
-  const [selectedDaoName, setSelectedDaoName] = useState(null);
+  const [daoList,setDaoList] = useState([]);
+  const [selectedDao, setSelectedDao] = useState(null);
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
+  const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
-  let badgeTokenAddress = null;
-  let chainId = null;
 
   useEffect(() => {
-    console.log("Dao Data",daodata)
-  }, [daodata])
+    console.log("Dao Data",daoList);
+  }, [daoList])
   useEffect(() => {
     console.log("BoardData",boardData)
   }, [boardData])
@@ -37,46 +39,62 @@ const OneRepBoardModule = (props) => {
      console.log("selected Value",selectedV)
   }, [selectedV])
   useEffect(() => {
-    dispatch({
-      type: USERS.CONNECT_WALLET, 
-      payload: { 
-        wallet: localStorage.getItem('wallet'),
-        user: localStorage.getItem('username'),
+    // Init connection info
+    axios.post(
+        SERVER_URL + '/users/loggedinuserbywallet', 
+        {
+            wallet: localStorage.getItem("wallet")
+        }
+    ).then(ret => {
+      let userInfo = ret.data ? ret.data : null;
+      if (!userInfo) {
+        orAlert("Failed to get information for current logined user");
+        return;
       }
-    });
-    
-    badgeTokenAddress = localStorage.getItem('badgeTokenAddress');
-    chainId = localStorage.getItem('chainId');
-
-    axios.post(SERVER_URL + "/getDaoData", {
-      master: localStorage.getItem("wallet")
-    }).then((resp)=> {
-      if (resp.data.error !== undefined && resp.data.error === 0) {
-        let daos = resp.data.data;
-        setDaoData(daos);
-        // if (daos.length === undefined && daos.dao !== undefined && daos.dao !== null) {
-        //   setSelectedDaoName(daos.dao);
-        //   getOneRepBoard(daos.dao);
-        //   // Get total count of token for the DAO
-        //   axios.post(SERVER_URL + "/getOneRepBoard", {
-        //     parent: resp.data.parent,
-        //     master: resp.data.wallet,
-        //     sort: sortOption,
-        //   })
-        //   .then((response) => {
-        //     let totalTokens = 0;
-        //     response.data.users.map(u => {
-        //       totalTokens += parseInt(u.sum);
-        //     });
-        //     setSelectedDaoTokenTotalSupply(totalTokens);
-        //   });
-        // } else if (daos.length !== undefined && daos.length > 0) {
-        //   setDaoData(daos);
-        // }
+      console.log("Logged in user:", ret.data);
+      setIsAdmin(userInfo.isAdmin);
+      let badgeTokenAddress = userInfo.badgeAddress;
+      setBadgeTokenAddress(badgeTokenAddress);
+      setChainId(localStorage.getItem('chainId'));
+      dispatch({
+        type: USERS.CONNECT_WALLET, 
+        payload: { 
+            wallet: userInfo.wallet,
+            user: userInfo.username,
+            isAdmin: userInfo.isAdmin,
+            badgeTokenAddress: badgeTokenAddress,
+        }
+      });
+      let thisAddress = localStorage.getItem("wallet");
+      if (!userInfo.isAdmin) {
+        // Get all DAO names to fill into DAO name list and select first DAO from it
+        axios.post(SERVER_URL + "/getDaoData", {
+          master: thisAddress
+        }).then((resp)=> {
+          if (resp.data.error !== undefined && resp.data.error === 0) {
+            let daos = resp.data.data;
+            setDaoList(daos);
+            handleDropDown(daos[0].dao);
+          } else {
+            alert("Failed to get DAO data");
+          }
+        });        
       } else {
-        alert("Failed to get DAO data");
+        // Get all DAO informations
+        axios.post(SERVER_URL + "/getAllDaoData", {
+          master: thisAddress
+        }).then(resp => {
+          let error = resp.data ? resp.data.error !== undefined ? resp.data.error : -100: -100;
+          if (error === 0) {
+            let daos = resp.data.data ? resp.data.data : [];
+            setBoardData(daos);
+            // setDaoList(daos);
+          }
+        }).catch(error => {
+          console.log("Failed to get all dao data", error)
+        })
       }
-    });
+    })    
   }, []);
   useEffect(() => {
     if (
@@ -87,19 +105,22 @@ const OneRepBoardModule = (props) => {
       return;
     }
   }, [show, sortOption]);
-  const getOneRepBoard = (value) => {
-    axios.post(SERVER_URL + "/getOneRepBoard", {
-      master: localStorage.getItem('wallet'),
-      dao: value,
-      sortOption: "{\"dao\": \"ASC\"}",
-    })
-    .then((response) => {
-      console.log("Response from backend",response)
-      setBoardData(response.data.users)   
-    })
-    .catch(error => {
+  const getOneRepBoard = async (wallet, daoName) => {
+    try {
+      let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
+        master: wallet,
+        dao: daoName,
+        sort: sortOption,
+      });
+      let totalTokens = 0;
+      ret.data.map(u => {
+        totalTokens += parseInt(u.sum ? u.sum: 0);
+      });
+      ret.data['totalTokens'] = totalTokens;
+      return ret.data;      
+    } catch(error) {
       console.log("Failed to getOneRepBoard(): ", error);
-    });
+    }
   };
   const getSelOpList = () => {
     axios.post(SERVER_URL + "/getSelOpList", {
@@ -110,17 +131,20 @@ const OneRepBoardModule = (props) => {
       setSelectData(response.data);
     });
   };
-  const handleDropDown = (e) => {
-    console.log("Handle Drop Down",e)
-    setSelectedDaoName(e);
-    axios.post(SERVER_URL + "/getDaoData", {
-      master: localStorage.getItem("wallet"),
-      dao: e
-    }).then((resp)=> {
-      let daos = resp.data;
-      setDaoData(resp.data);
-    });
-    getOneRepBoard(e);
+  const handleDropDown = async (selectedDaoName) => {
+    console.log("Handle Drop Down", selectedDaoName);
+    try {
+      let resp = await axios.post(SERVER_URL + "/getDaoData", {
+        master: localStorage.getItem("wallet"),
+        dao: selectedDaoName
+      });
+      let daos = resp.data.data;
+      setSelectedDao(daos[0]);
+      let ret = await getOneRepBoard(localStorage.getItem('wallet'), selectedDaoName);
+      setSelectedDaoTokenTotalSupply(ret.totalTokens);
+    } catch (error) {
+      console.log("Error occurred in handleDropDown()", error);
+    }
   };
   const handleInitContract = async () => {
     let web3 = new Web3(window.ethereum);
@@ -141,42 +165,46 @@ const OneRepBoardModule = (props) => {
         </div>
         <div className="zl_all_page_notify_logout_btn"></div>
       </div>
-      <div className='main-text-color'>
-        <div className='flow-layout'>
-          <div className='flow-layout'>DAO</div>
-          <div className='flow-layout'>
-            <Dropdown onSelect={handleDropDown}>
-              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                {selectedDaoName ? selectedDaoName: "Select DAO"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-              {
-                (daodata.length >1) ? 
-                  daodata.map(m => {
-                    return <Dropdown.Item eventKey={m.dao}>{m.dao}</Dropdown.Item>          
-                  }): 
-                  <Dropdown.Item eventKey={daodata.dao}>{daodata.dao}</Dropdown.Item>  
-              }
-                {/* <Dropdown.Item onClick={handleDropDown}>Action</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item> */}
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-        </div>
-        <div className='flow-layout'>
-          Token Name
-          <label className="bordered-label">
-            {daodata.badge}
-          </label>
-        </div>
-        <div className='flow-layout'>
-          Number of Tokens 
-          <label className="bordered-label">
-            {selectedDaoTokenTotalSupply}
-          </label>
-        </div>
-      </div>
+      {
+        !isAdmin ? 
+          <div className='main-text-color'>
+            <div className='flow-layout'>
+              <div className='flow-layout'>DAO</div>
+              <div className='flow-layout'>
+                <Dropdown onSelect={handleDropDown}>
+                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                    {selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                  {
+                    (daoList.length > 0) ? 
+                      daoList.map(m => {
+                        return <Dropdown.Item eventKey={m.dao}>{m.dao}</Dropdown.Item>          
+                      }): 
+                      <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
+                  }
+                    {/* <Dropdown.Item onClick={handleDropDown}>Action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item> */}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </div>
+            <div className='flow-layout'>
+              Token Name
+              <label className="bordered-label">
+                {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+              </label>
+            </div>
+            <div className='flow-layout'>
+              Number of Tokens 
+              <label className="bordered-label">
+                {selectedDaoTokenTotalSupply}
+              </label>
+            </div>
+          </div>:
+        <></>
+      }
       <br />
       <div>
         <Table striped className="or-table table">
@@ -196,7 +224,7 @@ const OneRepBoardModule = (props) => {
                   setSortOption({ _id: -sort_id });
                 }}
               >
-                Wallet Id
+                Wallet
               </th>
               <th
                 className="text-right"
@@ -213,10 +241,10 @@ const OneRepBoardModule = (props) => {
             {boardData.map((row, i) => {
               return (
                 <tr key={i}>
-                  <td>{row.name}</td>
-                  <td>{row._id}</td>
+                  <td>{row.dao}</td>
+                  <td>{row.wallet}</td>
                   <td className="text-right">
-                    {row.sum}
+                    {row.sent}
                   </td>
                 </tr>
               );

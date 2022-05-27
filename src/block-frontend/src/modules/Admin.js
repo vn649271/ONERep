@@ -35,10 +35,10 @@ const AdminModule = (props) => {
     const [messageType, setMessageType] = useState("error");
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
+    const [badgeAddress, setBadgeAddress] = useState(null);
+    const [chainId, setChainId] = useState(0);
 
     const dispatch = useDispatch();
-    let badgeTokenAddress = null;
-    let chainId = null;
 
     useEffect(() => {
         if (localStorage.getItem('wallet') == '' || !localStorage.getItem('wallet'))
@@ -46,15 +46,27 @@ const AdminModule = (props) => {
             window.location.href = "/";
             return;
         }
-        dispatch({
-            type: USERS.CONNECT_WALLET, 
-            payload: { 
-                wallet: localStorage.getItem('wallet'),
-                user: localStorage.getItem('username'),
-            }
-        });
-        badgeTokenAddress = localStorage.getItem('badgeTokenAddress');
-        chainId = localStorage.getItem('chainId');
+        if (!badgeAddress) {
+            axios.post(
+                SERVER_URL + '/users/loggedinuserbywallet', 
+                {
+                    wallet: localStorage.getItem("wallet")
+                }
+            ).then(ret => {
+                console.log("Logged in user:", ret.data);
+                setBadgeAddress(ret.data.badgeAddress);
+                dispatch({
+                    type: USERS.CONNECT_WALLET, 
+                    payload: { 
+                        wallet: ret.data.wallet,
+                        user: ret.data.username,
+                        isAdmin: ret.data.isAdmin,
+                        badgeAddress: badgeAddress,
+                    }
+                });
+                setChainId(localStorage.getItem('chainId'));
+            });            
+        }
         getContributors();
     })
     const showMessageBox = (title, content, _type = "error") => {

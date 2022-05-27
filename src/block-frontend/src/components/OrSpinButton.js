@@ -5,9 +5,9 @@ var me;
 
 export default function OrSpinButton(props) {
 
-    // renderMode: 0 - flex mode(caption is next by spinner) , 
-    //             1 - overlapped mode(spinner is overlapped above the caption)
-    const { title, additionalClass, extraData, children, renderMode=0 } = props;
+    // renderMode: 'flex' - flex mode(caption is next by spinner) , 
+    //             'overlapped' - overlapped mode(spinner is overlapped above the caption)
+    const { title, onClick, additionalClass, size, extraData, children, renderMode='flex' } = props;
 
     const baseClass = "justify-content-center align-items-center or-spin-button mx-auto focus:outline-none " +
                     (additionalClass ? additionalClass : "");
@@ -30,7 +30,7 @@ export default function OrSpinButton(props) {
         }
         setStatus(1);
         setButtonClass(disabledClass);
-        props.onClick({
+        onClick({
             stopWait: stopWait, 
             getExtraData: getExtraData
         });
@@ -52,11 +52,11 @@ export default function OrSpinButton(props) {
             // onMouseUp={handleMouseEvent}
         >
             {status?
-                <div className="flex items-center justify-center mr-2">
-                  <div className="or-spin-border spinner-border" role="status" />
+                <div className={`${renderMode} items-center justify-center mr-2`}>
+                  <div className={`or-spin-border spinner-border ${size}`} role="status"/>
                 </div>:
             <></>}
-            <label className="mb-0">{props.title}</label>
+            {children}
         </div>
     );
 }

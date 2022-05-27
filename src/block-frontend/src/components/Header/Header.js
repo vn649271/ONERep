@@ -8,7 +8,7 @@ const {SERVER_URL} = require('../../conf');
 
 const Header = (props) => {
 
-    const { wallet, userName } = props;
+    const { wallet, userName, isAdmin } = props;
 
     const [showMessage, setShowMessage] = useState(false);
     const [messageType, setMessageType] = useState("error");
@@ -17,7 +17,7 @@ const Header = (props) => {
     const [metaMaskAccessible, setMetaMaskAccessible] = useState(true);
     const [walletAddress, setWalletAddress] = useState(null);
     const [_userName, setUserName] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [_isAdmin, setIsAdmin] = useState(false);
 
     let connected = false;
     let installed = false;
@@ -36,18 +36,9 @@ const Header = (props) => {
                 logout();
             });            
         }
-        if (userName !== undefined && userName !== null && userName !== "") {
-            setWalletAddress(wallet);
-            setUserName(userName);          
-        }
-        axios.post(SERVER_URL + "/users/loggedinuser",{
-             user: userName
-        }).then(ret => {
-            setIsAdmin(ret.isAdmin);
-        })
-        .catch((error) => {
-            console.log("Header.js: Failed to get information for logined user");
-        });
+        setWalletAddress(wallet);
+        setUserName(userName);
+        setIsAdmin(isAdmin);
     });
 
     const showMessageBox = (title, content, _type = "error") => {
@@ -144,7 +135,7 @@ const Header = (props) => {
                         </li>
                         <li className="zl_page_sidebar_items" title="onerepfile">
                            {
-                               isAdmin == "false" ?
+                               !_isAdmin ?
                                     <Link  to={'/onerepfile'}  className="zl_page_sidebar_link position-relative">
                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
@@ -311,7 +302,8 @@ const Header = (props) => {
 function mapStoreToProps(state) {
     return { 
         userName: state.userAction.user,
-        wallet: state.userAction.wallet
+        wallet: state.userAction.wallet,
+        isAdmin: state.userAction.isAdmin
     };
 }
 

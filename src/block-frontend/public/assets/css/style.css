@@ -1943,6 +1943,18 @@ table td {
   border: none;
   cursor: pointer;
 }
+.or-spin-button div.overlapped {
+  position: absolute;
+  margin-right: 0px !important;
+}
+.or-spin-border.large {
+  margin-top: 25px;
+  width: 50px !important;
+  height: 50px !important;
+}
+.or-spin-button div.flex {
+  position: relative;
+} 
 .or-spin-button:hover {
   text-decoration: none;
   opacity: .8;
