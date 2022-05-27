@@ -112,11 +112,11 @@ const OneRepBoardModule = (props) => {
         dao: daoName,
         sort: sortOption,
       });
-      let totalTokens = 0;
-      ret.data.map(u => {
-        totalTokens += parseInt(u.sum ? u.sum: 0);
-      });
-      ret.data['totalTokens'] = totalTokens;
+      // let totalTokens = 0;
+      // ret.data.map(u => {
+      //   totalTokens += parseInt(u.sum ? u.sum: 0);
+      // });
+      // ret.data['totalTokens'] = totalTokens;
       return ret.data;      
     } catch(error) {
       console.log("Failed to getOneRepBoard(): ", error);
@@ -140,8 +140,9 @@ const OneRepBoardModule = (props) => {
       });
       let daos = resp.data.data;
       setSelectedDao(daos[0]);
+      setSelectedDaoTokenTotalSupply(daos[0].sent);
       let ret = await getOneRepBoard(localStorage.getItem('wallet'), selectedDaoName);
-      setSelectedDaoTokenTotalSupply(ret.totalTokens);
+      setBoardData(ret.data);
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
     }
@@ -179,7 +180,7 @@ const OneRepBoardModule = (props) => {
                   {
                     (daoList.length > 0) ? 
                       daoList.map(m => {
-                        return <Dropdown.Item eventKey={m.dao}>{m.dao}</Dropdown.Item>          
+                        return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
                       }): 
                       <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
                   }
@@ -241,10 +242,10 @@ const OneRepBoardModule = (props) => {
             {boardData.map((row, i) => {
               return (
                 <tr key={i}>
-                  <td>{row.dao}</td>
-                  <td>{row.wallet}</td>
+                  <td>{row.name}</td>
+                  <td>{row._id}</td>
                   <td className="text-right">
-                    {row.sent}
+                    {row.sum}
                   </td>
                 </tr>
               );

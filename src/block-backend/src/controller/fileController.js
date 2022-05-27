@@ -58,7 +58,7 @@ exports.addFile = async (req, res) => {
             });
           });
           /*************** Update 'sent' field in User *************/
-          fUser.findOne({master: req.body.master}).then(async user => {
+          fUser.findOne({wallet: req.body.master}).then(async user => {
             if (!user) {
               console.log("Not found the user with the specified wallet", req.body.master);
               return;
