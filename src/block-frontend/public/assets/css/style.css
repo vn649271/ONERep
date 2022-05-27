@@ -2160,6 +2160,9 @@ table td {
 .or-table td.text-right {
   text-align: right !important; 
 }
+.or-table td.text-center {
+  text-align: center !important; 
+}
 /**************************************************/
 @media (max-width: 1440px) {
   .or-wizard-modal .modal-dialog {

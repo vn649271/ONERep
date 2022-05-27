@@ -30,9 +30,9 @@ export const getMintApprovalSignature = async ({
   erc1238ContractAddress,
   chainId,
   signer,
-  id,
+  // id,
   amount,
-  address,
+  recipient,
 }) => {
   // console.log("I am inside get approval")
   const domain = getDomain(web3, chainId, erc1238ContractAddress);
@@ -43,8 +43,8 @@ export const getMintApprovalSignature = async ({
   // const signer = provider.getSigner(address);
 
   const value = {
-    recipient: address,
-    id,
+    recipient,
+    id: 1, //id,
     amount,
   };
 
@@ -60,23 +60,26 @@ export const getMintApprovalSignature = async ({
 };
 
 export const getMintBatchApprovalSignature = async ({
+  web3,
   erc1238ContractAddress,
   chainId,
-  ids,
+  signer,
+  // ids,
   amounts,
-  address,
+  recipient,
 }) => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.s0.b.hmny.io"
-  );
+  // const provider = new ethers.providers.JsonRpcProvider(
+  //   "https://api.s0.b.hmny.io"
+  // );
 
-  const signer = provider.getSigner(address);
+  // const signer = provider.getSigner(address);
 
-  const domain = getDomain(chainId, erc1238ContractAddress);
+  // const domain = getDomain(chainId, erc1238ContractAddress);
+  const domain = getDomain(web3, chainId, erc1238ContractAddress);
 
   const value = {
-    recipient: address,
-    ids,
+    recipient,
+    ids: [1],
     amounts,
   };
 

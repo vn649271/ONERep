@@ -40,50 +40,55 @@ const OneRepBoardModule = (props) => {
   }, [selectedV])
   useEffect(() => {
     // Init connection info
-    axios.post(
+    if (!badgeTokenAddress) {
+      axios.post(
         SERVER_URL + '/users/loggedinuserbywallet', 
         {
-            wallet: localStorage.getItem("wallet")
+          wallet: localStorage.getItem("wallet")
         }
-    ).then(ret => {
-      let userInfo = ret.data ? ret.data : null;
-      if (!userInfo) {
-        orAlert("Failed to get information for current logined user");
-        return;
-      }
-      console.log("Logged in user:", ret.data);
-      setIsAdmin(userInfo.isAdmin);
-      let badgeTokenAddress = userInfo.badgeAddress;
-      setBadgeTokenAddress(badgeTokenAddress);
-      setChainId(localStorage.getItem('chainId'));
-      dispatch({
-        type: USERS.CONNECT_WALLET, 
-        payload: { 
-            wallet: userInfo.wallet,
-            user: userInfo.username,
-            isAdmin: userInfo.isAdmin,
-            badgeTokenAddress: badgeTokenAddress,
+      ).then(ret => {
+        let userInfo = ret.data ? ret.data : null;
+        if (!userInfo) {
+          orAlert("Failed to get information for current logined user");
+          return;
         }
-      });
-      let thisAddress = localStorage.getItem("wallet");
-      if (!userInfo.isAdmin) {
-        // Get all DAO names to fill into DAO name list and select first DAO from it
-        axios.post(SERVER_URL + "/getDaoData", {
-          master: thisAddress
-        }).then((resp)=> {
-          if (resp.data.error !== undefined && resp.data.error === 0) {
-            let daos = resp.data.data;
-            setDaoList(daos);
-            handleDropDown(daos[0].dao);
-          } else {
-            alert("Failed to get DAO data");
+        console.log("Logged in user:", ret.data);
+        setIsAdmin(userInfo.isAdmin);
+        let badgeTokenAddress = userInfo.badgeAddress;
+        setBadgeTokenAddress(badgeTokenAddress);
+        setChainId(localStorage.getItem('chainId'));
+        dispatch({
+          type: USERS.CONNECT_WALLET, 
+          payload: { 
+              wallet: userInfo.wallet,
+              user: userInfo.username,
+              isAdmin: userInfo.isAdmin,
+              badgeTokenAddress: badgeTokenAddress,
           }
-        });        
-      } else {
-        // For super admin, get all board data
-        getOneRepBoard(thisAddress);
-      }
-    })    
+        });
+        let thisAddress = localStorage.getItem("wallet");
+        if (!userInfo.isAdmin) {
+          // Get all DAO names to fill into DAO name list and select first DAO from it
+          axios.post(SERVER_URL + "/getDaoData", {
+            master: thisAddress
+          }).then((resp)=> {
+            if (resp.data.error !== undefined && resp.data.error === 0) {
+              let daos = resp.data.data;
+              setDaoList(daos);
+              handleDropDown(daos[0].dao);
+            } else {
+              alert("Failed to get DAO data");
+            }
+          });        
+        } else {
+          // For super admin, get all board data
+          getOneRepBoard(thisAddress);
+        }
+      })
+      .catch(error => {
+        orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);        
+      });
+    }
   }, []);
   useEffect(() => {
     if (

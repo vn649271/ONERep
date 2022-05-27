@@ -96,7 +96,6 @@ const AdminModule = (props) => {
         handleSave(ev);
     }
     const handleSave = async ev => {
-        curUser.isAdmin = admin;
         curUser.status = enable;
         
         try {
@@ -106,6 +105,7 @@ const AdminModule = (props) => {
                     wallet: localStorage.getItem("wallet")
                 }
             );
+            curUser.isAdmin = ret.isAdmin;
             console.log("The fetched user", ret);
             curUser.badgeAddress = ret.data.badgeAddress;
             curUser.dao = ret.data.dao;
@@ -121,7 +121,7 @@ const AdminModule = (props) => {
                 SERVER_URL + '/users/update', 
                 { 
                     ...curUser, 
-                    master: localStorage.getItem("wallet") 
+                    master: localStorage.getItem("wallet")
                 }
             );
             console.log("response", ret);
@@ -187,13 +187,14 @@ const AdminModule = (props) => {
                 <p className="text-white">{messageContent}</p>
             </BasicModal>
             <div>
-                <Table striped className="zl_transaction_list_table table">
+                <Table striped className="or-table table">
                     <thead>
                     <tr>
                         <th>Name</th>
                         <th>ETH Wallet</th>
                         <th>Are you admin?</th>
                         <th>Reputation Awarded</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -202,8 +203,9 @@ const AdminModule = (props) => {
                         <tr key={i}>
                             <td><FaUserAlt/><span className="pl-2">{item.username}</span></td>
                             <td>{item.wallet}</td>
-                            <td>{item.isAdmin ? 'Admin' : '-'}</td>
-                            <td>{item.received}</td>
+                            <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
+                            <td className="text-center">{item.received}</td>
+                            <td className="text-center">{!item.status?'Inactive':'Active'}</td>
                             <td>
                                 <FaPencilAlt onClick={()=>{
                                     setSAdmin(item.isAdmin);
@@ -243,25 +245,25 @@ const AdminModule = (props) => {
                                     <Form.Control type="text" name="wallet" onChange={(e)=>{curUser.wallet = e.target.value}} value={curUser.wallet} placeholder="" />
                                 </Form.Group>
                             </div>
-                            <div className="col-md-6">
-                            {
-                                localStorage.getItem('isAdmin') == "false" && ([
+                            {/*{<div className="col-md-6">
+                            
+                                localStorage.getItem('isAdmin') === "true" && ([
                                     <Form.Label key="form-label-elem" className="text-muted-dark">Is Super Admin?</Form.Label>,
                                     <ToggleButton
                                         key="toggle-btn-elem"
                                         name="isAdmin"
-                                        value={ false|| admin }
+                                        value={true}
                                         inactiveLabel="No"
                                         activeLabel="Yes"
                                         thumbStyle={borderRadiusStyle}
                                         trackStyle={borderRadiusStyle}
                                         onToggle={(value) => {
-                                            setSAdmin(!value);
+                                            setSAdmin(true);
                                         }} 
                                     />
                                 ])
-                            } 
-                            </div>
+                            }
+                            </div>*/}
                             <div className="col-md-6">
                                 <Form.Label className="text-muted-dark">Enable</Form.Label>
                                 <ToggleButton
@@ -271,9 +273,10 @@ const AdminModule = (props) => {
                                     activeLabel="Yes"
                                     thumbStyle={borderRadiusStyle}
                                     trackStyle={borderRadiusStyle}
-                                    onToggle={(value) => {
+                                    onToggle={value => {
                                         setEnable(!value);
-                                    }} />
+                                    }} 
+                                />
                             </div>
                             <div className="col-12 text-center">
                                 <div className="zl_securebackup_btn"><button type="button" onClick={onClickSave} className="mx-auto"><FaRegSave/><span className="ml-2">Save</span></button></div>
@@ -286,8 +289,5 @@ const AdminModule = (props) => {
     );
 }
 
-const mapStoreToProps = ({ userAction }) => ({
-
-});
-
+const mapStoreToProps = ({ userAction }) => ({});
 export default connect(mapStoreToProps, null)(AdminModule);

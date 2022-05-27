@@ -311,7 +311,5 @@ const Header = (props) => {
     );
 }
 
-function mapStoreToProps(state) {
-}
-
-export default connect(mapStoreToProps)(Header);
+const mapStoreToProps = ({ userAction }) => ({});
+export default connect(mapStoreToProps, null)(Header);

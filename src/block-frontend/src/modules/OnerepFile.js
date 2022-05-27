@@ -20,7 +20,7 @@ import "react-step-progress/dist/index.css";
 import { determineAddress, initContractByAddress } from "../service/contractService";
 import Web3 from "web3";
 import { ethers } from "ethers";
-import { getMintApprovalSignature, orAlert } from "../service/utils";
+import { getMintBatchApprovalSignature, orAlert } from "../service/utils";
 import BasicModal from "../components/Modals/BasicModal";
 const { SERVER_URL } = require("../conf");
 
@@ -30,6 +30,7 @@ const OneRepFileModule = (props) => {
 
   const [showMintWizard, setShowMintWizard] = useState(false);
   const [showSucces, setshowSucces] = useState(false);
+  const [showFailure, setshowFailure] = useState(false);
   const [repfiles, setRepFiles] = useState([]);
 
   const [progress, setProgress] = useState(0);
@@ -55,6 +56,8 @@ const OneRepFileModule = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [userName, setUserName] = useState(null);
   const [chainId, setChainId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [mintFailureReason, setMintFailureReason] = useState("");
 
   let web3 = null;
   let rpcProvider = null;
@@ -66,21 +69,35 @@ const OneRepFileModule = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setWalletAddress(_wallet);
-    setUserName(_userName);
-    setBadgeTokenAddress(_badgeTokenAddress);
-    let _chainId = localStorage.getItem('chainId');
-    setChainId(_chainId);
-
-    if (!walletAddress) {
-      dispatch({
-        type: USERS.CONNECT_WALLET, 
-        payload: { 
-          wallet: localStorage.getItem('wallet'),
-          user: _userName,
-          isAdmin: _isAdmin,
-          badgeTokenAddress: _badgeTokenAddress
+    if (!badgeTokenAddress) {
+      axios.post(
+        SERVER_URL + '/users/loggedinuserbywallet', 
+        {
+          wallet: localStorage.getItem("wallet")
         }
+      ).then(ret => {
+        let userInfo = ret.data ? ret.data : null;
+        if (!userInfo) {
+          orAlert("Failed to get information for current logined user");
+          return;
+        }
+        console.log("Logged in user:", ret.data);
+        setIsAdmin(userInfo.isAdmin);
+        let badgeTokenAddress = userInfo.badgeAddress;
+        setBadgeTokenAddress(badgeTokenAddress);
+        setChainId(localStorage.getItem('chainId'));
+        dispatch({
+          type: USERS.CONNECT_WALLET, 
+          payload: { 
+              wallet: userInfo.wallet,
+              user: userInfo.username,
+              isAdmin: userInfo.isAdmin,
+              badgeTokenAddress: badgeTokenAddress,
+          }
+        });
+      })
+      .catch(error => {
+        orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);        
       });
     }
   });
@@ -113,8 +130,13 @@ const OneRepFileModule = (props) => {
   };
 
   const handleCloseSuccess = () => setshowSucces(false);
+  const handleCloseFailure = () => setshowFailure(false);
 
   const handleShowSuccess = () => setshowSucces(true);
+  const handleShowFailure = (reason) => {
+    setMintFailureReason(reason);
+    setshowFailure(true);
+  }
 
   const inform = (title, content) => {
     setMessageBoxTitle(title);
@@ -152,79 +174,78 @@ const OneRepFileModule = (props) => {
     let wallet = localStorage.getItem('wallet')
     // let recipientcontractadd;
 
-    /************Preparing an array of recipient contracts**********/
-    var recipients = new Array(values.length);
-    for (let j = 0; j < values.length; j++) {
-      recipients[j] = values[j][2];
-    }
     /***************************Mint to each individual Recipient Contract***********/
-    let tokenAmount = 0;
-    let totalTokenAmount = 0;
-    for(let i = 0; i < values.length;i++) {
-      tokenAmount = values[i][3];
-      if (parseInt(tokenAmount) <= 0) {
-        continue;
-      }
-      ////////////////////////////////////////////////////////
-      try {
-        let ret = await getMintApprovalSignature({
+
+    ////////////////////////////////////////////////////////
+    try {
+      let idsList = [];
+      let toList = [];
+      let amountsList = [];
+      let tokenUrisList = [];
+      let dataList = [];
+
+      for(let i = 0; i < values.length;i++) {
+        let tokenAmount = values[i][3];
+        if (parseInt(tokenAmount) <= 0) {
+          continue;
+        }
+        let amounts = [];
+        amounts.push(tokenAmount)
+        // Get signature for each 
+        let ret = await getMintBatchApprovalSignature({
           web3,
           erc1238ContractAddress: badgeTokenAddress,
           chainId: chainId,
           signer: signer,
-          id: 1,
-          amount: tokenAmount,
-          address: recipients[i]
+          amounts: amounts,
+          recipient: values[i][2]
         });
         if (ret.fullSignature === undefined || ret.fullSignature === null) {
           console.log("Failed to getMintApprovalSignature()", ret);
           continue;
         }
-        let resp = await badgeTokenContract.connect(signer).mintToEOA(
-          recipients[i],
-          tokenAmount,
-          ret.v, ret.r, ret.s,
-          "https://your-domain-name.com/credentials/tokens/1",
-          []
-        );
-        totalTokenAmount = tokenAmount;
-      } catch (error) {
-        let errorCode = error.code ? error.code : 0;
-        if (errorCode === 4001) {
-          setShowWatingModalForMint(false);
-          return;
-        }
-        console.error("Failed to mintToEOA(): ", error);
+        toList.push(values[i][2]);
+        amountsList.push(amounts);
+        let tokenUris = [];
+        tokenUris.push("https://your-domain-name.com/credentials/tokens/1");
+        tokenUrisList.push(tokenUris);
+        dataList.push(ret.fullSignature);
+        idsList.push([1]);
       }
-    }
 
-    // console.log("Balance of recipient contract after");
-    // for(let g = 0; g < recipients.length; g++){
-    //   try {
-    //     let bal = await badgeTokenContract.balanceOf(recipients[g]);
-    //     console.log(recipients[g], "Balance(2): ", bal);        
-    //   } catch (error) {
-    //     console.log("Invalid member wallet address: ", recipients[g], error);
-    //   }
-    // }
-
-    /****************************adding information of uploaded files in the mongodb */
-    let ret = await axios.post(SERVER_URL + "/files/add", {
-      filename: ipfsName,
-      ipfsuri: ipfsPath,
-      status: true,
-      reputation: reputation,
-      data: values,
-      master: localStorage.getItem("wallet"),
-    });
-    setShowWatingModalForMint(false);
-    if (ret.data === undefined || ret.data === null ||
-        ret.data.success === undefined) {
-      orAlert("Failed to save file");
-      return;
+      let resp = await badgeTokenContract.connect(signer).mintBundle(
+        toList,
+        idsList,
+        amountsList,
+        tokenUrisList,
+        dataList
+      );
+      /****************************adding information of uploaded files in the mongodb */
+      let ret = await axios.post(SERVER_URL + "/files/add", {
+        filename: ipfsName,
+        ipfsuri: ipfsPath,
+        status: true,
+        reputation: reputation,
+        data: values,
+        master: localStorage.getItem("wallet"),
+      });
+      setShowWatingModalForMint(false);
+      if (ret.data === undefined || ret.data === null ||
+          ret.data.success === undefined) {
+        orAlert("Failed to save file");
+        return;
+      }
+      getOneRepFile();
+      handleShowSuccess();
+    } catch (error) {
+      setShowWatingModalForMint(false);
+      handleShowFailure(error.message);
+      let errorCode = error.code ? error.code : 0;
+      if (errorCode === 4001) {
+        return;
+      }
+      console.error("Failed to mintToEOA(): ", error);
     }
-    getOneRepFile();
-    handleShowSuccess();
   };
   const getOneRepFile = () => {
     let parent = localStorage.getItem("parent");
@@ -389,6 +410,30 @@ const OneRepFileModule = (props) => {
                 type="button"
                 className="btn-connect"
                 onClick={handleCloseSuccess}
+              >
+                Okay Got it
+              </button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      {/******************* "Minted Failure" Dialog *********************/}
+      <Modal centered show={showFailure} onHide={handleCloseFailure}>
+        <Modal.Body>
+          <div className="p-4">
+            <br />
+            <h4 className="text-center text-white">
+              Failed to Mint
+            </h4>
+            <p className="main-text-color">
+              {mintFailureReason}
+            </p>
+            <br />
+            <div className="text-center">
+              <button
+                type="button"
+                className="btn-connect"
+                onClick={handleCloseFailure}
               >
                 Okay Got it
               </button>

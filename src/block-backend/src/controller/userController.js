@@ -267,7 +267,7 @@ exports.getSelOpList = (req, res) => {
 
 exports.update = async (req, res) => {
     req.body.wallet = req.body.wallet.toLowerCase();
-    User.findOne({wallet: req.body.wallet}).then((user) => {
+    User.findOne({wallet: req.body.wallet}).then(async user => {
         var puser = user;
         if (req.body._id == '')
         {
@@ -279,14 +279,20 @@ exports.update = async (req, res) => {
             }
             else
             {
-                console.log("inside else puser", JSON.stringify(req.body));
+                let isAdmin = false;
+                try {
+                    let user = await User.findOne({wallet: req.body.master});
+                    isAdmin = user.isAdmin;
+                } catch (error) {
+                    console.log(error);
+                }
                 puser = new User({
                     username: req.body.username,
                     parent: req.body.master,
                     wallet: req.body.wallet,
                     badge: req.body.badge,
                     dao: req.body.dao,
-                    isAdmin: req.body.isAdmin,
+                    isAdmin: isAdmin,
                     status: req.body.status,
                     badgeAddress: req.body.badgeAddress
                 });
@@ -301,25 +307,29 @@ exports.update = async (req, res) => {
             }
             else
             {
-                console.log("else puser setting");
+                let isAdmin = false;
+                try {
+                    let user = await User.findOne({wallet: req.body.master});
+                    isAdmin = user.isAdmin;
+                } catch (error) {
+                    console.log(error);
+                }
                 puser.username = req.body.username;
                 puser.parent = req.body.master;
                 puser.wallet = req.body.wallet;
                 puser.badge = req.body.badge;
                 puser.dao = req.body.dao;
-                puser.isAdmin = req.body.isAdmin;
+                puser.isAdmin = isAdmin;
                 puser.status = req.body.status;
                 badgeAddress = req.body.badgeAddress
             }
         }
 
         puser.save().then((result) => {
-            console.log("req.body.master", req.body.master);
             User.find({parent: req.body.master}).then((users) => {
                 res.status(200).send({users: users, success: true});
             });
         }).catch((err) => {
-            console.log(JSON.stringify(err));
             res.status(200).send({success: false, error: "Error Occured!"});
         });
     });
