@@ -1,6 +1,6 @@
-const User  = require('../../models/user');
-const fAction  = require('../../models/action');
-const {SERVER_URL} = require('../../config/conf')
+const User  = require('../models/user');
+const fAction  = require('../models/action');
+const {SERVER_URL} = require('../config/conf')
 const jwt = require("jwt-simple");
 
 exports.register = async (req, res) => {

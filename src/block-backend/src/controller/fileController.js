@@ -1,8 +1,8 @@
 // 
 const fs = require('fs');
 const uploadFile = require("../middleware/upload");
-const fUpload  = require('../../models/upload');
-const fAction  = require('../../models/action');
+const fUpload  = require('../models/upload');
+const fAction  = require('../models/action');
 const ipfsAPI = require('ipfs-api');
 
 exports.upload = async (req, res) => {
