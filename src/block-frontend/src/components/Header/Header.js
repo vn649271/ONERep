@@ -42,7 +42,7 @@ const Header = (props) => {
                 }
             ).then(ret => {
                 if (ret.data === undefined || ret.data.isAdmin === undefined) {
-                    orAlert("Failed to get information for logged in user");
+                    console.log("Failed to get information for logged in user");
                     return;
                 }
                 setIsAdmin(ret.data.isAdmin);

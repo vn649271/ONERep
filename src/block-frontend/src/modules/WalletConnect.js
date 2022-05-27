@@ -196,10 +196,10 @@ const WalletConnectModule = (props) => {
                                     className="mx-auto"
                                 >Deploy Token</button>
 */}
-                            <OrSpinButton 
-                                title="Deploy Token"
-                                onClick={onSubmitHandler}
-                            />
+                                <OrSpinButton 
+                                    onClick={onSubmitHandler}
+                                >Deploy Token
+                                </OrSpinButton>
                             </div>
                         </div>
                         <div className="col-12 text-center">

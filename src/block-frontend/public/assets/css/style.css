@@ -2125,7 +2125,7 @@ table td {
 }
 /**************************************************/
 .zl_securebackup_btn button:disabled {
-    opacity: 1;
+    opacity: 0.3;
 }
 .bg-dark {
   background-color: rgb(40 41 44);
