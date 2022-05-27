@@ -67,7 +67,6 @@ const OneRepBoardModule = (props) => {
           }
         });
         let thisAddress = localStorage.getItem("wallet");
-        if (!userInfo.isAdmin) {
           // Get all DAO names to fill into DAO name list and select first DAO from it
           axios.post(SERVER_URL + "/getDaoData", {
             master: thisAddress
@@ -80,10 +79,6 @@ const OneRepBoardModule = (props) => {
               alert("Failed to get DAO data");
             }
           });        
-        } else {
-          // For super admin, get all board data
-          getOneRepBoard(thisAddress);
-        }
       })
       .catch(error => {
         orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);        
@@ -164,46 +159,43 @@ const OneRepBoardModule = (props) => {
         </div>
         <div className="zl_all_page_notify_logout_btn"></div>
       </div>
-      {
-        !isAdmin ? 
-          <div className='main-text-color'>
-            <div className='flow-layout'>
-              <div className='flow-layout'>DAO</div>
-              <div className='flow-layout'>
-                <Dropdown onSelect={handleDropDown}>
-                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                    {selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                  {
-                    (daoList.length > 0) ? 
-                      daoList.map(m => {
-                        return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
-                      }): 
-                      <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
-                  }
-                    {/* <Dropdown.Item onClick={handleDropDown}>Action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item> */}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </div>
-            <div className='flow-layout'>
-              Token Name
-              <label className="bordered-label">
-                {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
-              </label>
-            </div>
-            <div className='flow-layout'>
-              Number of Tokens 
-              <label className="bordered-label">
-                {selectedDaoTokenTotalSupply}
-              </label>
-            </div>
-          </div>:
-        <></>
-      }
+      <div className='main-text-color'>
+        <div className='flow-layout'>
+          <div className='flow-layout'>DAO</div>
+          <div className='flow-layout'>
+          {
+            isAdmin ?
+            <Dropdown onSelect={handleDropDown}>
+              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                {selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+              {
+                (daoList.length > 0) ? 
+                  daoList.map(m => {
+                    return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
+                  }): 
+                  <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
+              }
+              </Dropdown.Menu>
+            </Dropdown>:
+            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}</label>
+          }
+          </div>
+        </div>
+        <div className='flow-layout'>
+          Token Name
+          <label className="bordered-label">
+            {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+          </label>
+        </div>
+        <div className='flow-layout'>
+          Number of Tokens 
+          <label className="bordered-label">
+            {selectedDaoTokenTotalSupply}
+          </label>
+        </div>
+      </div>
       <br />
       <div>
         <Table striped className="or-table table">
