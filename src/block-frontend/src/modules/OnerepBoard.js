@@ -80,19 +80,8 @@ const OneRepBoardModule = (props) => {
           }
         });        
       } else {
-        // Get all DAO informations
-        axios.post(SERVER_URL + "/getAllDaoData", {
-          master: thisAddress
-        }).then(resp => {
-          let error = resp.data ? resp.data.error !== undefined ? resp.data.error : -100: -100;
-          if (error === 0) {
-            let daos = resp.data.data ? resp.data.data : [];
-            setBoardData(daos);
-            // setDaoList(daos);
-          }
-        }).catch(error => {
-          console.log("Failed to get all dao data", error)
-        })
+        // For super admin, get all board data
+        getOneRepBoard(thisAddress);
       }
     })    
   }, []);
@@ -105,21 +94,21 @@ const OneRepBoardModule = (props) => {
       return;
     }
   }, [show, sortOption]);
-  const getOneRepBoard = async (wallet, daoName) => {
+  const getOneRepBoard = async (wallet) => {
     try {
       let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
         master: wallet,
-        dao: daoName,
         sort: sortOption,
       });
-      // let totalTokens = 0;
-      // ret.data.map(u => {
-      //   totalTokens += parseInt(u.sum ? u.sum: 0);
-      // });
-      // ret.data['totalTokens'] = totalTokens;
-      return ret.data;      
+      if (ret === null || ret.data === undefined || 
+        ret.data.data === undefined || ret.data.data.length === undefined) 
+      {
+        orAlert("Failed to get all board data for super admin");
+        return;
+      }
+      setBoardData(ret.data.data);
     } catch(error) {
-      console.log("Failed to getOneRepBoard(): ", error);
+      orAlert("Failed to getOneRepBoard(): ", error.message);
     }
   };
   const getSelOpList = () => {
@@ -141,7 +130,11 @@ const OneRepBoardModule = (props) => {
       let daos = resp.data.data;
       setSelectedDao(daos[0]);
       setSelectedDaoTokenTotalSupply(daos[0].sent);
-      let ret = await getOneRepBoard(localStorage.getItem('wallet'), selectedDaoName);
+      let ret = await getOneRepBoard(localStorage.getItem('wallet'));
+      if (ret === null || ret.data === undefined || ret.data.length === undefined) {
+        orAlert("Failed to get board data");
+        return;
+      }
       setBoardData(ret.data);
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);

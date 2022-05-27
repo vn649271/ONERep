@@ -125,29 +125,46 @@ exports.getUserList = async(req, res) => {
 }
 
 exports.getOneRepBoard  = async(req, res) => {
-    let parentAddress = req.body.parent;
-    if (parentAddress === undefined || parentAddress === null || parentAddress === '') { // In case of not contributor
-        parentAddress = req.body.master;
-    }
-    await fAction.aggregate([
-        {
-            $match : { parent : parentAddress }
-        }, 
-        {
-            $group:{
-                _id: "$wallet", 
-                name : { $first: '$name' }, 
-                sum: {$sum: "$received"}
+    let parentAddress = req.body.master;
+    let user = await User.findOne({wallet: parentAddress});
+    if (user.isAdmin) {
+        await fAction.aggregate([
+            {
+                $group:{
+                    _id: "$wallet", 
+                    name : { $first: '$name' }, 
+                    sum: {$sum: "$received"}
+                }
+            }, 
+            {
+                $sort: req.body.sort
             }
-        }, 
-        {
-            $sort: req.body.sort
-        }
-    ]).then(users => {
-        res.status(200).send({error: 0, data: users});
-    }).catch(error => {
-        res.status(200).send({error: -1, data: error.message})
-    });
+        ]).then(users => {
+            res.status(200).send({error: 0, data: users});
+        }).catch(error => {
+            res.status(200).send({error: -1, data: error.message})
+        });
+    } else {
+        await fAction.aggregate([
+            {
+                $match : { parent : parentAddress }
+            },
+            {
+                $group:{
+                    _id: "$wallet", 
+                    name : { $first: '$name' }, 
+                    sum: {$sum: "$received"}
+                }
+            }, 
+            {
+                $sort: req.body.sort
+            }
+        ]).then(users => {
+            res.status(200).send({error: 0, data: users});
+        }).catch(error => {
+            res.status(200).send({error: -1, data: error.message})
+        });
+    }
 }
 /*******************************Get DAO data********************** */
 exports.getDaoData = async(req, res)=> {
