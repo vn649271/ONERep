@@ -54,6 +54,7 @@ const OneRepBoardModule = (props) => {
         }
         console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.isAdmin);
+        localStorage.setItem("isAdmin", userInfo.isAdmin);
         let badgeTokenAddress = userInfo.badgeAddress;
         setBadgeTokenAddress(badgeTokenAddress);
         setChainId(localStorage.getItem('chainId'));
@@ -73,8 +74,16 @@ const OneRepBoardModule = (props) => {
           }).then((resp)=> {
             if (resp.data.error !== undefined && resp.data.error === 0) {
               let daos = resp.data.data;
+              daos = [{
+                _id: '',
+                dao: 'All'
+              }, ...daos];
               setDaoList(daos);
-              handleDropDown(daos[0].dao);
+              if (userInfo.isAdmin) {
+                handleDropDown(null);
+              } else {
+                handleDropDown(daos[0].dao);
+              }
             } else {
               alert("Failed to get DAO data");
             }
@@ -94,11 +103,12 @@ const OneRepBoardModule = (props) => {
       return;
     }
   }, [show, sortOption]);
-  const getOneRepBoard = async (wallet) => {
+  const loadOneRepBoardData = async (wallet, dao) => {
     try {
       let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
         master: wallet,
         sort: sortOption,
+        dao: dao
       });
       if (ret === null || ret.data === undefined || 
         ret.data.data === undefined || ret.data.data.length === undefined) 
@@ -108,7 +118,7 @@ const OneRepBoardModule = (props) => {
       }
       setBoardData(ret.data.data);
     } catch(error) {
-      orAlert("Failed to getOneRepBoard(): ", error.message);
+      orAlert("Failed to loadOneRepBoardData(): ", error.message);
     }
   };
   const getSelOpList = () => {
@@ -121,21 +131,29 @@ const OneRepBoardModule = (props) => {
     });
   };
   const handleDropDown = async (selectedDaoName) => {
-    console.log("Handle Drop Down", selectedDaoName);
     try {
-      let resp = await axios.post(SERVER_URL + "/getDaoData", {
+      let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
-        dao: selectedDaoName
-      });
+        dao: selectedDaoName === "All"? null: selectedDaoName
+      };
+      // let isAdmin = localStorage.getItem("isAdmin");
+      // if (isAdmin) {
+      //   getDaoDataReqParam = {
+      //     master: localStorage.getItem("wallet"),
+      //   };
+      // }
+      let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
       let daos = resp.data.data;
-      setSelectedDao(daos[0]);
-      setSelectedDaoTokenTotalSupply(daos[0].sent);
-      let ret = await getOneRepBoard(localStorage.getItem('wallet'));
-      if (ret === null || ret.data === undefined || ret.data.length === undefined) {
-        orAlert("Failed to get board data");
-        return;
-      }
-      setBoardData(ret.data);
+      let selectedDao = null;
+      daos.map(dao => {
+        if (dao.dao === selectedDaoName) {
+          selectedDao = dao;
+          return;
+        }
+      })
+      setSelectedDao(selectedDao);
+      setSelectedDaoTokenTotalSupply(selectedDao.sent);
+      loadOneRepBoardData(localStorage.getItem('wallet'), selectedDao.dao);
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
     }
@@ -167,7 +185,7 @@ const OneRepBoardModule = (props) => {
             isAdmin ?
             <Dropdown onSelect={handleDropDown}>
               <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                {selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}
+                {selectedDao? selectedDao.dao ? selectedDao.dao: "All": "All"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
               {
@@ -183,18 +201,23 @@ const OneRepBoardModule = (props) => {
           }
           </div>
         </div>
-        <div className='flow-layout'>
-          Token Name
-          <label className="bordered-label">
-            {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
-          </label>
-        </div>
-        <div className='flow-layout'>
-          Number of Tokens 
-          <label className="bordered-label">
-            {selectedDaoTokenTotalSupply}
-          </label>
-        </div>
+        {
+          selectedDao ? ([
+              <div className='flow-layout'>
+                Token Name
+                <label className="bordered-label">
+                  {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+                </label>
+              </div>,
+              <div className='flow-layout'>
+                Number of Tokens 
+                <label className="bordered-label">
+                  {selectedDaoTokenTotalSupply}
+                </label>
+              </div>
+            ]): 
+            <></>
+        }
       </div>
       <br />
       <div>

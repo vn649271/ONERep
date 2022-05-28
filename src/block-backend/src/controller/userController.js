@@ -128,22 +128,37 @@ exports.getOneRepBoard  = async(req, res) => {
     let parentAddress = req.body.master;
     let user = await User.findOne({wallet: parentAddress});
     if (user.isAdmin) {
-        await fAction.aggregate([
-            {
-                $group:{
-                    _id: "$wallet", 
-                    name : { $first: '$name' }, 
-                    sum: {$sum: "$received"}
+        let daos = await User.find({dao: req.body.dao});
+        let result = [];
+        for (let i = 0; i < daos.length; i++) {
+            try {
+                let actions = await fAction.aggregate([
+                    {
+                        $match: {parent: daos[i].wallet}
+                    },
+                    {
+                        $group:{
+                            _id: "$wallet", 
+                            name : { $first: '$name' }, 
+                            sum: {$sum: "$received"}
+                        }
+                    }, 
+                    {
+                        $sort: req.body.sort
+                    }
+                ]);
+                if (actions.length === undefined) {
+                    return res.status(200).send({error: -1, data: "Failed to get board data"});
                 }
-            }, 
-            {
-                $sort: req.body.sort
+                if (actions.length < 1) {
+                    continue;
+                }
+                result.push(...actions);
+            } catch(error) {
+                return res.status(200).send({error: -10, data: error.message});
             }
-        ]).then(users => {
-            res.status(200).send({error: 0, data: users});
-        }).catch(error => {
-            res.status(200).send({error: -1, data: error.message})
-        });
+        }
+        return res.status(200).send({error: 0, data: result});
     } else {
         await fAction.aggregate([
             {
@@ -159,10 +174,13 @@ exports.getOneRepBoard  = async(req, res) => {
             {
                 $sort: req.body.sort
             }
-        ]).then(users => {
-            res.status(200).send({error: 0, data: users});
+        ]).then(actions => {
+            if (actions.length === undefined) {
+                res.status(200).send({error: -1, data: "Failed to get board data"});
+            }
+            res.status(200).send({error: 0, data: actions});
         }).catch(error => {
-            res.status(200).send({error: -1, data: error.message})
+            res.status(200).send({error: -10, data: error.message})
         });
     }
 }
@@ -182,7 +200,17 @@ exports.getDaoData = async(req, res)=> {
                         return res.status(200).send({ error: -1, data: error.message });
                     });
                 } else {
-                    await User.find({})
+                    await User.aggregate(
+                        {
+                            $group: {
+                                _id: "$dao", 
+                                dao: {$first: "$dao"}
+                            }
+                        }, 
+                        {
+                            $sort: {dao: 1}
+                        }            
+                    )
                     .then(daos => {
                         return res.status(200).send({ error: 0, data: daos });
                     })
@@ -225,38 +253,6 @@ exports.getAllDaoData = async(req, res)=> {
         return res.status(200).send({error: -1, data: null});
     }
 }
-
-// exports.getOneRepBoard  = async(req, res) => {
-//     console.log("enter in api")
-//     const result = {};
-//     console.log("request master",req.body.master)
-//     console.log("request sort",req.body.sort)
-//     fAction.aggregate([{ $match : { parent : req.body.master }}, {$group:{_id:"$wallet", name : { $first: '$name' }, sum:{$sum: "$received"}}}, {$sort: req.body.sort}]).then((users) => {
-//         result.users = users;
-//         console.log("users list", users)
-//         User.findOne({wallet: req.body.master}).then((user) => {
-//             console.log("user name" , user)
-//             User.findOne({wallet: req.body.master}).then((user) => {
-//                 console.log("wallet ", user)
-//                 result.isAdmin = user.isAdmin;
-//                 if (user.isAdmin == false)  
-//                 {
-//                     console.log("inside if")
-//                     res.status(200).send(result);
-//                 }
-//                 else{
-//                     // logic to get all the DAO
-//                     console.log("inside else if Admin")
-//                     User.find().then((users) => {
-//                         console.log("Users", users)
-//                             res.status(200).send(users);
-//                     });
-//                 }
-//                // res.status(200).send(result);
-//             });
-//         });
-//     });
-// }
 
 exports.getSelOpList = (req, res) => {
     const result = {};
