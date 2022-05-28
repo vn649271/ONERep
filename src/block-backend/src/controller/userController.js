@@ -120,7 +120,10 @@ exports.getLoggedInUserByWallet = async(req,res) => {
 
 exports.getUserList = async(req, res) => {
     let user = await User.findOne({wallet: req.body.master});
-    if (user.isAdmin) {
+    if (user === undefined || user === null) {
+        return res.status(200).send([]);
+    }
+    if (user.isAdmin !== undefined && user.isAdmin) {
         User.find().then((users) => {
             res.status(200).send(users);
         });
