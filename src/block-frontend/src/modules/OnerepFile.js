@@ -133,7 +133,7 @@ const OneRepFileModule = (props) => {
   });
   useEffect(() => {
     // setShowWatingModalForMint(true);
-    getOneRepFile();
+    loadOneRepFiles();
     if (
       localStorage.getItem("wallet") === "" ||
       !localStorage.getItem("wallet")
@@ -256,7 +256,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      getOneRepFile();
+      loadOneRepFiles();
       handleShowSuccess();
     } catch (error) {
       setShowWatingModalForMint(false);
@@ -268,17 +268,25 @@ const OneRepFileModule = (props) => {
       console.error("Failed to mintToEOA(): ", error);
     }
   };
-  const getOneRepFile = () => {
+  const loadOneRepFiles = (selectedDaoName = null) => {
     let parent = localStorage.getItem("parent");
     if(parent === "" || parent === "undefined") {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet") })
+      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), dao: selectedDaoName })
       .then((response) => {
-        setRepFiles(response.data);
+        if (response.data.error) {
+          orAlert("Failed to load ONERep files: " + response.data.data);
+          return;
+        }
+        setRepFiles(response.data.data);
       });
     } else {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent") })
+      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), dao: selectedDaoName })
       .then((response) => {
-        setRepFiles(response.data);
+        if (response.data.error) {
+          orAlert("Failed to load ONERep files: " + response.data.data);
+          return;
+        }
+        setRepFiles(response.data.data);
       });
     }
   };
@@ -372,9 +380,9 @@ const OneRepFileModule = (props) => {
       setSelectedDao(selectedDao);
       if (selectedDao) {
         setSelectedDaoTokenTotalSupply(selectedDao.sent);
-        // loadBoardData(localStorage.getItem('wallet'), selectedDao.dao);
+        loadOneRepFiles(selectedDao.dao);
       } else {
-        // loadBoardData(localStorage.getItem('wallet'), null);
+        loadOneRepFiles();
       }
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);

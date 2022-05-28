@@ -97,13 +97,45 @@ exports.ipfsupload = async (req, res) => {
   })
 }
 
-exports.getListFiles = (req, res) => {
+exports.getListFiles = async (req, res) => {
   try {
-    fUpload.find({parent: req.body.master}).then((files) => {
-      res.status(200).send(files);
-    });
+    let dao = req.body.dao;
+    let findFilter = {parent: req.body.master};
+    if (dao !== null && dao !== "") {
+      try {
+        fUser.find({dao: dao}).then(async users => {
+          if (users.length !== undefined && users.length > 0) {
+            let filesList = [];
+            for (let i = 0; i < users.length; i++) {
+              let parent = users[i].wallet;
+              try {
+                let files = await fUpload.find({parent: parent});
+                filesList.push(...files)
+              } catch (e) {
+                return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the list of users with the specified DAO: " + error.message});
+              }
+            }
+            res.status(200).send({error: 0, data: filesList});
+          }
+        });
+      } catch (error) {
+        return resizeTo.status(200).send({error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message});
+      }
+    } else {
+      fUser.findOne({wallet: req.body.master}).then(async user => {
+        if (user.isAdmin) {
+          fUpload.find().then((files) => {
+            res.status(200).send({error: 0, data: files});
+          });
+        } else {
+          fUpload.find({parent: req.body.master}).then((files) => {
+            res.status(200).send({error: 0, data: files});
+          });
+        }
+      });
+    }
   } catch(e) {
-    res.status(200).send([]);
+    res.status(200).send({error: -12, data: "Error occurred in getting file list: " + e.message});
   }
 };
 
