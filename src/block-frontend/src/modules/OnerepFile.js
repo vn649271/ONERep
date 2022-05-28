@@ -60,6 +60,7 @@ const OneRepFileModule = (props) => {
   const [userName, setUserName] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [initedIsAdmin, setInitedIsAdmin] = useState(false);
   const [mintFailureReason, setMintFailureReason] = useState("");
 
   let web3 = null;
@@ -72,6 +73,11 @@ const OneRepFileModule = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    let _isAdmin = localStorage.getItem("isAdmin");
+    if (_isAdmin !== "undefined" && !initedIsAdmin) {
+      setIsAdmin(_isAdmin === "true"?true:false);
+      setInitedIsAdmin(true);
+    }
     if (!badgeTokenAddress) {
       axios.post(
         SERVER_URL + '/users/loggedinuserbywallet', 
@@ -86,6 +92,7 @@ const OneRepFileModule = (props) => {
         }
         console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.isAdmin);
+        setInitedIsAdmin(true);
         let badgeTokenAddress = userInfo.badgeAddress;
         setBadgeTokenAddress(badgeTokenAddress);
         setChainId(localStorage.getItem('chainId'));
