@@ -2185,6 +2185,12 @@ table td {
   width: 18px;
   height: 18px;
 }
+.ml-12 {
+  margin-left: 12px;
+}
+.ml-20 {
+  margin-left: 20px;
+}
 /**************************************************/
 @media (max-width: 1440px) {
   .or-wizard-modal .modal-dialog {

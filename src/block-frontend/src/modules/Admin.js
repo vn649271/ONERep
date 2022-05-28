@@ -212,7 +212,7 @@ const AdminModule = (props) => {
                                     setEnable(item.status);
                                     handleShow(item)}
                                 }/> 
-                                <span className="ml-2">
+                                <span className="ml-20">
                                     <FaTrashAlt onClick={()=>{handleDelete(item)}} className="text-danger"/>
                                 </span>
                             </td>
