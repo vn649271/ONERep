@@ -206,7 +206,7 @@ const AdminModule = (props) => {
                             <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
                             <td className="text-center">{item.received}</td>
                             <td className="text-center">{!item.status?'Inactive':'Active'}</td>
-                            <td>
+                            <td className="text-center">
                                 <FaPencilAlt onClick={()=>{
                                     setSAdmin(item.isAdmin);
                                     setEnable(item.status);
