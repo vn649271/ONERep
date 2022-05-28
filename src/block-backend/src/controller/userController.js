@@ -119,9 +119,16 @@ exports.getLoggedInUserByWallet = async(req,res) => {
 }
 
 exports.getUserList = async(req, res) => {
-    User.find({parent: req.body.master}).then((users) => {
-        res.status(200).send(users);
-    });
+    let user = await User.findOne({wallet: req.body.master});
+    if (user.isAdmin) {
+        User.find().then((users) => {
+            res.status(200).send(users);
+        });
+    } else {
+        User.find({parent: req.body.master}).then((users) => {
+            res.status(200).send(users);
+        });
+    }
 }
 
 exports.getOneRepBoard  = async(req, res) => {
