@@ -379,7 +379,8 @@ const OneRepFileModule = (props) => {
             </tr>
           </thead>
           <tbody>
-            {repfiles.map((row, i) => (
+          {
+            repfiles.length > 0? repfiles.map((row, i) => (
               <tr key={i}>
                 <td>{row.filename}</td>
                 <td><a href={`${SERVER_URL}` + "/uploads/" + row.ipfsuri}>{row.ipfsuri}</a></td>
@@ -391,7 +392,8 @@ const OneRepFileModule = (props) => {
                   new Date(row.created_at).toLocaleTimeString()
                 }</td>
               </tr>
-            ))}
+            )): <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+          }
           </tbody>
         </Table>
       </div>

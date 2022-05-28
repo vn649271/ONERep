@@ -230,7 +230,7 @@ const OneRepBoardModule = (props) => {
       </div>
       <br />
       <div>
-        <Table striped className="or-table table">
+        <Table striped className="or-table">
           <thead>
             <tr>
               <th
@@ -261,17 +261,19 @@ const OneRepBoardModule = (props) => {
             </tr>
           </thead>
           <tbody>
-            {boardData.map((row, i) => {
-              return (
-                <tr key={i}>
-                  <td>{row.name}</td>
-                  <td>{row._id}</td>
-                  <td className="text-right">
-                    {row.sum}
-                  </td>
-                </tr>
-              );
-            })}
+            {
+              boardData.length > 0 ? boardData.map((row, i) => {
+                return (
+                  <tr key={i}>
+                    <td>{row.name}</td>
+                    <td>{row._id}</td>
+                    <td className="text-right">
+                      {row.sum}
+                    </td>
+                  </tr>
+                );
+              }): <tr><td colSpan="4" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+            }
           </tbody>
         </Table>
       </div>

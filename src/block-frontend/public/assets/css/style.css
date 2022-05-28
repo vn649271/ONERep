@@ -2157,10 +2157,10 @@ table td {
   text-align: left;
   color: #828CAE;
 }
-.or-table td.text-right {
+.or-table tr td.text-right {
   text-align: right !important; 
 }
-.or-table td.text-center {
+.or-table tr td.text-center {
   text-align: center !important; 
 }
 /**************************************************/
