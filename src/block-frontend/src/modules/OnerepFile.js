@@ -448,9 +448,9 @@ const OneRepFileModule = (props) => {
         <></>
       }
       <div className='main-text-color'>
-        <div className='flow-layout'>
-          <div className='flow-layout'>DAO</div>
-          <div className='flow-layout'>
+        <div className='flow-layout mr-20'>
+          <div className='flow-layout mr-10'>DAO</div>
+          <div className='flow-layout mr-10'>
           {
             isAdmin ?
             <Dropdown onSelect={handleDropDown}>
@@ -473,13 +473,13 @@ const OneRepFileModule = (props) => {
         </div>
         {
           selectedDao ? ([
-              <div key="badge-token-name-label" className='flow-layout'>
+              <div key="badge-token-name-label" className='flow-layout mr-20'>
                 Token Name
                 <label className="bordered-label">
                   {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
                 </label>
               </div>,
-              <div key="badge-token-total-supply-label" className='flow-layout'>
+              <div key="badge-token-total-supply-label" className='flow-layout mr-10'>
                 Number of Tokens 
                 <label className="bordered-label">
                   {selectedDaoTokenTotalSupply}

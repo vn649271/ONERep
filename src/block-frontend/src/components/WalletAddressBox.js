@@ -16,7 +16,7 @@ const WalletAddressBox = props => {
 	useEffect(() => {
 		if (userName !== undefined && userName !== null && userName !== "") {
 			setWalletAddress(wallet);
-			setUserName(userName);			
+			setUserName(userName);
 		}
 	});
 	const onClick = ev => {
@@ -42,7 +42,8 @@ const WalletAddressBox = props => {
 				{
 					_wallet_address && history.location.pathname !== "/" ? 
 					<div>
-						<div className="flow-layout main-text-color">{_user_name}</div>
+						<div className="flow-layout main-text-color mr-20"><img className="mr-6" src='/assets/image/avatar-3.png' width='30px' height='26px'/>{_user_name}</div>
+						<div className="flow-layout main-text-color"><img src='/assets/image/wallet.png' width='40px' height='40px'/></div>
 						<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
 						{
 							_wallet_address.substring(0, 6) + 
@@ -51,7 +52,7 @@ const WalletAddressBox = props => {
 						}
 						</div>
 						{/******************* "Minting..." Dialog *********************/}
-						<div className={`${showCopiedMessage?"show-toast-box":"hide-toast-box"}`} onClick={hideCopiedMessage}>
+						<div className={`${showCopiedMessage?"show-toast-box ml-130":"hide-toast-box"}`} onClick={hideCopiedMessage}>
 							<div className="check-icon flow-layout">
 						    	<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 								  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

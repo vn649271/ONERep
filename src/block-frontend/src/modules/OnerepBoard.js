@@ -183,9 +183,9 @@ const OneRepBoardModule = (props) => {
         <div className="zl_all_page_notify_logout_btn"></div>
       </div>
       <div className='main-text-color'>
-        <div className='flow-layout'>
-          <div className='flow-layout'>DAO</div>
-          <div className='flow-layout'>
+        <div className='flow-layout mr-20'>
+          <div className='flow-layout mr-10'>DAO</div>
+          <div className='flow-layout mr-10'>
           {
             isAdmin ?
             <Dropdown onSelect={handleDropDown}>
@@ -208,13 +208,13 @@ const OneRepBoardModule = (props) => {
         </div>
         {
           selectedDao ? ([
-              <div key="token-name-label" className='flow-layout'>
+              <div key="token-name-label" className='flow-layout mr-20'>
                 Token Name
                 <label className="bordered-label">
                   {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
                 </label>
               </div>,
-              <div key="token-token-total-count-label" className='flow-layout'>
+              <div key="token-token-total-count-label" className='flow-layout mr-10'>
                 Number of Tokens 
                 <label className="bordered-label">
                   {selectedDaoTokenTotalSupply}

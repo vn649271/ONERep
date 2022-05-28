@@ -121,7 +121,7 @@ const ORFileImportWizard = props => {
         <Modal.Body className="">
           <Card className="or-wizard-dialog bg-dark main-text-color">
             <CardHeader>
-                <div className="flow-layout float-left">
+                <div className="flow-layout float-left mr-10">
                   Import Cordinape file
                 </div>
                 <div className="or-small-button float-right" onClick={onClose}>x</div>
