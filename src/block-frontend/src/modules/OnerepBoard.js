@@ -74,10 +74,15 @@ const OneRepBoardModule = (props) => {
           }).then((resp)=> {
             if (resp.data.error !== undefined && resp.data.error === 0) {
               let daos = resp.data.data;
-              daos = [{
-                _id: '',
-                dao: 'All'
-              }, ...daos];
+              if (userInfo.isAdmin) {
+                daos = [
+                  {
+                    _id: '',
+                    dao: 'All'
+                  },
+                  ...daos
+                ];
+              }
               setDaoList(daos);
               if (userInfo.isAdmin) {
                 handleDropDown(null);
@@ -103,7 +108,7 @@ const OneRepBoardModule = (props) => {
       return;
     }
   }, [show, sortOption]);
-  const loadOneRepBoardData = async (wallet, dao) => {
+  const loadBoardData = async (wallet, dao) => {
     try {
       let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
         master: wallet,
@@ -118,7 +123,7 @@ const OneRepBoardModule = (props) => {
       }
       setBoardData(ret.data.data);
     } catch(error) {
-      orAlert("Failed to loadOneRepBoardData(): ", error.message);
+      orAlert("Failed to loadBoardData(): ", error.message);
     }
   };
   const getSelOpList = () => {
@@ -152,8 +157,12 @@ const OneRepBoardModule = (props) => {
         }
       })
       setSelectedDao(selectedDao);
-      setSelectedDaoTokenTotalSupply(selectedDao.sent);
-      loadOneRepBoardData(localStorage.getItem('wallet'), selectedDao.dao);
+      if (selectedDao) {
+        setSelectedDaoTokenTotalSupply(selectedDao.sent);
+        loadBoardData(localStorage.getItem('wallet'), selectedDao.dao);
+      } else {
+        loadBoardData(localStorage.getItem('wallet'), null);
+      }
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
     }

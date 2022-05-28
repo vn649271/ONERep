@@ -128,7 +128,11 @@ exports.getOneRepBoard  = async(req, res) => {
     let parentAddress = req.body.master;
     let user = await User.findOne({wallet: parentAddress});
     if (user.isAdmin) {
-        let daos = await User.find({dao: req.body.dao});
+        let daoFilter = {dao: req.body.dao};
+        if (!req.body.dao) {
+            daoFilter = {};
+        }
+        let daos = await User.find(daoFilter);
         let result = [];
         for (let i = 0; i < daos.length; i++) {
             try {
