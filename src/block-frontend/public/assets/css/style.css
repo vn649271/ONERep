@@ -2019,6 +2019,9 @@ table td {
   padding: 6px 12px;
   border-radius: 4px;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 .or-button {
   color: #f5f3f3;
   background: transparent;  

@@ -207,14 +207,16 @@ const AdminModule = (props) => {
                             <td className="text-center">{item.received}</td>
                             <td className="text-center">{!item.status?'Inactive':'Active'}</td>
                             <td className="text-center">
-                                <FaPencilAlt onClick={()=>{
-                                    setSAdmin(item.isAdmin);
-                                    setEnable(item.status);
-                                    handleShow(item)}
-                                }/> 
-                                <span className="ml-20">
+                                <div className="cursor-pointer flow-layout">
+                                    <FaPencilAlt onClick={()=>{
+                                        setSAdmin(item.isAdmin);
+                                        setEnable(item.status);
+                                        handleShow(item)}
+                                    }/> 
+                                </div>
+                                <div className="cursor-pointer flow-layout ml-20">
                                     <FaTrashAlt onClick={()=>{handleDelete(item)}} className="text-danger"/>
-                                </span>
+                                </div>
                             </td>
                         </tr>
                     ))
