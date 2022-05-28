@@ -2387,6 +2387,9 @@ table td {
 .mr-200 {
   margin-right: 200px;
 }
+.dropdown-toggle::after {
+  margin-left: 0.75em !important;
+}
 /**************************************************/
 @media (max-width: 1440px) {
   .or-wizard-modal .modal-dialog {
