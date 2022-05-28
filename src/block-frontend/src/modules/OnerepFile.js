@@ -143,6 +143,14 @@ const OneRepFileModule = (props) => {
     }
   }, [step]);
 
+  const filterContractMessage = (originMessage) => {
+    let contractErrorReqExp = /[a-zA-Z\ ]+;[a-zA-Z\ ]+\[[a-zA-Z\:\/\/\-_\.0-9 ]+\] \(reason=\"([a-zA-Z \:]+)\",.+/;
+    let msgElems = originMessage.match(contractErrorReqExp);
+    if (msgElems.length > 1) {
+      return msgElems[1].replace("execution reverted:", "");
+    }
+    return originMessage;
+  }
   const handleCloseMintWizard = () => setShowMintWizard(false);
   const handleCloseWatingModalForMint = () => setShowWatingModalForMint(false);
   const handleCloseMessageBox = () => setShowMessageBox(false);
@@ -260,7 +268,8 @@ const OneRepFileModule = (props) => {
       handleShowSuccess();
     } catch (error) {
       setShowWatingModalForMint(false);
-      handleShowFailure(error.message);
+      let msg = filterContractMessage(error.message);
+      handleShowFailure(msg);
       let errorCode = error.code ? error.code : 0;
       if (errorCode === 4001) {
         return;
@@ -534,7 +543,8 @@ const OneRepFileModule = (props) => {
             <h4 className="text-center text-white">
               Failed to Mint
             </h4>
-            <p className="main-text-color">
+            <br />
+            <p className="main-text-color text-center">
               {mintFailureReason}
             </p>
             <br />
