@@ -38,13 +38,14 @@ const WalletAddressBox = props => {
 	return  (
 		<>
 			<div className="text-right">
-				<div className="wallet-address-box w-full">
+				<div className="wallet-address-box w-full text-right">
 				{
 					_wallet_address && history.location.pathname !== "/" ? 
 					<div>
-						<div className="wallet-address" onClick={onClick} tooltip="Copy to clipboard">
+						<div className="flow-layout main-text-color">{_user_name}</div>
+						<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
 						{
-							_user_name + ": " + _wallet_address.substring(0, 6) + 
+							_wallet_address.substring(0, 6) + 
 							"..." + 
 							_wallet_address.substring(_wallet_address.length-5, _wallet_address.length-1)
 						}

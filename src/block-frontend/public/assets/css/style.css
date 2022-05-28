@@ -2164,14 +2164,14 @@ table td {
   text-align: center !important; 
 }
 .show-toast-box {
-  display: inline-block;
+  display: block;
   color: #f8f9fa;
   position: absolute;
   background: #28a745;
   width: fit-content;
   text-align: right;
-  margin-top: 30px;
-  margin-left: 5px;
+  margin-top: -7px;
+  margin-left: 47px;
   padding: 2px 5px;
   cursor: pointer;
 }
@@ -2180,6 +2180,16 @@ table td {
 }
 .wallet-address-box {
   display: inline-block;
+}
+.wallet-address {
+  /*width: 120px;*/
+  padding: 5px;
+  display: inline-block;
+  cursor: pointer;
+  color: #eee;
+}
+.wallet-address:hover {
+  opacity: 75%;
 }
 .check-icon {
   width: 18px;

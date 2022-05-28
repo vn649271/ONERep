@@ -115,14 +115,3 @@ FaTrashAlt, FaPencilAlt {
   line-height: 25px;
 }
 
-.wallet-address {
-  /*width: 120px;*/
-  padding: 5px;
-  display: inline-block;
-  float: right;
-  cursor: pointer;
-  color: #eee;
-}
-.wallet-address:hover {
-  opacity: 35%;
-}
