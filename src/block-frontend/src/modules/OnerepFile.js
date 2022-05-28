@@ -3,6 +3,7 @@ import { BigNumber, Signer } from "ethers";
 import { connect } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import { USERS } from "../store/actionTypes";
+import Dropdown from "react-bootstrap/Dropdown";
 import Table from "react-bootstrap/Table";
 import Modal from "react-bootstrap/Modal";
 import StepProgressBar from "react-step-progress";
@@ -32,7 +33,9 @@ const OneRepFileModule = (props) => {
   const [showSucces, setshowSucces] = useState(false);
   const [showFailure, setshowFailure] = useState(false);
   const [repfiles, setRepFiles] = useState([]);
-
+  const [daoList,setDaoList] = useState([]);
+  const [selectedDao, setSelectedDao] = useState(null);
+  const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
   const [progress, setProgress] = useState(0);
   const [ipfsPath, setipfsPath] = useState("");
   const [ipfsName, setipfsName] = useState("");
@@ -95,13 +98,39 @@ const OneRepFileModule = (props) => {
               badgeTokenAddress: badgeTokenAddress,
           }
         });
+        // Init DAO drop down
+        let thisAddress = localStorage.getItem("wallet");
+        // Get all DAO names to fill into DAO name list and select first DAO from it
+        axios.post(SERVER_URL + "/getDaoData", {
+          master: thisAddress
+        }).then((resp)=> {
+          if (resp.data.error !== undefined && resp.data.error === 0) {
+            let daos = resp.data.data;
+            if (userInfo.isAdmin) {
+              daos = [
+                {
+                  _id: '',
+                  dao: 'All'
+                },
+                ...daos
+              ];
+            }
+            setDaoList(daos);
+            if (userInfo.isAdmin) {
+              handleDropDown(null);
+            } else {
+              handleDropDown(daos[0].dao);
+            }
+          } else {
+            alert("Failed to get DAO data");
+          }
+        });        
       })
       .catch(error => {
         orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);        
       });
     }
   });
-
   useEffect(() => {
     // setShowWatingModalForMint(true);
     getOneRepFile();
@@ -115,11 +144,8 @@ const OneRepFileModule = (props) => {
   }, [step]);
 
   const handleCloseMintWizard = () => setShowMintWizard(false);
-
   const handleCloseWatingModalForMint = () => setShowWatingModalForMint(false);
-  
   const handleCloseMessageBox = () => setShowMessageBox(false);
-
   const handleShow = () => {
     setShowMintWizard(true);
     setFile(null);
@@ -128,22 +154,18 @@ const OneRepFileModule = (props) => {
     setStep(0);
     setProgress(0);
   };
-
   const handleCloseSuccess = () => setshowSucces(false);
   const handleCloseFailure = () => setshowFailure(false);
-
   const handleShowSuccess = () => setshowSucces(true);
   const handleShowFailure = (reason) => {
     setMintFailureReason(reason);
     setshowFailure(true);
   }
-
   const inform = (title, content) => {
     setMessageBoxTitle(title);
     setMessageBoxContent(content);
     setShowMessageBox(true);
   }
-
   const InitWeb3 = async () => {
     if (web3 == null && window.ethereum) {
       web3 = new Web3(window.ethereum);
@@ -151,7 +173,6 @@ const OneRepFileModule = (props) => {
       signer = rpcProvider.getSigner();
     }
   }
-
   const handleSubmit = async () => {
     await InitWeb3();
     if (web3 == null || chainId == null) {
@@ -327,7 +348,38 @@ const OneRepFileModule = (props) => {
   const onChangedFileUploadInput = (ev) => {
     onSubmitHandler(ev);
   }
-
+  const handleDropDown = async (selectedDaoName) => {
+    try {
+      let getDaoDataReqParam = {
+        master: localStorage.getItem("wallet"),
+        dao: selectedDaoName === "All"? null: selectedDaoName
+      };
+      // let isAdmin = localStorage.getItem("isAdmin");
+      // if (isAdmin) {
+      //   getDaoDataReqParam = {
+      //     master: localStorage.getItem("wallet"),
+      //   };
+      // }
+      let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
+      let daos = resp.data.data;
+      let selectedDao = null;
+      daos.map(dao => {
+        if (dao.dao === selectedDaoName) {
+          selectedDao = dao;
+          return;
+        }
+      })
+      setSelectedDao(selectedDao);
+      if (selectedDao) {
+        setSelectedDaoTokenTotalSupply(selectedDao.sent);
+        // loadBoardData(localStorage.getItem('wallet'), selectedDao.dao);
+      } else {
+        // loadBoardData(localStorage.getItem('wallet'), null);
+      }
+    } catch (error) {
+      console.log("Error occurred in handleDropDown()", error);
+    }
+  }
   return (
     <section className="">
       <br />
@@ -336,15 +388,19 @@ const OneRepFileModule = (props) => {
         <div className="zl_all_page_heading">
           <h2>ONERep Files (Cordinape)</h2>
         </div>
-        <div className="zl_all_page_notify_logout_btn">
-          <ul className="v-link">
-            <li>
-              <button onClick={handleShow} className="btn-connect">
-                Add ONERep File
-              </button>
-            </li>
-          </ul>
-        </div>
+        {
+          !isAdmin ? 
+            <div className="zl_all_page_notify_logout_btn">
+              <ul className="v-link">
+                <li>
+                  <button onClick={handleShow} className="btn-connect">
+                    Add ONERep File
+                  </button>
+                </li>
+              </ul>
+            </div>:
+            <></>
+        }
       </div>
       {
         showMintWizard?
@@ -367,6 +423,49 @@ const OneRepFileModule = (props) => {
           />:
         <></>
       }
+      <div className='main-text-color'>
+        <div className='flow-layout'>
+          <div className='flow-layout'>DAO</div>
+          <div className='flow-layout'>
+          {
+            isAdmin ?
+            <Dropdown onSelect={handleDropDown}>
+              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                {selectedDao? selectedDao.dao ? selectedDao.dao: "All": "All"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+              {
+                (daoList.length > 0) ? 
+                  daoList.map(m => {
+                    return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
+                  }): 
+                  <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
+              }
+              </Dropdown.Menu>
+            </Dropdown>:
+            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}</label>
+          }
+          </div>
+        </div>
+        {
+          selectedDao ? ([
+              <div key="badge-token-name-label" className='flow-layout'>
+                Token Name
+                <label className="bordered-label">
+                  {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+                </label>
+              </div>,
+              <div key="badge-token-total-supply-label" className='flow-layout'>
+                Number of Tokens 
+                <label className="bordered-label">
+                  {selectedDaoTokenTotalSupply}
+                </label>
+              </div>
+            ]): 
+            <></>
+        }
+      </div>
+      <br/>
       <div>
         <Table striped className="or-table table">
           <thead>

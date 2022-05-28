@@ -14,7 +14,7 @@ const Header = (props) => {
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [metaMaskAccessible, setMetaMaskAccessible] = useState(true);
-    const [isAdmin, setIsAdmin] = useState(false);
+    // const [isAdmin, setIsAdmin] = useState(false);
 
     let connected = false;
     let installed = false;
@@ -33,24 +33,24 @@ const Header = (props) => {
                 logout();
             });            
         }
-        let wallet = localStorage.getItem("wallet");
-        if (wallet !== undefined && wallet !== null && wallet !== "") {
-            axios.post(
-                SERVER_URL + '/users/loggedinuserbywallet', 
-                {
-                    wallet: wallet
-                }
-            ).then(ret => {
-                if (ret.data === undefined || ret.data.isAdmin === undefined) {
-                    console.log("Failed to get information for logged in user");
-                    return;
-                }
-                setIsAdmin(ret.data.isAdmin);
-            })
-            .catch(error => {
-                orAlert("Error occurred in getting information for logged in user");
-            })            
-        }
+        // let wallet = localStorage.getItem("wallet");
+        // if (wallet !== undefined && wallet !== null && wallet !== "") {
+        //     axios.post(
+        //         SERVER_URL + '/users/loggedinuserbywallet', 
+        //         {
+        //             wallet: wallet
+        //         }
+        //     ).then(ret => {
+        //         if (ret.data === undefined || ret.data.isAdmin === undefined) {
+        //             console.log("Failed to get information for logged in user");
+        //             return;
+        //         }
+        //         setIsAdmin(ret.data.isAdmin);
+        //     })
+        //     .catch(error => {
+        //         orAlert("Error occurred in getting information for logged in user");
+        //     })            
+        // }
     });
 
     const showMessageBox = (title, content, _type = "error") => {
@@ -146,27 +146,15 @@ const Header = (props) => {
                             </Link>
                         </li>
                         <li className="zl_page_sidebar_items" title="onerepfile">
-                           {
-                               !isAdmin ?
-                                    <Link  to={'/onerepfile'}  className="zl_page_sidebar_link position-relative">
-                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="0.10527" y="6.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="6.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="6.10527" y="6.10527" width="7" height="7" rx="1.4" fill="#828CAE" />
-                                        </svg>
-                                        <span className="zl_pagesidebar_text">ONERep Files</span>
-                                    </Link>: 
-                                    <Link  to="#"  className="zl_page_sidebar_link position-relative">
-                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="0.10527" y="6.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="6.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
-                                            <rect x="6.10527" y="6.10527" width="7" height="7" rx="1.4" fill="#828CAE" />
-                                        </svg>
-                                        <span className="zl_pagesidebar_text">ONERep Files</span>
-                                    </Link>
-                            }
+                            <Link  to={'/onerepfile'}  className="zl_page_sidebar_link position-relative">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
+                                    <rect x="0.10527" y="6.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
+                                    <rect x="6.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
+                                    <rect x="6.10527" y="6.10527" width="7" height="7" rx="1.4" fill="#828CAE" />
+                                </svg>
+                                <span className="zl_pagesidebar_text">ONERep Files</span>
+                            </Link>
                         </li>
                         <li className="zl_page_sidebar_items" title="onerepboard">
                             <Link to={'/onerepboard'} className="zl_page_sidebar_link position-relative">

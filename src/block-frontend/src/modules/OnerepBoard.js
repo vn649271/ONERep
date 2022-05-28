@@ -13,9 +13,7 @@ const { SERVER_URL } = require("../conf");
 
 const OneRepBoardModule = (props) => {
   const [show, setShow] = useState(false);
-  const [selectData, setSelectData] = useState([]);
   const [boardData, setBoardData] = useState([]);
-  const [selectedV, setSelectedV] = useState('');
   const [sort_name, setSortName] = useState(1);
   const [sort_id, setSortId] = useState(1);
   const [sort_sum, setSortSum] = useState(1);
@@ -35,9 +33,6 @@ const OneRepBoardModule = (props) => {
   useEffect(() => {
     console.log("BoardData",boardData)
   }, [boardData])
-  useEffect(()=>{
-     console.log("selected Value",selectedV)
-  }, [selectedV])
   useEffect(() => {
     // Init connection info
     if (!badgeTokenAddress) {
@@ -67,32 +62,33 @@ const OneRepBoardModule = (props) => {
               badgeTokenAddress: badgeTokenAddress,
           }
         });
+        // Init DAO drop down
         let thisAddress = localStorage.getItem("wallet");
-          // Get all DAO names to fill into DAO name list and select first DAO from it
-          axios.post(SERVER_URL + "/getDaoData", {
-            master: thisAddress
-          }).then((resp)=> {
-            if (resp.data.error !== undefined && resp.data.error === 0) {
-              let daos = resp.data.data;
-              if (userInfo.isAdmin) {
-                daos = [
-                  {
-                    _id: '',
-                    dao: 'All'
-                  },
-                  ...daos
-                ];
-              }
-              setDaoList(daos);
-              if (userInfo.isAdmin) {
-                handleDropDown(null);
-              } else {
-                handleDropDown(daos[0].dao);
-              }
-            } else {
-              alert("Failed to get DAO data");
+        // Get all DAO names to fill into DAO name list and select first DAO from it
+        axios.post(SERVER_URL + "/getDaoData", {
+          master: thisAddress
+        }).then((resp)=> {
+          if (resp.data.error !== undefined && resp.data.error === 0) {
+            let daos = resp.data.data;
+            if (userInfo.isAdmin) {
+              daos = [
+                {
+                  _id: '',
+                  dao: 'All'
+                },
+                ...daos
+              ];
             }
-          });        
+            setDaoList(daos);
+            if (userInfo.isAdmin) {
+              handleDropDown(null);
+            } else {
+              handleDropDown(daos[0].dao);
+            }
+          } else {
+            alert("Failed to get DAO data");
+          }
+        });        
       })
       .catch(error => {
         orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);        
@@ -126,15 +122,15 @@ const OneRepBoardModule = (props) => {
       orAlert("Failed to loadBoardData(): ", error.message);
     }
   };
-  const getSelOpList = () => {
-    axios.post(SERVER_URL + "/getSelOpList", {
-      master: localStorage.getItem("wallet"),
-    })
-    .then((response) => {
-      console.log("The response in inside getSelOpList",response);
-      setSelectData(response.data);
-    });
-  };
+  // const getSelOpList = () => {
+  //   axios.post(SERVER_URL + "/getSelOpList", {
+  //     master: localStorage.getItem("wallet"),
+  //   })
+  //   .then((response) => {
+  //     console.log("The response in inside getSelOpList",response);
+  //     setSelectData(response.data);
+  //   });
+  // };
   const handleDropDown = async (selectedDaoName) => {
     try {
       let getDaoDataReqParam = {
@@ -212,13 +208,13 @@ const OneRepBoardModule = (props) => {
         </div>
         {
           selectedDao ? ([
-              <div className='flow-layout'>
+              <div key="token-name-label" className='flow-layout'>
                 Token Name
                 <label className="bordered-label">
                   {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
                 </label>
               </div>,
-              <div className='flow-layout'>
+              <div key="token-token-total-count-label" className='flow-layout'>
                 Number of Tokens 
                 <label className="bordered-label">
                   {selectedDaoTokenTotalSupply}
