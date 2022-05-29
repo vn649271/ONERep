@@ -2150,10 +2150,8 @@ table td {
   color: #CAD3F2;
   text-transform: uppercase;
 }
-.or-table tr td, .or-table tr td {
-  padding: 0.75rem;
-}
 .or-table tr td {
+  padding: 0.75rem;
   font-size: 14px;
   line-height: 15px;
   text-align: left;
