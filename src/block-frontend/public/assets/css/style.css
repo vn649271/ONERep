@@ -39,6 +39,15 @@ ul {
   padding: 26px 20px 20px 110px;
 }
 
+.zl_all_pages_content .zl_page_sidebar[title='walletconnect'] {
+  display: none;
+}
+
+.zl_all_pages_content .zl_page_sidebar[title='walletconnect'] ~ .zl_all_pages_inner_content {
+  padding: 10px;
+  overflow-x: hidden;
+}
+
 .zl_all_pages_content .zl_page_sidebar[title='login'] {
   display: none;
 }

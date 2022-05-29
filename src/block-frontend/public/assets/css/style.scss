@@ -45,11 +45,29 @@ ul {
 		}
 	}
 
+	.zl_page_sidebar[title='walletconnect'] {
+		display: none;
+
+		&~.zl_all_pages_inner_content {
+			padding: 10px;
+			overflow-x: hidden;
+		}
+	}
+
 	.zl_page_sidebar[title='login'] {
 		display: none;
 
 		&~.zl_all_pages_inner_content {
 			padding: 0;
+		}
+	}
+
+	.zl_page_sidebar[title='home'] {
+		display: none;
+
+		&~.zl_all_pages_inner_content {
+			padding: 10px;
+			overflow-x: hidden;
 		}
 	}
 
