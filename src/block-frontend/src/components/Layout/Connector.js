@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Settings from "../../modules/Settings";
 
 import SideBar from "../SideBar";
@@ -13,15 +13,13 @@ import SideBar from "../SideBar";
 
 const Layout = (props) => {
 
-
-
     const [color, setColor] = useState('zl_page_dark_mode');
 
-    // useEffect(() => {
-    //     if(typeof window !== 'undefined') {
-    //         setColor(localStorage.getItem("themColor"));
-    //     }
-    //   }, []);
+    useEffect(() => {
+        if(typeof window !== 'undefined') {
+            setColor(localStorage.getItem("themColor"));
+        }
+      }, []);
 
     const themHandler = (val) => {
         setColor(val ? 'zl_light_theme_active' : 'zl_page_dark_mode');

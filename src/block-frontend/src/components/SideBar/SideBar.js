@@ -7,6 +7,8 @@ import { orAlert } from "../../service/utils";
 
 const SideBar = (props) => {
 
+    // hide show header
+    const [send, setSend] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
     const [messageType, setMessageType] = useState("error");
     const [messageTitle, setMessageTitle] = useState("");
@@ -88,9 +90,6 @@ const SideBar = (props) => {
             return;
         }
     }
-
-    // hide show header
-    const [send, setSend] = useState(false);
 
     const handleToggle = () => {
         setSend(!send);
@@ -304,5 +303,7 @@ const SideBar = (props) => {
     );
 }
 
-const mapStoreToProps = ({ userAction }) => ({});
+const mapStoreToProps = ({ userAction }) => ({
+    
+});
 export default connect(mapStoreToProps, null)(SideBar);
