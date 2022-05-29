@@ -8,12 +8,14 @@
 } */
 
 body {
-	font-family: $fontfamily !important;
+	font-family: $fontfamily  !important;
 }
+
 .zl_page_dark_mode {
 	background: $gradian-color1;
 	min-height: 100vh;
 }
+
 a {
 	&:-webkit-any-link {
 		&:focus-visible {
@@ -21,56 +23,70 @@ a {
 		}
 	}
 }
+
 ul {
 	padding: 0 !important;
 	margin: 0 !important;
 	list-style: none !important;
 }
+
 .zl_all_pages_content {
 	position: relative;
+
 	.zl_all_pages_inner_content {
 		padding: 26px 20px 20px 270px;
 		min-height: 100vh;
 		transition: all 0.3s ease-in-out;
 	}
+
 	.zl_page_sidebar.zl_hide_sidebar {
 		&~.zl_all_pages_inner_content {
 			padding: 26px 20px 20px 110px;
 		}
 	}
+
 	.zl_page_sidebar[title='login'] {
 		display: none;
+
 		&~.zl_all_pages_inner_content {
 			padding: 0;
 		}
 	}
+
 	.zl_page_sidebar[title=''] {
 		display: none;
+
 		&~.zl_all_pages_inner_content {
 			padding: 38px;
 			overflow-x: hidden;
 		}
 	}
+
 	.custom-switch {
 		padding-left: 24px;
+
 		.custom-control-label {
 			&::before {
 				left: -24px;
 			}
 		}
 	}
+
 	.react-datepicker-popper[data-placement^="bottom"] {
 		position: absolute;
 		right: 0;
+
 		.react-datepicker__triangle {
 			&::before {
 				border-bottom-color: $color18;
 			}
+
 			&::after {
 				border-bottom-color: $color18;
 			}
 		}
 	}
+
 	.react-datepicker__input-container {
 		input {
 			background: transparent;
@@ -86,7 +102,9 @@ ul {
 			z-index: 9;
 			font-weight: 600;
 		}
+
 		position: relative;
+
 		&::before {
 			content: "";
 			position: absolute;
@@ -98,155 +116,197 @@ ul {
 			z-index: 0;
 		}
 	}
+
 	.react-datepicker__close-icon {
 		display: none;
 	}
+
 	.react-datepicker {
 		background: $gradian-color2;
 		box-shadow: 0px 48px 69px rgb(23, 18, 43);
 		border: 0;
-		font-family: $fontfamily !important;
+		font-family: $fontfamily  !important;
 	}
+
 	.react-datepicker__header {
 		background: transparent;
 		border: 0;
 	}
+
 	.react-datepicker__current-month {
 		color: $color1;
 		font-weight: 400;
 	}
+
 	.react-datepicker-time__header {
 		color: $color1;
 		font-weight: 400;
 	}
+
 	.react-datepicker-year-header {
 		color: $color1;
 		font-weight: 400;
 	}
+
 	.react-datepicker__day-name {
 		color: $color1;
 	}
+
 	.react-datepicker__day {
 		color: $color1;
+
 		&:hover {
 			color: $color17;
 			background: $color13;
 		}
 	}
+
 	.react-datepicker__time-name {
 		color: $color1;
 	}
+
 	.react-datepicker__day--keyboard-selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+
 		&:hover {
 			background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 		}
 	}
+
 	.react-datepicker__month-text--keyboard-selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+
 		&:hover {
 			background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 		}
 	}
+
 	.react-datepicker__quarter-text--keyboard-selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+
 		&:hover {
 			background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 		}
 	}
+
 	.react-datepicker__year-text--keyboard-selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+
 		&:hover {
 			background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 		}
 	}
+
 	.react-datepicker__day--selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__day--in-selecting-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__day--in-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__month-text--selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__month-text--in-selecting-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__month-text--in-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__quarter-text--selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__quarter-text--in-selecting-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__quarter-text--in-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__year-text--selected {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__year-text--in-selecting-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__year-text--in-range {
 		background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
 	}
+
 	.react-datepicker__month-text {
 		&:hover {
 			color: $color17;
 			background: $color13;
 		}
 	}
+
 	.react-datepicker__quarter-text {
 		&:hover {
 			color: $color17;
 			background: $color13;
 		}
 	}
+
 	.react-datepicker__year-text {
 		&:hover {
 			color: $color17;
 			background: $color13;
 		}
 	}
+
 	.react-datepicker__navigation-icon {
 		&::before {
 			top: 11px;
 		}
 	}
+
 	.react-datepicker__year-read-view--down-arrow {
 		top: 11px;
 	}
+
 	.react-datepicker__month-read-view--down-arrow {
 		top: 11px;
 	}
+
 	.react-datepicker__month-year-read-view--down-arrow {
 		top: 11px;
 	}
+
 	.react-datepicker__navigation-icon--previous {
 		&::before {
 			right: -5px;
 		}
 	}
+
 	.react-datepicker__navigation-icon--next {
 		&::before {
 			left: -4px;
 		}
 	}
+
 	.react-datepicker__navigation {
 		outline: 0;
 	}
 }
+
 .zl_all_page_comman_content {
 	padding: 32px;
 	border: 1px solid $color21;
 	border-radius: 4px;
 }
+
 .zl_bottom_content_heading {
 	font-weight: 600;
 	font-size: 12px;
@@ -254,27 +314,33 @@ ul {
 	text-transform: uppercase;
 	color: $color1;
 }
+
 input {
 	&::-webkit-outer-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
+
 	&::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
 }
+
 input[type=number] {
 	-moz-appearance: textfield;
 }
+
 table {
 	th {
 		border: 0 !important;
 	}
+
 	td {
 		border: 0 !important;
 	}
 }
+
 .zl_welcome_slide_section {
 	.zl_welcome_slide_content.container {
 		max-width: 600px;
@@ -282,7 +348,9 @@ table {
 		flex-direction: column;
 		position: relative;
 	}
+
 	padding: 102px 0;
+
 	.zl_welcome_slide_content {
 		.zl_welcome_slide_img {
 			img {
@@ -290,38 +358,47 @@ table {
 				order: 1;
 			}
 		}
+
 		.zl_welcome_slide_indicator {
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			padding: 41px 0 31px !important;
 			order: 2;
+
 			.zl_welcome_slide_indicator_items {
 				width: 6px;
 				height: 6px;
 				background: $color22;
 				border-radius: 10px;
 				margin-right: 5px;
+
 				&:first-child[title='1'] {
 					background: $color23;
 				}
+
 				&:nth-child(2)[title='2'] {
 					background: $color23;
 				}
+
 				&:nth-child(3)[title='3'] {
 					background: $color23;
 				}
+
 				&:nth-child(2)[title='1'] {
 					background: $color24;
 				}
+
 				&:nth-child(3)[title='2'] {
 					background: $color24;
 				}
+
 				&:nth-child(2)[title='3'] {
 					background: $color24;
 				}
 			}
 		}
+
 		.zl_welcome_slide_heading {
 			font-weight: 600;
 			font-size: 30px;
@@ -331,6 +408,7 @@ table {
 			margin-bottom: 10px;
 			order: 3;
 		}
+
 		.zl_welcome_slide_peregraph {
 			font-size: 13px;
 			line-height: 16px;
@@ -339,6 +417,7 @@ table {
 			text-align: center;
 			order: 4;
 		}
+
 		.zl_welcome_slide_step_btns {
 			margin: 0 auto;
 			background: $color3;
@@ -357,6 +436,7 @@ table {
 			outline: 0;
 			order: 5;
 		}
+
 		.round_shap_img_one {
 			position: absolute;
 			top: 330px;
@@ -364,6 +444,7 @@ table {
 			z-index: 0;
 			width: 150px;
 		}
+
 		.round_shap_img_two {
 			position: absolute;
 			top: -78px;
@@ -371,6 +452,7 @@ table {
 			width: 309px;
 			z-index: 0;
 		}
+
 		.zl_welcome_slide_already_wallet {
 			font-weight: 600;
 			font-size: 13px;
@@ -382,11 +464,13 @@ table {
 		}
 	}
 }
+
 .round_shap_light_img_two,
 .round_shap_light_img_one,
-.zl_light_theme_slide_img{
+.zl_light_theme_slide_img {
 	display: none;
 }
+
 .zl_light_theme_active {
 	.zl_welcome_slide_section {
 		.zl_welcome_slide_content {
@@ -398,6 +482,7 @@ table {
 				width: 150px;
 				display: block;
 			}
+
 			.round_shap_light_img_two {
 				position: absolute;
 				top: -78px;
@@ -406,27 +491,33 @@ table {
 				z-index: 0;
 				display: block;
 			}
-			.zl_welcome_slide_img{
-				.zl_light_theme_slide_img{
+
+			.zl_welcome_slide_img {
+				.zl_light_theme_slide_img {
 					display: block;
 				}
 			}
 		}
 	}
 }
+
 .zl_login_section {
 	padding: 165px 15px;
+
 	.zl_login_content.container {
 		max-width: 1240px;
 	}
+
 	.zl_login_content {
 		border: 1px solid $color25;
 		border-radius: 10px;
 		padding: 25px 25px 94px;
+
 		.zl_login_heading_text {
 			text-align: center;
 			border-bottom: 1px solid $color25;
 			margin-bottom: 25px;
+
 			.zl_login_heading {
 				font-size: 17px;
 				line-height: 21px;
@@ -434,6 +525,7 @@ table {
 				opacity: 0.7;
 				margin-bottom: 14px;
 			}
+
 			.zl_login_peregraph {
 				font-weight: bold;
 				font-size: 12px;
@@ -443,24 +535,31 @@ table {
 				margin-bottom: 17px;
 			}
 		}
+
 		.zl_login_row {
 			margin: 0 -11px;
+
 			.zl_login_col_3 {
 				padding: 0 11px 22px;
+
 				&:nth-last-child(4) {
 					padding-bottom: 0;
 				}
+
 				&:nth-last-child(3) {
 					padding-bottom: 0;
 				}
+
 				&:nth-last-child(2) {
 					padding-bottom: 0;
 				}
+
 				&:nth-last-child(1) {
 					padding-bottom: 0;
 				}
 			}
 		}
+
 		.zl_login_input_content {
 			&::before {
 				content: "";
@@ -473,9 +572,11 @@ table {
 				width: 23px;
 				height: 23px;
 			}
+
 			border: 1px solid $color25;
 			border-radius: 10px;
 			padding: 17px 22px;
+
 			.zl_login_input_text {
 				font-weight: bold;
 				font-size: 12px;
@@ -483,6 +584,7 @@ table {
 				color: $color3;
 				margin-bottom: 15px;
 			}
+
 			.zl_login_input {
 				background: transparent;
 				border: 0;
@@ -491,6 +593,7 @@ table {
 				line-height: 21px;
 				color: $color6;
 				width: 100%;
+
 				&:focus {
 					&::placeholder {
 						opacity: 0;
@@ -498,8 +601,10 @@ table {
 				}
 			}
 		}
+
 		.zl_login_btn {
 			padding-top: 60px;
+
 			a {
 				background: $color3;
 				border-radius: 10px;
@@ -516,15 +621,18 @@ table {
 		}
 	}
 }
+
 .zl_all_page_heading_section {
 	margin-bottom: 26px;
 	display: flex;
 	align-items: center;
+
 	.zl_all_page_notify_logout_btn {
 		display: flex;
 		align-items: center;
 		margin-left: auto;
 		min-width: 130px;
+
 		.dropdown-toggle {
 			display: flex;
 			align-items: center;
@@ -538,13 +646,16 @@ table {
 			border-radius: 14px;
 			border: 0;
 			margin-right: 25px;
+
 			svg {
 				margin-right: 5px;
 			}
+
 			&::after {
 				display: none;
 			}
 		}
+
 		.show {
 			>.btn-primary.dropdown-toggle {
 				&:focus {
@@ -552,6 +663,7 @@ table {
 				}
 			}
 		}
+
 		.btn-primary {
 			&:not(:disabled) {
 				&:not(.disabled) {
@@ -563,6 +675,7 @@ table {
 				}
 			}
 		}
+
 		.zl_all_page_logout_btn {
 			font-weight: 600;
 			font-size: 13px;
@@ -570,6 +683,7 @@ table {
 			color: $color3;
 			text-decoration: none;
 		}
+
 		.dropdown-menu {
 			background: $gradian-color2;
 			box-shadow: 0px 48px 69px rgba(23, 18, 43, 0.845335);
@@ -581,8 +695,10 @@ table {
 			border: 0;
 			margin-top: 3px !important;
 			z-index: 99999;
+
 			.zl_all_page_notification_body {
 				padding: 27px 0px 20px;
+
 				.zl_all_page_notification_heading {
 					font-weight: 600;
 					font-size: 12px;
@@ -591,34 +707,42 @@ table {
 					color: $color1;
 					padding: 0 25px;
 				}
+
 				.zl_all_page_notification_list {
 					display: flex;
 					align-items: flex-start;
 					padding: 10px 25px;
+
 					.zl_all_page_notification_list_more_btn {
 						background: transparent;
 						border: 0;
 						border-radius: 0;
 						padding: 0;
 						display: none;
+
 						svg {
 							width: 20px;
 						}
 					}
+
 					&:hover {
 						.zl_all_page_notification_list_more_btn {
 							display: block;
 						}
+
 						background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+
 						.zl_all_page_notification_list_body {
 							.zl_all_page_notification_list_heading {
 								opacity: 1;
 							}
 						}
+
 						div.zl_all_page_notification_user_img {
 							opacity: 1;
 						}
 					}
+
 					.show {
 						>.btn-primary.dropdown-toggle {
 							&:focus {
@@ -627,6 +751,7 @@ table {
 							}
 						}
 					}
+
 					.btn-primary {
 						&:not(:disabled) {
 							&:not(.disabled) {
@@ -639,10 +764,12 @@ table {
 							}
 						}
 					}
+
 					.btn-primary.focus {
 						box-shadow: none !important;
 						outline: 0 !important;
 					}
+
 					.zl_all_page_notification_user_img {
 						min-width: 38px;
 						width: 38px;
@@ -650,6 +777,7 @@ table {
 						border-radius: 50px;
 						margin-right: 15px;
 					}
+
 					div.zl_all_page_notification_user_img {
 						display: flex;
 						align-items: center;
@@ -660,12 +788,15 @@ table {
 						color: $color5;
 						opacity: 0.8;
 					}
+
 					div.zl_all_page_notification_user_img.zl_user_green_bg {
 						background: $gradian-color5;
 					}
+
 					div.zl_all_page_notification_user_img.zl_user_pink_bg {
 						background: $gradian-color4;
 					}
+
 					.zl_all_page_notification_list_body {
 						.zl_all_page_notification_list_heading {
 							font-weight: bold;
@@ -674,6 +805,7 @@ table {
 							color: $color1;
 							opacity: 0.7;
 							margin-bottom: 7px;
+
 							span {
 								font-size: 11px;
 								line-height: 13px;
@@ -682,12 +814,14 @@ table {
 								font-weight: 500;
 							}
 						}
+
 						.zl_all_page_notification_list_peregraph {
 							font-size: 12px;
 							line-height: 15px;
 							color: $color3;
 							margin-bottom: 9px;
 						}
+
 						.zl_all_page_notification_list_price {
 							p {
 								font-size: 13px;
@@ -695,6 +829,7 @@ table {
 								color: $color8;
 								margin-bottom: 0;
 								margin-right: auto;
+
 								span {
 									font-size: 12px;
 									line-height: 15px;
@@ -704,18 +839,22 @@ table {
 									margin-left: 6px;
 								}
 							}
+
 							svg {
 								width: 38px;
 								margin-right: 18px;
+
 								g {
 									&:last-child {
 										display: none;
 									}
 								}
 							}
+
 							display: flex;
 							align-items: center;
 							margin-bottom: 10px;
+
 							a {
 								font-size: 12px;
 								line-height: 15px;
@@ -723,6 +862,7 @@ table {
 								color: $color7;
 							}
 						}
+
 						.zl_all_page_notification_list_time {
 							font-size: 11px;
 							line-height: 13px;
@@ -730,9 +870,11 @@ table {
 						}
 					}
 				}
+
 				.zl_all_page_notification_more_list_btn {
 					text-align: center;
 					padding-top: 24px;
+
 					a {
 						text-decoration: none;
 						font-size: 12px;
@@ -743,8 +885,10 @@ table {
 			}
 		}
 	}
+
 	.zl_all_page_heading {
 		margin-right: 15px;
+
 		h2 {
 			font-weight: 600;
 			font-size: 30px;
@@ -754,6 +898,7 @@ table {
 			font-style: normal;
 			margin-bottom: 6px;
 		}
+
 		p {
 			font-size: 13px;
 			line-height: 16px;
@@ -762,12 +907,14 @@ table {
 		}
 	}
 }
+
 .btn-primary {
 	&:focus {
 		box-shadow: none !important;
 		outline: 0 !important;
 	}
 }
+
 .zl_currency_icon {
 	width: 30px;
 	height: 30px;
@@ -776,16 +923,19 @@ table {
 	align-items: center;
 	justify-content: center;
 	margin-right: auto;
+
 	svg {
 		width: auto !important;
 		height: 25px;
 		filter: none !important;
 	}
 }
+
 .zl_chart_box_heading_date {
 	display: flex;
 	align-items: center;
 	margin-bottom: 32px;
+
 	.zl_chart_box_heading {
 		font-weight: 600;
 		font-size: 24px;
@@ -794,19 +944,23 @@ table {
 		margin-bottom: 0;
 	}
 }
+
 .zl_dashboard_chart {
 	tspan {
 		fill: $color3;
 		font-weight: 600;
 		font-size: 12px;
-		font-family: $fontfamily !important;
+		font-family: $fontfamily  !important;
 	}
+
 	.apexcharts-toolbar {
 		display: none;
 	}
 }
+
 .zl_all_page_comman_total_price {
 	margin-top: 32px;
+
 	.zl_all_page_total_price_heading {
 		font-weight: 600;
 		font-size: 12px;
@@ -815,6 +969,7 @@ table {
 		color: $color3;
 		margin-bottom: 0;
 	}
+
 	.zl_all_page_total_price_text {
 		font-weight: 600;
 		font-size: 24px;
@@ -823,6 +978,7 @@ table {
 		margin-bottom: 8px;
 		word-break: break-all;
 	}
+
 	.zl_all_page_total_price_up_text {
 		display: flex;
 		align-items: center;
@@ -830,10 +986,12 @@ table {
 		line-height: 16px;
 		letter-spacing: 0.4px;
 		color: $color9;
+
 		svg {
 			margin-right: 7px;
 		}
 	}
+
 	.zl_add_currency_down_price {
 		display: flex;
 		align-items: center;
@@ -842,21 +1000,25 @@ table {
 		letter-spacing: 0.4px;
 		color: $color9;
 		color: $color10;
+
 		svg {
 			margin-right: 7px;
 		}
 	}
 }
-.zl_all_page_comman_content{
-	+ .zl_add_currency_content {
+
+.zl_all_page_comman_content {
+	+.zl_add_currency_content {
 		padding-top: 27px;
 	}
 }
+
 .zl_add_currency_row.row {
 	margin-top: 21px;
 	margin-left: -10px;
 	margin-right: -10px;
 }
+
 .zl_add_currency_row {
 	.zl_currency_column_sub_row {
 		display: flex;
@@ -864,47 +1026,58 @@ table {
 		max-width: 80%;
 		overflow-x: auto;
 		padding-bottom: 15px;
+
 		.zl_add_currency_column {
 			max-width: 25%;
 			min-width: 25%;
 		}
+
 		&::-webkit-scrollbar {
 			width: 5px;
 			height: 5px;
 		}
+
 		&::-webkit-scrollbar-track {
 			background: $color21;
 		}
+
 		&::-webkit-scrollbar-thumb {
 			background: $color28;
+
 			&:hover {
 				background: $color28;
 			}
 		}
 	}
+
 	.zl_add_currency_column {
 		max-width: 20%;
 		min-width: 20%;
 		flex-basis: auto;
 		padding: 0 10px;
+
 		.zl_add_currency_inner_content {
 			padding: 22px 16px;
 			border: 1px solid $color21;
 			border-radius: 10px;
 			position: relative;
+
 			.zl_add_currency_icon_chart {
 				display: flex;
 				align-items: center;
 				margin-bottom: 14px;
+
 				svg {
 					width: 70px;
 					filter: drop-shadow(0px 5px 4px $color29);
+
 					g {
 						&:last-child {
 							circle {
 								&:first-child {
 									display: none;
 								}
+
 								stroke: transparent !important;
 								fill: transparent !important;
 							}
@@ -912,20 +1085,24 @@ table {
 					}
 				}
 			}
+
 			.zl_add_currency_price {
 				display: flex;
 				align-items: flex-start;
+
 				.zl_add_currency_left_price {
 					margin-right: auto;
 					display: flex;
 					flex-direction: column;
 				}
+
 				h3 {
 					font-weight: bold;
 					font-size: 12px;
 					line-height: 15px;
 					color: $color3;
 				}
+
 				p {
 					font-size: 17px;
 					line-height: 21px;
@@ -933,22 +1110,27 @@ table {
 					margin-top: auto;
 					margin-bottom: 0;
 				}
+
 				span {
 					font-size: 11px;
 					line-height: 13px;
 					color: $color9;
+
 					svg {
 						margin-right: 7px;
 					}
 				}
+
 				span.zl_add_currency_down_price {
 					color: $color10;
 				}
 			}
+
 			.zl_add_currency_right_price {
 				text-align: right;
 			}
 		}
+
 		.zl_add_currency_btn_content {
 			border: 1px dashed $color21;
 			border-radius: 10px;
@@ -965,6 +1147,7 @@ table {
 		}
 	}
 }
+
 .zl_wallets_page {
 	.zl_add_currency_row {
 		.zl_add_currency_column {
@@ -973,9 +1156,11 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_bitcoin_currency {
 		&:hover {
 			background: $gradian-color6;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
@@ -987,11 +1172,14 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_bitcoin_currency.active {
 		background: $gradian-color6;
+
 		&::before {
 			background: $gradian-color7;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
@@ -1002,6 +1190,7 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content {
 		&::before {
 			content: "";
@@ -1014,43 +1203,52 @@ table {
 			filter: blur(90.885px);
 			z-index: -1;
 		}
+
 		&:hover {
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					background: $color13;
 					box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.0744452);
 				}
+
 				svg {
 					polyline {
-						stroke: $color13 !important;
+						stroke: $color13  !important;
 					}
 				}
 			}
+
 			.zl_add_currency_price {
 				h3 {
 					color: $color5;
 					opacity: 0.5;
 				}
+
 				p {
 					color: $color13;
 				}
+
 				span {
 					color: $color13;
+
 					svg {
 						path {
 							fill: $color13;
 						}
 					}
 				}
+
 				span.zl_add_currency_down_price {
 					color: $color13;
 				}
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_litecoin_currency {
 		&:hover {
 			background: $gradian-color8;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
@@ -1062,11 +1260,14 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_litecoin_currency.active {
 		background: $gradian-color8;
+
 		&::before {
 			background: $gradian-color9;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
@@ -1077,15 +1278,18 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_ethereum_currency {
 		&:hover {
 			background: $gradian-color10;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
 						.left-shap {
 							fill: $color10;
 						}
+
 						.right-shap {
 							fill: $color32;
 						}
@@ -1094,17 +1298,21 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_ethereum_currency.active {
 		background: $gradian-color10;
+
 		&::before {
 			background: $gradian-color11;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
 					.left-shap {
 						fill: $color10;
 					}
+
 					.right-shap {
 						fill: $color32;
 					}
@@ -1112,64 +1320,78 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.active {
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				background: $color13;
 				box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.0744452);
 			}
+
 			svg {
 				polyline {
-					stroke: $color13 !important;
+					stroke: $color13  !important;
 				}
 			}
 		}
+
 		.zl_add_currency_price {
 			h3 {
 				color: $color5;
 				opacity: 0.5;
 			}
+
 			p {
 				color: $color13;
 			}
+
 			span {
 				color: $color13;
+
 				svg {
 					path {
 						fill: $color13;
 					}
 				}
 			}
+
 			span.zl_add_currency_down_price {
 				color: $color13;
 			}
 		}
 	}
+
 	.tab-content {
 		margin-top: 27px;
 	}
 }
+
 .zl_add_currency_page {
 	.zl_all_page_comman_content {
 		padding: 4px 21px 21px;
 		border-radius: 10px;
 	}
+
 	.zl_add_currency_row {
 		margin: 0 -10px;
+
 		.zl_add_currency_column {
 			margin-top: 20px;
 			padding: 0 10px;
 		}
+
 		.zl_add_currency_inner_content {
 			display: flex;
 			align-items: center;
 		}
 	}
 }
+
 .zl_add_currency_search {
 	position: relative;
 	padding-left: 34px;
 	border-bottom: 1px solid $color26;
+
 	.zl_add_currency_search_icon {
 		background: transparent;
 		border: 0;
@@ -1185,6 +1407,7 @@ table {
 		top: 50%;
 		transform: translateY(-50%);
 	}
+
 	.form-control {
 		padding: 18px 12px;
 		font-size: 17px;
@@ -1194,9 +1417,11 @@ table {
 		border: 0;
 		outline: 0;
 		height: auto;
+
 		&::placeholder {
 			opacity: 0.3;
 		}
+
 		&:focus {
 			outline: 0;
 			background: transparent;
@@ -1205,6 +1430,7 @@ table {
 		}
 	}
 }
+
 .zl_custom_currency_checkbox.custom-switch {
 	.custom-control-label {
 		&::before {
@@ -1212,6 +1438,7 @@ table {
 			height: 14px;
 			border: 0;
 		}
+
 		&::after {
 			width: 12px;
 			height: 12px;
@@ -1221,21 +1448,25 @@ table {
 			background: $color7;
 		}
 	}
+
 	.custom-control-input {
 		&:checked~.custom-control-label {
 			&::after {
-				left: -14px;
+				left: -39px;
 				transform: translateX(0);
 			}
+
 			&::before {
 				background: $color7;
 			}
 		}
 	}
 }
+
 .zl_add_currency_text {
 	margin-right: auto;
 	padding-left: 15px;
+
 	h3 {
 		font-weight: bold;
 		font-size: 12px;
@@ -1243,6 +1474,7 @@ table {
 		color: $color3;
 		margin-bottom: 3px;
 	}
+
 	p {
 		font-size: 10px;
 		line-height: 12px;
@@ -1250,49 +1482,59 @@ table {
 		margin-bottom: 0;
 	}
 }
+
 .zl_protfolio_mini_chart {
 	svg {
 		filter: drop-shadow(0px 10px 4px rgba(12, 10, 32, 0.54362));
+
 		g {
 			&:last-child {
 				display: none;
 			}
 		}
 	}
+
 	margin-top: 9px;
 }
-.zl_add_currency_content{
-	+ .zl_all_page_comman_content {
+
+.zl_add_currency_content {
+	+.zl_all_page_comman_content {
 		margin-top: 27px;
 	}
 }
+
 .apexcharts-legend-series {
 	margin: 0 !important;
 	padding: 6px 16px;
 	display: flex !important;
+
 	.apexcharts-legend-text {
-		color: $color12 !important;
+		color: $color12  !important;
 		font-weight: 600 !important;
 		font-size: 12px !important;
 		padding-left: 10px;
-		font-family: $fontfamily !important;
+		font-family: $fontfamily  !important;
 	}
 }
+
 .zl_protfolio_main_chart {
 	.zl_chart_box_heading_date {
 		margin-bottom: 0;
 		position: relative;
 		z-index: 9999;
 	}
+
 	.zl_chart_date_picker {
 		margin-bottom: -30px;
 		margin-left: auto;
 	}
 }
+
 .zl_history_page {
 	.zl_add_currency_inner_content.zl_add_bitcoin_currency {
 		&:hover {
 			background: $gradian-color6;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
@@ -1304,11 +1546,14 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_bitcoin_currency.active {
 		background: $gradian-color6;
+
 		&::before {
 			background: $gradian-color7;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
@@ -1319,6 +1564,7 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content {
 		&::before {
 			content: "";
@@ -1331,43 +1577,52 @@ table {
 			filter: blur(90.885px);
 			z-index: -1;
 		}
+
 		&:hover {
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					background: $color13;
 					box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.0744452);
 				}
+
 				svg {
 					polyline {
-						stroke: $color13 !important;
+						stroke: $color13  !important;
 					}
 				}
 			}
+
 			.zl_add_currency_price {
 				h3 {
 					color: $color5;
 					opacity: 0.5;
 				}
+
 				p {
 					color: $color13;
 				}
+
 				span {
 					color: $color13;
+
 					svg {
 						path {
 							fill: $color13;
 						}
 					}
 				}
+
 				span.zl_add_currency_down_price {
 					color: $color13;
 				}
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_litecoin_currency {
 		&:hover {
 			background: $gradian-color8;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
@@ -1379,11 +1634,14 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_litecoin_currency.active {
 		background: $gradian-color8;
+
 		&::before {
 			background: $gradian-color9;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
@@ -1394,15 +1652,18 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_ethereum_currency {
 		&:hover {
 			background: $gradian-color10;
+
 			.zl_add_currency_icon_chart {
 				.zl_currency_icon {
 					svg {
 						.left-shap {
 							fill: $color10;
 						}
+
 						.right-shap {
 							fill: $color32;
 						}
@@ -1411,17 +1672,21 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.zl_add_ethereum_currency.active {
 		background: $gradian-color10;
+
 		&::before {
 			background: $gradian-color11;
 		}
+
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				svg {
 					.left-shap {
 						fill: $color10;
 					}
+
 					.right-shap {
 						fill: $color32;
 					}
@@ -1429,43 +1694,52 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_inner_content.active {
 		.zl_add_currency_icon_chart {
 			.zl_currency_icon {
 				background: $color13;
 				box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.0744452);
 			}
+
 			svg {
 				polyline {
-					stroke: $color13 !important;
+					stroke: $color13  !important;
 				}
 			}
 		}
+
 		.zl_add_currency_price {
 			h3 {
 				color: $color5;
 				opacity: 0.5;
 			}
+
 			p {
 				color: $color13;
 			}
+
 			span {
 				color: $color13;
+
 				svg {
 					path {
 						fill: $color13;
 					}
 				}
 			}
+
 			span.zl_add_currency_down_price {
 				color: $color13;
 			}
 		}
 	}
+
 	.zl_transaction_list_table {
 		margin-top: 21px;
 	}
 }
+
 .zl_all_currency_content {
 	&::before {
 		content: "";
@@ -1478,6 +1752,7 @@ table {
 		filter: blur(90.885px);
 		z-index: -1;
 	}
+
 	border: 1px solid $color21;
 	border-radius: 10px;
 	padding: 15px !important;
@@ -1490,55 +1765,64 @@ table {
 	line-height: 16px;
 	color: $color3;
 	position: relative;
+
 	&:hover {
 		color: $color5;
 		background: $gradian-color3;
 	}
 }
+
 .zl_wallet_chart_bottom_content {
 	margin-top: 32px;
 	display: flex;
 	align-items: center;
+
 	.zl_all_page_comman_total_price {
 		margin-top: 0;
 		margin-right: auto;
 	}
+
 	.zl_wallet_chart_send_recive_btn {
 		display: flex;
 		align-items: center;
 		margin-left: 10px;
+
 		button {
 			border: 0;
-			background-color: $color3 !important;
+			background-color: $color3  !important;
 			border-radius: 10px;
 			font-weight: bold;
 			font-size: 20px;
 			line-height: 24px;
-			color: $color4 !important;
+			color: $color4  !important;
 			padding: 17px;
 			max-width: 180px;
 			min-width: 180px;
 			width: 100%;
+
 			&:active {
 				border: 0;
-				background-color: $color3 !important;
+				background-color: $color3  !important;
 				border-radius: 10px;
 				font-weight: bold;
 				font-size: 20px;
 				line-height: 24px;
-				color: $color4 !important;
+				color: $color4  !important;
 				padding: 17px;
 				max-width: 180px;
 				min-width: 180px;
 				width: 100%;
 			}
+
 			svg {
 				margin-right: 11px;
 			}
 		}
+
 		button.zl_wallet_chart_send_btn {
 			margin-right: 20px;
 		}
+
 		button.zl_wallet_chart_recive_btn {
 			svg {
 				transform: rotate(180deg);
@@ -1546,44 +1830,49 @@ table {
 		}
 	}
 }
+
 .zl_send_currency_btn_text {
 	.zl_send_currency_btn {
 		border: 0;
-		background-color: $color3 !important;
+		background-color: $color3  !important;
 		border-radius: 10px;
 		font-weight: bold;
 		font-size: 20px;
 		line-height: 24px;
-		color: $color4 !important;
+		color: $color4  !important;
 		padding: 17px;
 		max-width: 180px;
 		min-width: 180px;
 		width: 100%;
 		margin-right: 41px;
+
 		&:active {
 			border: 0;
-			background-color: $color3 !important;
+			background-color: $color3  !important;
 			border-radius: 10px;
 			font-weight: bold;
 			font-size: 20px;
 			line-height: 24px;
-			color: $color4 !important;
+			color: $color4  !important;
 			padding: 17px;
 			max-width: 180px;
 			min-width: 180px;
 			width: 100%;
 		}
 	}
+
 	display: flex;
 	align-items: center;
 	row-gap: 10px;
 	flex-wrap: wrap;
+
 	.zl_send_currency_text {
 		p {
 			font-size: 14px;
 			line-height: 20px;
 			color: $color3;
 			margin-bottom: 0;
+
 			span {
 				color: $color14;
 				display: block;
@@ -1592,6 +1881,7 @@ table {
 		}
 	}
 }
+
 .zl_send_recive_content {
 	.zl_send_recive_inner_content {
 		.zl_send_recive_heading.zl_recive_heading {
@@ -1599,10 +1889,12 @@ table {
 				transform: rotate(180deg);
 			}
 		}
+
 		border: 1px solid $color21;
 		border-radius: 10px;
 		padding: 66px 66px 46px;
 		height: 100%;
+
 		.zl_send_recive_heading {
 			font-weight: bold;
 			font-size: 22px;
@@ -1611,35 +1903,42 @@ table {
 			display: flex;
 			align-items: center;
 			margin-bottom: 27px;
+
 			svg {
 				margin-right: 11px;
 			}
 		}
 	}
+
 	.zl_send_recive_content_row {
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0 -12px;
 	}
+
 	.zl_send_recive_content_column {
 		max-width: 50%;
 		width: 100%;
 		padding: 0 12px;
 	}
 }
+
 .zl_chart_component.active {
 	.zl_all_page_comman_content {
 		display: none;
 	}
+
 	.zl_send_recive_content {
 		display: block;
 	}
 }
+
 .zl_chart_component {
 	.zl_send_recive_content {
 		display: none;
 	}
 }
+
 .zl_send_qr_address {
 	background: $color12;
 	border-radius: 10px;
@@ -1647,6 +1946,7 @@ table {
 	align-items: center;
 	padding: 30px;
 	padding-left: 36px;
+
 	input {
 		margin-bottom: 0;
 		margin-right: auto;
@@ -1657,6 +1957,7 @@ table {
 		border: 0;
 		box-shadow: none;
 		padding: 0;
+
 		&:focus {
 			margin-bottom: 0;
 			margin-right: auto;
@@ -1668,11 +1969,13 @@ table {
 			box-shadow: none;
 			padding: 0;
 		}
+
 		&::placeholder {
 			color: $color14;
 		}
 	}
 }
+
 .zl_send_currency_input_content {
 	display: flex;
 	align-items: center;
@@ -1680,6 +1983,7 @@ table {
 	row-gap: 10px;
 	padding: 25px 0 16px 5px;
 	border-bottom: 3px solid $color12;
+
 	.zl_send_currency_input {
 		margin-right: 12px;
 		width: calc(100% - 201px);
@@ -1693,14 +1997,17 @@ table {
 		outline: 0;
 		height: auto;
 		padding: 0;
+
 		&:focus {
 			background: transparent;
 			box-shadow: none;
 			color: $color14;
 		}
 	}
+
 	.zl_send_currency_input_btns {
 		min-width: 189px;
+
 		button {
 			padding: 9px 11px;
 			font-size: 16px;
@@ -1711,22 +2018,26 @@ table {
 			background: transparent;
 			width: 55px;
 			margin-right: 12px;
+
 			&:active {
-				border: 1px solid $color21 !important;
+				border: 1px solid $color21  !important;
 				background: transparent !important;
-				color: $color3 !important;
+				color: $color3  !important;
 			}
+
 			&:last-child {
 				margin-right: 0;
 			}
 		}
 	}
 }
+
 .zl_send_currency_text_type {
 	margin-top: 22px;
 	display: flex;
 	align-items: center;
 	margin-bottom: 60px;
+
 	.zl_send_currency_text {
 		font-weight: 600;
 		font-size: 20px;
@@ -1735,6 +2046,7 @@ table {
 		margin-bottom: 0;
 		margin-right: auto;
 	}
+
 	.zl_send_currency_type {
 		font-weight: bold;
 		font-size: 20px;
@@ -1743,6 +2055,7 @@ table {
 		margin-bottom: 0;
 	}
 }
+
 .zl_recive_address_content {
 	.zl_recive_address_heading {
 		font-size: 18px;
@@ -1751,9 +2064,11 @@ table {
 		margin-bottom: 21px;
 		word-break: break-word;
 	}
+
 	.zl_recive_copy_address_content {
 		display: flex;
 		align-items: center;
+
 		button {
 			background: $color12;
 			border-radius: 10px;
@@ -1766,10 +2081,12 @@ table {
 			align-items: center;
 			justify-content: center;
 			margin-right: 20px;
+
 			&:active {
-				background: $color12 !important;
+				background: $color12  !important;
 			}
 		}
+
 		p {
 			font-size: 16px;
 			line-height: 20px;
@@ -1778,6 +2095,7 @@ table {
 			word-break: break-all;
 		}
 	}
+
 	.zl_recive_address_qr_code {
 		margin-top: 32px;
 		width: 226px;
@@ -1789,12 +2107,15 @@ table {
 		justify-content: center;
 	}
 }
+
 .zl_light_theme_qrcode {
 	display: none;
 }
+
 .zl_transaction_list_table {
 	margin-bottom: 0 !important;
 	min-width: 1200px;
+
 	.zl_transaction_list_table_heading {
 		font-weight: 600;
 		font-size: 12px;
@@ -1803,6 +2124,7 @@ table {
 		color: $color14;
 		text-align: center;
 	}
+
 	tr {
 		td {
 			font-size: 12px;
@@ -1811,16 +2133,20 @@ table {
 			color: $color3;
 		}
 	}
+
 	.zl_transaction_pluse {
 		color: $color8;
 	}
+
 	.zl_transaction_minas {
 		color: $color10;
 	}
+
 	.zl_transaction_list_status {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+
 		&::before {
 			content: "";
 			width: 5px;
@@ -1831,16 +2157,19 @@ table {
 			margin-right: 5px;
 		}
 	}
+
 	.zl_transaction_completed {
 		&::before {
 			background: $color9;
 		}
 	}
+
 	.zl_transaction_failed {
 		&::before {
 			background: $color33;
 		}
 	}
+
 	.zl_transaction_list_type {
 		img {
 			width: 22px;
@@ -1849,6 +2178,7 @@ table {
 		}
 	}
 }
+
 .zl_transaction_list_main_heading {
 	display: flex;
 	align-items: center;
@@ -1859,6 +2189,7 @@ table {
 	line-height: 15px;
 	text-transform: uppercase;
 	color: $color15;
+
 	a {
 		margin-left: auto;
 		font-size: 12px;
@@ -1866,19 +2197,23 @@ table {
 		color: $color16;
 		text-transform: capitalize;
 		font-weight: 400;
+
 		&:hover {
 			text-decoration: none;
 			color: $color16;
 		}
 	}
 }
+
 .zl_all_currency_content.active {
 	color: $color5;
 	background: $gradian-color3;
+
 	&::before {
 		background: $gradian-color12;
 	}
 }
+
 .zl_SecureBackup_heading {
 	h3 {
 		font-weight: 600;
@@ -1889,17 +2224,21 @@ table {
 		margin-bottom: 0;
 	}
 }
+
 .zl_securebackup_row.row {
 	margin: 0 -12px;
 }
+
 .zl_securebackup_col_3 {
 	padding: 0 12px;
 	margin-top: 25px;
 }
+
 .zl_securebackup_input_content {
 	border: 1px solid $color26;
 	border-radius: 10px;
 	padding: 15px 20px;
+
 	.zl_securebackup_input_text {
 		font-weight: bold;
 		font-size: 12px;
@@ -1907,6 +2246,7 @@ table {
 		color: $color3;
 		margin-bottom: 13px;
 	}
+
 	.zl_securebackup_input {
 		background: transparent;
 		border: 0;
@@ -1916,19 +2256,21 @@ table {
 		opacity: 0.7;
 		outline: 0;
 		padding: 0;
+
 		&::placeholder {
 			color: $color5;
 			opacity: 0.7;
 		}
 	}
 }
+
 .zl_securebackup_btn {
 	margin-top: 60px;
-	a {
+
+	a, button {
 		background: $color3;
 		border-radius: 10px;
 		min-width: 180px;
-		max-width: 180px;
 		display: block;
 		padding: 18px;
 		font-weight: bold;
@@ -1936,12 +2278,22 @@ table {
 		line-height: 24px;
 		color: $color4;
 		text-align: center;
+
 		&:hover {
 			text-decoration: none;
+			opacity: .8;
 			color: $color4;
 		}
 	}
+
+	button {
+		display: inline-block;
+		padding: 15px;
+		box-shadow: none;
+		border: none;
+	}
 }
+
 .zl_setting_list {
 	.zl_setting_list_items {
 		border: 1px solid $color26;
@@ -1951,11 +2303,14 @@ table {
 		display: flex;
 		margin-bottom: 25px;
 		text-decoration: none;
+
 		&:last-child {
 			margin-bottom: 0;
 		}
+
 		.zl_setting_items_heading_peregraph {
 			margin-right: auto;
+
 			h3 {
 				font-size: 17px;
 				line-height: 21px;
@@ -1963,6 +2318,7 @@ table {
 				opacity: 0.7;
 				margin-bottom: 13px;
 			}
+
 			p {
 				font-weight: bold;
 				font-size: 12px;
@@ -1971,9 +2327,11 @@ table {
 				margin-bottom: 0;
 			}
 		}
+
 		.zl_setting_items_right_text {
 			display: flex;
 			align-items: center;
+
 			h3 {
 				font-weight: bold;
 				font-size: 20px;
@@ -1984,16 +2342,19 @@ table {
 			}
 		}
 	}
+
 	a.zl_setting_list_items {
 		align-items: center;
 	}
 }
+
 .zl_portfolio_page {
 	.zl_add_currency_inner_content {
 		.zl_add_currency_mini_chart {
 			svg {
 				margin-top: 10px;
 				filter: drop-shadow(0px 10px 5px rgba(12, 10, 32, 0.15));
+
 				g {
 					&:last-child {
 						display: none;
@@ -2003,62 +2364,77 @@ table {
 		}
 	}
 }
+
 .zl_restore_wallet_input_content {
 	padding: 22px 22px 54px;
 	border: 1px solid $color26;
 	border-radius: 10px;
+
 	.zl_securebackup_col_3 {
 		margin-bottom: 25px;
 		margin-top: 0;
 		padding: 0 10px;
+
 		&:nth-last-child(4) {
 			margin-bottom: 0;
 		}
+
 		&:nth-last-child(3) {
 			margin-bottom: 0;
 		}
+
 		&:nth-last-child(2) {
 			margin-bottom: 0;
 		}
+
 		&:nth-last-child(1) {
 			margin-bottom: 0;
 		}
 	}
 }
+
 .zl_currency_page {
 	.zl_add_currency_row {
 		.zl_add_currency_column {
 			&:nth-last-child(4) {
 				margin-bottom: 0;
 			}
+
 			&:nth-last-child(3) {
 				margin-bottom: 0;
 			}
+
 			&:nth-last-child(2) {
 				margin-bottom: 0;
 			}
+
 			&:nth-last-child(1) {
 				margin-bottom: 0;
 			}
+
 			.zl_add_currency_inner_content {
 				padding: 21px;
 				display: flex;
 				align-items: center;
 				position: relative;
 				height: 100%;
+
 				.zl_add_currency_img {
 					img {
 						filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.1));
 					}
 				}
 			}
+
 			max-width: 25%;
 			padding: 0 10px;
 			margin-bottom: 20px;
 		}
+
 		.zl_add_currency_column.active {
 			.zl_add_currency_inner_content {
 				background: $color21;
+
 				&::before {
 					content: "";
 					position: absolute;
@@ -2074,21 +2450,26 @@ table {
 			}
 		}
 	}
+
 	.zl_all_page_comman_content {
 		border-radius: 10px;
 		padding: 4px 21px 21px;
 	}
+
 	.zl_add_currency_row.row {
 		margin: 0 -10px;
 		margin-top: 21px;
 	}
 }
+
 .zl_account_support_input_list {
 	margin-top: 21px;
+
 	.zl_account_support_input_items {
 		padding: 15px 19px 21px;
 		border: 1px solid $color26;
 		border-radius: 10px;
+
 		.form-label {
 			font-weight: bold;
 			font-size: 12px;
@@ -2096,6 +2477,7 @@ table {
 			color: $color3;
 			margin-bottom: 13px;
 		}
+
 		.form-control {
 			font-size: 17px;
 			line-height: 21px;
@@ -2107,6 +2489,7 @@ table {
 			box-shadow: none;
 			padding: 0;
 			height: auto;
+
 			&::placeholder {
 				color: $color5;
 				opacity: 0.7;
@@ -2115,32 +2498,628 @@ table {
 	}
 }
 
-.zl_history_page{
-	.zl_add_currency_row{
-		&.nav{
+.zl_history_page {
+	.zl_add_currency_row {
+		&.nav {
 			flex-wrap: nowrap;
 			overflow-x: auto;
 			padding-bottom: 15px;
+
 			&::-webkit-scrollbar {
 				width: 5px;
 				height: 5px;
 			}
+
 			&::-webkit-scrollbar-track {
 				background: $color21;
 			}
+
 			&::-webkit-scrollbar-thumb {
 				background: $color28;
+
 				&:hover {
 					background: $color28;
 				}
 			}
 		}
-		.zl_add_currency_column{
+
+		.zl_add_currency_column {
 			margin-bottom: 0 !important;
 		}
 	}
 }
 
+.or-spin-button {
+	background: #828CAE;
+	border-radius: 10px;
+	min-width: 180px;
+	display: block;
+	padding: 15px;
+	font-weight: bold;
+	display: flex;
+	width: fit-content;
+	font-size: 20px;
+	line-height: 24px;
+	color: #252F47;
+	text-align: center;
+	box-shadow: none;
+	border: none;
+	cursor: pointer;
+}
+
+.or-spin-button div.overlapped {
+	position: absolute;
+	margin-right: 0px !important;
+}
+
+.or-spin-border.large {
+	margin-top: 25px;
+	width: 50px !important;
+	height: 50px !important;
+}
+
+.or-spin-button div.flex {
+	position: relative;
+}
+
+.or-spin-button:hover {
+	text-decoration: none;
+	opacity: .8;
+	color: #252F47;
+}
+
+.or-spin-button label {
+	cursor: pointer;
+}
+
+.or-spin-border {
+	width: 1em !important;
+	height: 1em !important;
+	border: 0.1em solid currentColor !important;
+	border-right-color: transparent !important;
+}
+
+.or-spin-border-white {
+	width: 1em !important;
+	height: 1em !important;
+	border: 0.1em solid #d8d8d8 !important;
+	border-right-color: transparent !important;
+}
+
+.halign-center {
+	text-align: center;
+}
+
+.or-waiting-modal {}
+
+.w-fit-content {
+	width: fit-content;
+}
+
+.or-waiting-modal-body {
+	text-align: center;
+}
+
+.or-waiting-modal-spinner,
+.or-waiting-modal-text {
+	display: inline-block;
+}
+
+.error-tooltip {
+	/*  
+position: absolute;
+margin-top: -2em;
+margin-left: 0.8em;
+*/
+	height: 1em;
+	color: #C33;
+}
+
+.invalid-content {
+	border: 2px solid #D33 !important;
+}
+
+.flow-layout {
+	display: inline-block;
+}
+
+.w-60-percent {
+	width: 60%;
+	margin-left: 20%;
+}
+
+.main-text-color {
+	color: rgb(245, 249, 252);
+}
+
+.bordered-label {
+	border: 1px solid #828CAE;
+	margin: 5px;
+	padding: 6px 12px;
+	border-radius: 4px;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.or-button {
+	color: #f5f3f3;
+	background: transparent;
+	border: 1px solid #828CAE;
+	width: fit-content;
+	padding: 8px 15px;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.or-button:hover {
+	opacity: .6;
+}
+
+.or-small-button {
+	color: #f5f3f3;
+	background: transparent;
+	border: 1px solid #828CAE;
+	width: fit-content;
+	padding: 0px 10px;
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.or-small-button:hover {
+	opacity: .6;
+}
+
+.or-wizard-dialog .card-header {
+	padding: 15px 20px;
+	font-size: 20px;
+}
+
+.or-row {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+/**************** Wizard Modal *************************/
+.or-wizard-modal .modal-dialog {
+	max-width: 1000px;
+	left: 8em;
+}
+
+/**************** Success Modal *************************/
+.or-modal-success .modal-content {
+	background-color: rgb(21, 128, 61) !important;
+}
+
+.or-modal-success .modal-content .modal-header {
+	border-bottom: 0px !important;
+}
+
+.or-modal-success .modal-content .modal-header button span {
+	color: #eee !important;
+}
+
+.or-modal-success .modal-content .modal-footer {
+	border-top: 0px !important;
+}
+
+.or-modal-success .modal-content .modal-footer button {
+	background-color: transparent;
+	border-color: #eee;
+	border-radius: 5px;
+}
+
+.or-modal-success .modal-content .modal-footer button:hover {
+	background-color: #eee;
+	color: rgb(21, 128, 61);
+}
+
+/**************** Warning Modal *************************/
+.or-modal-warning .modal-content {
+	background-color: rgb(202, 138, 4) !important;
+}
+
+.or-modal-warning .modal-content .modal-header {
+	border-bottom: 0px !important;
+}
+
+.or-modal-warning .modal-content .modal-header button span {
+	color: #eee !important;
+}
+
+.or-modal-warning .modal-content .modal-footer {
+	border-top: 0px !important;
+}
+
+.or-modal-warning .modal-content .modal-footer button {
+	background-color: transparent;
+	border-color: #eee;
+	border-radius: 5px;
+}
+
+.or-modal-warning .modal-content .modal-footer button:hover {
+	background-color: #eee;
+	color: rgb(202, 138, 4);
+}
+
+/**************** Error Modal *************************/
+.or-modal-error .modal-content {
+	background-color: rgb(220, 38, 38) !important;
+}
+
+.or-modal-error .modal-content .modal-header {
+	border-bottom: 0px !important;
+}
+
+.or-modal-error .modal-content .modal-header button span {
+	color: #eee !important;
+}
+
+.or-modal-error .modal-content .modal-footer {
+	border-top: 0px !important;
+}
+
+.or-modal-error .modal-content .modal-footer button {
+	background-color: transparent;
+	border-color: #eee;
+	border-radius: 5px;
+}
+
+.or-modal-error .modal-content .modal-footer button:hover {
+	background-color: #eee;
+	color: rgb(220, 38, 38);
+}
+
+/**************************************************/
+.zl_securebackup_btn button:disabled {
+	opacity: 0.3;
+}
+
+.bg-dark {
+	background-color: rgb(40, 41, 44);
+}
+
+.or-wizard-wrapper {
+	width: 80%;
+}
+
+.or-wizard {
+	margin: auto;
+	width: 40%;
+	;
+}
+
+.or-wizard-modal .modal-body {
+	padding: 0;
+}
+
+.text-right {
+	text-align: right !important;
+}
+
+.or-table tr th {
+	vertical-align: bottom;
+	color: #CAD3F2;
+	text-transform: uppercase;
+}
+
+.or-table tr td {
+	padding: 0.75rem;
+	font-size: 14px;
+	line-height: 15px;
+	text-align: left;
+	color: #828CAE;
+}
+
+.or-table tr td.text-right {
+	text-align: right !important;
+}
+
+.or-table tr td.text-center {
+	text-align: center !important;
+}
+
+.show-toast-box {
+	display: block;
+	color: #f8f9fa;
+	position: absolute;
+	background: #28a745;
+	width: fit-content;
+	text-align: right;
+	margin-top: -7px;
+	margin-left: 47px;
+	padding: 2px 5px;
+	cursor: pointer;
+}
+
+.hide-toast-box {
+	display: none;
+}
+
+.wallet-address-box {
+	display: inline-block;
+}
+
+.wallet-address {
+	/*width: 120px;*/
+	padding: 5px;
+	display: inline-block;
+	cursor: pointer;
+	color: #eee;
+}
+
+.wallet-address:hover {
+	opacity: 75%;
+}
+
+.check-icon {
+	width: 18px;
+	height: 18px;
+}
+
+/**********************/
+/**** margin-right ****/
+.ml-1 {
+	margin-left: 1px;
+}
+
+.ml-2 {
+	margin-left: 2px;
+}
+
+.ml-3 {
+	margin-left: 3px;
+}
+
+.ml-4 {
+	margin-left: 4px;
+}
+
+.ml-5 {
+	margin-left: 5px;
+}
+
+.ml-6 {
+	margin-left: 6px;
+}
+
+.ml-7 {
+	margin-left: 7px;
+}
+
+.ml-8 {
+	margin-left: 8px;
+}
+
+.ml-9 {
+	margin-left: 9px;
+}
+
+.ml-10 {
+	margin-left: 10px;
+}
+
+.ml-11 {
+	margin-left: 11px;
+}
+
+.ml-12 {
+	margin-left: 12px;
+}
+
+.ml-20 {
+	margin-left: 20px;
+}
+
+.ml-30 {
+	margin-left: 30px;
+}
+
+.ml-40 {
+	margin-left: 40px;
+}
+
+.ml-50 {
+	margin-left: 50px;
+}
+
+.ml-60 {
+	margin-left: 60px;
+}
+
+.ml-70 {
+	margin-left: 70px;
+}
+
+.ml-80 {
+	margin-left: 80px;
+}
+
+.ml-90 {
+	margin-left: 90px;
+}
+
+.ml-100 {
+	margin-left: 100px;
+}
+
+.ml-110 {
+	margin-left: 110px;
+}
+
+.ml-120 {
+	margin-left: 120px;
+}
+
+.ml-130 {
+	margin-left: 130px;
+}
+
+.ml-140 {
+	margin-left: 140px;
+}
+
+.ml-150 {
+	margin-left: 150px;
+}
+
+.ml-160 {
+	margin-left: 160px;
+}
+
+.ml-170 {
+	margin-left: 170px;
+}
+
+.ml-180 {
+	margin-left: 180px;
+}
+
+.ml-190 {
+	margin-left: 190px;
+}
+
+.ml-200 {
+	margin-left: 190px;
+}
+
+/**********************/
+/**** margin-right ****/
+.mr-1 {
+	margin-right: 1px;
+}
+
+.mr-2 {
+	margin-right: 2px;
+}
+
+.mr-3 {
+	margin-right: 3px;
+}
+
+.mr-4 {
+	margin-right: 4px;
+}
+
+.mr-5 {
+	margin-right: 5px;
+}
+
+.mr-6 {
+	margin-right: 6px;
+}
+
+.mr-7 {
+	margin-right: 7px;
+}
+
+.mr-8 {
+	margin-right: 8px;
+}
+
+.mr-9 {
+	margin-right: 9px;
+}
+
+.mr-10 {
+	margin-right: 10px;
+}
+
+.mr-11 {
+	margin-right: 11px;
+}
+
+.mr-12 {
+	margin-right: 12px;
+}
+
+.mr-20 {
+	margin-right: 20px;
+}
+
+.mr-30 {
+	margin-right: 30px;
+}
+
+.mr-40 {
+	margin-right: 40px;
+}
+
+.mr-50 {
+	margin-right: 50px;
+}
+
+.mr-60 {
+	margin-right: 60px;
+}
+
+.mr-70 {
+	margin-right: 70px;
+}
+
+.mr-80 {
+	margin-right: 80px;
+}
+
+.mr-90 {
+	margin-right: 90px;
+}
+
+.mr-100 {
+	margin-right: 100px;
+}
+
+.mr-110 {
+	margin-right: 110px;
+}
+
+.mr-120 {
+	margin-right: 120px;
+}
+
+.mr-130 {
+	margin-right: 130px;
+}
+
+.mr-140 {
+	margin-right: 140px;
+}
+
+.mr-150 {
+	margin-right: 150px;
+}
+
+.mr-160 {
+	margin-right: 160px;
+}
+
+.mr-170 {
+	margin-right: 170px;
+}
+
+.mr-180 {
+	margin-right: 180px;
+}
+
+.mr-190 {
+	margin-right: 190px;
+}
+
+.mr-200 {
+	margin-right: 200px;
+}
+
+.dropdown-toggle::after {
+	margin-left: 0.75em !important;
+}
+
+/**************************************************/
+@media (max-width: 1440px) {
+	.or-wizard-modal .modal-dialog {
+		left: 8em;
+	}
+}
 
 @media (max-width: 1350px) {
 	.zl_add_currency_row {
@@ -2148,14 +3127,17 @@ table {
 			max-width: 25%;
 			min-width: 25%;
 		}
+
 		.zl_currency_column_sub_row {
 			.zl_add_currency_column {
 				min-width: 307px;
 			}
+
 			min-width: 100%;
 			max-width: 100%;
 		}
 	}
+
 	.zl_wallets_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column {
@@ -2163,31 +3145,45 @@ table {
 					height: 100%;
 				}
 			}
+
 			.zl_add_currency_column.zl_add_currency_btn_col {
 				max-width: 100%;
 				margin-top: 10px;
 			}
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		left: 8em;
+	}
 }
+
 @media (max-width: 1300px) {
 	.zl_send_recive_content {
 		.zl_send_recive_inner_content {
 			padding: 45px 20px;
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 800px;
+		left: 8em;
+	}
 }
+
 @media (max-width: 1150px) {
 	.zl_add_currency_row {
 		.zl_add_currency_column {
 			max-width: 33.333333%;
 			min-width: 33.333333%;
 			margin-bottom: 30px;
+
 			&:nth-last-child(1) {
 				margin-bottom: 0px;
 			}
 		}
 	}
+
 	.zl_add_currency_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column {
@@ -2195,9 +3191,11 @@ table {
 			}
 		}
 	}
+
 	.zl_send_qr_address {
 		padding: 18px;
 	}
+
 	.zl_wallets_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column {
@@ -2205,7 +3203,20 @@ table {
 			}
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 750px;
+		left: 8em;
+	}
 }
+
+@media (max-width: 1024px) {
+	.or-wizard-modal .modal-dialog {
+		max-width: 700px;
+		left: 8em;
+	}
+}
+
 @media (max-width: 991px) {
 	.zl_login_section {
 		.zl_login_content {
@@ -2214,56 +3225,70 @@ table {
 					&:nth-last-child(4) {
 						padding-bottom: 22px;
 					}
+
 					&:nth-last-child(3) {
 						padding-bottom: 22px;
 					}
+
 					&:nth-last-child(2) {
 						padding-bottom: 0;
 					}
+
 					&:nth-last-child(1) {
 						padding-bottom: 0;
 					}
 				}
 			}
 		}
+
 		padding: 100px 15px;
 	}
+
 	.zl_welcome_slide_section {
 		padding: 43px 0;
 	}
+
 	.zl_all_pages_content {
 		.zl_all_pages_inner_content {
 			padding: 26px 20px;
 		}
+
 		.zl_page_sidebar.zl_hide_sidebar {
 			&~.zl_all_pages_inner_content {
 				padding: 26px 20px;
 			}
 		}
 	}
+
 	.zl_add_currency_row {
 		.zl_add_currency_column {
 			max-width: 50%;
 			min-width: 50%;
+
 			&:nth-last-child(1) {
 				margin-bottom: 0px;
 			}
+
 			&:nth-last-child(2) {
 				margin-bottom: 0px;
 			}
 		}
 	}
+
 	.zl_all_page_heading_section {
 		padding-left: 55px;
 	}
+
 	.zl_send_recive_content {
 		.zl_send_recive_content_column {
 			max-width: 100%;
 		}
 	}
+
 	.zl_send_recive_content_row {
 		row-gap: 24px;
 	}
+
 	.zl_wallets_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column.zl_add_currency_btn_col {
@@ -2271,7 +3296,13 @@ table {
 			}
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 700px;
+		left: 0.5em;
+	}
 }
+
 @media (max-width: 767px) {
 	.zl_login_section {
 		.zl_login_content {
@@ -2280,72 +3311,89 @@ table {
 					&:nth-last-child(2) {
 						padding-bottom: 22px;
 					}
+
 					&:nth-last-child(1) {
 						padding-bottom: 0;
 					}
 				}
 			}
+
 			padding: 25px;
 		}
+
 		padding: 50px 15px;
 	}
+
 	.zl_welcome_slide_section {
 		.zl_welcome_slide_content {
 			.zl_welcome_slide_indicator {
 				padding: 25px 0 16px !important;
 			}
+
 			.zl_welcome_slide_heading {
 				font-size: 22px;
 			}
+
 			.zl_welcome_slide_peregraph {
 				margin-bottom: 20px;
 				font-size: 11px;
 			}
+
 			.zl_welcome_slide_step_btns {
 				padding: 12px 10px;
 				font-size: 18px;
 			}
 		}
 	}
+
 	.zl_add_currency_row {
 		.zl_add_currency_column {
 			max-width: 100%;
 			min-width: 100%;
+
 			&:nth-last-child(2) {
 				margin-bottom: 30px;
 			}
+
 			&:nth-last-child(1) {
 				margin-bottom: 0px;
 			}
 		}
 	}
+
 	.zl_all_pages_content {
 		.zl_all_pages_inner_content {
 			padding: 38px 15px;
 			padding: 38px 15px;
 		}
+
 		.zl_page_sidebar.zl_hide_sidebar {
 			&~.zl_all_pages_inner_content {
 				padding: 38px 15px;
 			}
 		}
 	}
+
 	.zl_all_page_comman_content {
 		padding: 25px 20px;
 	}
+
 	.zl_protfolio_main_chart {
 		.zl_chart_date_picker {
 			margin-bottom: 0;
 		}
 	}
+
 	.zl_wallet_chart_bottom_content {
 		display: block;
+
 		.zl_wallet_chart_send_recive_btn {
 			margin-left: 0;
 			margin-top: 20px;
 			justify-content: center;
 		}
 	}
+
 	.zl_wallets_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column {
@@ -2353,6 +3401,7 @@ table {
 			}
 		}
 	}
+
 	.zl_add_currency_page {
 		.zl_add_currency_row {
 			.zl_add_currency_column {
@@ -2362,33 +3411,46 @@ table {
 			}
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 550px;
+		left: 0.2em;
+	}
 }
+
 @media (max-width: 600px) {
 	.zl_all_page_heading_section {
 		display: block;
 		margin-bottom: 20px;
+
 		.zl_all_page_notify_logout_btn {
 			.zl_all_page_logout_btn {
 				margin-left: auto;
 			}
+
 			margin-top: 20px;
 			margin-left: -55px;
+
 			.dropdown-menu {
 				max-width: 290px;
 				min-width: 290px;
+
 				.zl_all_page_notification_body {
 					.zl_all_page_notification_list {
 						display: block;
 						text-align: center;
 						position: relative;
+
 						.zl_all_page_notification_user_img {
 							margin: 0 auto 10px;
 						}
+
 						.zl_all_page_notification_list_more_btn {
 							position: absolute;
 							top: 10px;
 							right: 10px;
 						}
+
 						.zl_all_page_notification_list_body {
 							.zl_all_page_notification_list_peregraph {
 								overflow: hidden;
@@ -2402,45 +3464,55 @@ table {
 				}
 			}
 		}
+
 		.zl_all_page_heading {
 			margin-right: 0;
 		}
 	}
+
 	.zl_chart_box_heading_date {
 		display: block;
 		margin-bottom: 15px;
 	}
+
 	.zl_dashboard_datepicker {
 		margin-top: 20px;
 	}
+
 	.zl_all_pages_content {
 		.react-datepicker-wrapper {
 			width: 100%;
 		}
+
 		.react-datepicker__input-container {
 			input {
 				width: 100%;
 			}
 		}
+
 		.zl_page_sidebar[title=''] {
 			&~.zl_all_pages_inner_content {
 				padding: 35px 15px;
 			}
 		}
 	}
+
 	.zl_wallet_chart_bottom_content {
 		.zl_wallet_chart_send_recive_btn {
 			display: block;
+
 			button {
 				display: block;
 				max-width: 100%;
 			}
+
 			button.zl_wallet_chart_send_btn {
 				margin-bottom: 20px;
 				margin-right: 0;
 			}
 		}
 	}
+
 	.zl_securebackup_page {
 		.zl_securebackup_btn {
 			a {
@@ -2448,6 +3520,7 @@ table {
 			}
 		}
 	}
+
 	.zl_account_support_page {
 		.zl_securebackup_btn {
 			a {
@@ -2455,25 +3528,40 @@ table {
 			}
 		}
 	}
+
 	.zl_setting_list {
 		.zl_setting_list_items {
 			padding: 20px 15px;
 		}
 	}
+
 	.zl_welcome_slide_section {
 		.zl_welcome_slide_content.container {
 			padding: 0;
 		}
 	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 450px;
+		left: 0.5em;
+	}
 }
+
 @media (max-width: 450px) {
 	.zl_send_currency_btn_text {
 		flex-direction: column;
+
 		.zl_send_currency_btn {
 			margin-right: 0;
 		}
+
 		.zl_send_currency_text {
 			text-align: center;
 		}
+	}
+
+	.or-wizard-modal .modal-dialog {
+		max-width: 400px;
+		left: 0em;
 	}
 }
