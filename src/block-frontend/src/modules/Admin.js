@@ -193,7 +193,7 @@ const AdminModule = (props) => {
                         <th>Name</th>
                         <th>ETH Wallet</th>
                         <th>Are you admin?</th>
-                        <th>Reputation Awarded</th>
+                        <th className="text-right">Reputation Awarded</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -204,7 +204,7 @@ const AdminModule = (props) => {
                             <td><FaUserAlt/><span className="pl-2">{item.username}</span></td>
                             <td>{item.wallet}</td>
                             <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
-                            <td className="text-center">{item.received}</td>
+                            <td className="text-right">{item.received}</td>
                             <td className="text-center">{!item.status?'Inactive':'Active'}</td>
                             <td className="text-center">
                                 <div className="cursor-pointer flow-layout">
