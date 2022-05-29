@@ -3129,8 +3129,10 @@ margin-left: 0.8em;
 
 /**************************************************/
 @media (max-width: 1440px) {
-	.or-wizard-modal .modal-dialog {
-		left: 8em;
+	.or-wizard-modal {
+		.modal-dialog {
+			left: 8em;
+		}
 	}
 }
 
@@ -3166,8 +3168,10 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		left: 8em;
+	.or-wizard-modal {
+		.modal-dialog {
+			left: 8em;
+		}
 	}
 }
 
@@ -3178,10 +3182,13 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 800px;
-		left: 8em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 800px;
+			left: 8em;
+		}
 	}
+
 }
 
 @media (max-width: 1150px) {
@@ -3217,16 +3224,20 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 750px;
-		left: 8em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 750px;
+			left: 8em;
+		}
 	}
 }
 
 @media (max-width: 1024px) {
-	.or-wizard-modal .modal-dialog {
-		max-width: 700px;
-		left: 8em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 700px;
+			left: 8em;
+		}
 	}
 }
 
@@ -3310,9 +3321,11 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 700px;
-		left: 0.5em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 700px;
+			left: 0.5em;
+		}
 	}
 }
 
@@ -3425,9 +3438,11 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 550px;
-		left: 0.2em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 550px;
+			left: 0.2em;
+		}
 	}
 }
 
@@ -3554,9 +3569,11 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 450px;
-		left: 0.5em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 450px;
+			left: 0.5em;
+		}
 	}
 }
 
@@ -3573,8 +3590,10 @@ margin-left: 0.8em;
 		}
 	}
 
-	.or-wizard-modal .modal-dialog {
-		max-width: 400px;
-		left: 0em;
+	.or-wizard-modal {
+		.modal-dialog {
+			max-width: 400px;
+			left: 0em;
+		}
 	}
 }
