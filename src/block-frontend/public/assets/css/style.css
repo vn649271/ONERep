@@ -2258,7 +2258,8 @@ table td {
   margin-top: 60px;
 }
 
-.zl_securebackup_btn a, .zl_securebackup_btn button {
+.zl_securebackup_btn a,
+.zl_securebackup_btn button {
   background: #828CAE;
   border-radius: 10px;
   min-width: 180px;
@@ -2271,7 +2272,8 @@ table td {
   text-align: center;
 }
 
-.zl_securebackup_btn a:hover, .zl_securebackup_btn button:hover {
+.zl_securebackup_btn a:hover,
+.zl_securebackup_btn button:hover {
   text-decoration: none;
   opacity: .8;
   color: #252F47;

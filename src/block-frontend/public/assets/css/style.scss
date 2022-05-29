@@ -2267,7 +2267,8 @@ table {
 .zl_securebackup_btn {
 	margin-top: 60px;
 
-	a, button {
+	a,
+	button {
 		background: $color3;
 		border-radius: 10px;
 		min-width: 180px;
@@ -2790,34 +2791,38 @@ margin-left: 0.8em;
 	;
 }
 
-.or-wizard-modal .modal-body {
-	padding: 0;
+.or-wizard-modal {
+	.modal-body {
+		padding: 0;
+	}
 }
 
 .text-right {
 	text-align: right !important;
 }
 
-.or-table tr th {
-	vertical-align: bottom;
-	color: #CAD3F2;
-	text-transform: uppercase;
-}
+.or-table {
+	tr th {
+		vertical-align: bottom;
+		color: #CAD3F2;
+		text-transform: uppercase;
+	}
 
-.or-table tr td {
-	padding: 0.75rem;
-	font-size: 14px;
-	line-height: 15px;
-	text-align: left;
-	color: #828CAE;
-}
+	tr td {
+		padding: 0.75rem;
+		font-size: 14px;
+		line-height: 15px;
+		text-align: left;
+		color: #828CAE;
 
-.or-table tr td.text-right {
-	text-align: right !important;
-}
+		&.text-right {
+			text-align: right !important;
+		}
 
-.or-table tr td.text-center {
-	text-align: center !important;
+		&.text-center {
+			text-align: center !important;
+		}
+	}
 }
 
 .show-toast-box {
@@ -2847,10 +2852,9 @@ margin-left: 0.8em;
 	display: inline-block;
 	cursor: pointer;
 	color: #eee;
-}
-
-.wallet-address:hover {
-	opacity: 75%;
+	&:hover {
+		opacity: 75%;
+	}
 }
 
 .check-icon {
