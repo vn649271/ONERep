@@ -127,8 +127,11 @@ const HeadingModule = (props) => {
                     </Dropdown>
                     <Link to={'/'} onClick={(e) => {
                         e.preventDefault()
+                        localStorage.setItem("wallet", "");
+                        localStorage.setItem('username', "");
+                        localStorage.setItem("isAdmin",false);
                         dispatch({type: USERS.LOGOUT})
-                        history.push('/')
+                        window.location.href = "/";
                     }} className="zl_all_page_logout_btn">Log Out</Link>
                 </div>
             </div>
