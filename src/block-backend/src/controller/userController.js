@@ -194,7 +194,10 @@ exports.getOneRepBoard = async (req, res) => {
             if (actions.length === undefined) {
                 res.status(200).send({ error: -1, data: "Failed to get board data" });
             }
-            res.status(200).send({ error: 0, data: actions });
+            for (let j = 0; j < actions.length; j++) {
+                actions[j]['dao'] = user.dao;
+            }
+        res.status(200).send({ error: 0, data: actions });
         }).catch(error => {
             res.status(200).send({ error: -10, data: error.message })
         });

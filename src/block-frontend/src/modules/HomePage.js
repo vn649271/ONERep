@@ -154,7 +154,7 @@ const HomePageModule = (props) => {
       .then((balance) => {
         // Setting balance
         setdata({
-          address: data.address,
+          address: address,
           Balance: ethers.utils.formatEther(balance),
         });
       });

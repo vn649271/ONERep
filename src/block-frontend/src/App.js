@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import modules from './modules';
 import WalletAddressBox from './components/WalletAddressBox';
+import BadgeTokenAddressBox from './components/BadgeTokenAddressBox';
 
 import Page404 from './components/Page404';
 import Layout from './components/Layout';
@@ -35,7 +36,7 @@ export default class App extends Component {
 
     return this._routes;
   }
-  
+
   render() {
     const routes = this.renderRoutes();
 
@@ -44,7 +45,10 @@ export default class App extends Component {
         <BrowserRouter>
           <Layout>
             <div className="or-header">
-              <div className="flex justify-content-end">
+              <div className="float-left">
+                <BadgeTokenAddressBox />
+              </div>
+              <div className="float-right">
                 <WalletAddressBox />
               </div>
             </div>

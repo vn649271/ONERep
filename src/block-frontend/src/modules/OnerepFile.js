@@ -504,7 +504,7 @@ const OneRepFileModule = (props) => {
           {
             repfiles.length > 0? repfiles.map((row, i) => (
               <tr key={i}>
-                <td>{row.userInfo[0].dao}</td>
+                <td>{row.userInfo?row.userInfo.length?row.userInfo[0].dao:"":""}</td>
                 <td>{row.filename}</td>
                 <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
                 <td className="text-right">{row.reputation}</td>

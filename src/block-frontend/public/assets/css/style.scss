@@ -30,6 +30,14 @@ ul {
 	list-style: none !important;
 }
 
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
 .zl_all_pages_content {
 	position: relative;
 
@@ -2548,6 +2556,11 @@ table {
 	}
 }
 
+
+.or-header {
+	margin-bottom: 30px
+}
+
 .or-spin-button {
 	background: #828CAE;
 	border-radius: 10px;
@@ -2863,8 +2876,16 @@ margin-left: 0.8em;
 	display: none;
 }
 
-.wallet-address-box {
+.wallet-address-box, .badge-address-box {
 	display: inline-block;
+
+	div {
+		div {
+			img {
+				margin-top: -5px;
+			}
+		}
+	}
 }
 
 .wallet-address {
