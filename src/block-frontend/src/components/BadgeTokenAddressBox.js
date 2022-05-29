@@ -40,7 +40,7 @@ const BadgeTokenAddressBox = props => {
 					_badgeTokenAddress && history.location.pathname !== "/" ? 
 					<div>
 						<div className="flow-layout main-text-color mr-1"><img src='/assets/image/badge-token.png' alt="ONERep Token" width='26px' height='26px'/></div>
-						<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
+						<div className="wallet-address main-text-color" onClick={onClick} toolTip="Wallet Address">
 						{
 							_badgeTokenAddress.substring(0, 6) + 
 							"..." + 
@@ -48,7 +48,7 @@ const BadgeTokenAddressBox = props => {
 						}
 						</div>
 						{/******************* "Minting..." Dialog *********************/}
-						<div className={`${showCopiedMessage?"show-toast-box ml-130":"hide-toast-box"}`} onClick={hideCopiedMessage}>
+						<div className={`${showCopiedMessage?"show-toast-box ml-40":"hide-toast-box"}`} onClick={hideCopiedMessage}>
 							<div className="check-icon flow-layout">
 						    	<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 								  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
