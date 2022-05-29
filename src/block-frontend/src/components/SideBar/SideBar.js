@@ -7,7 +7,7 @@ import { orAlert } from "../../service/utils";
 import axios from "axios";
 const {SERVER_URL} = require('../../conf');
 
-const Header = (props) => {
+const SideBar = (props) => {
 
     const [showMessage, setShowMessage] = useState(false);
     const [messageType, setMessageType] = useState("error");
@@ -300,4 +300,4 @@ const Header = (props) => {
 }
 
 const mapStoreToProps = ({ userAction }) => ({});
-export default connect(mapStoreToProps, null)(Header);
+export default connect(mapStoreToProps, null)(SideBar);
