@@ -1,6 +1,5 @@
 import { routes } from '../shared/constants';
 
-// import Homepage from './Homepage';
 import Dashboard from './Dashboard';
 import Welcome from './Welcome';
 import LogIn from './LogIn';
@@ -14,21 +13,21 @@ import RestoreWallet from './RestoreWallet';
 import Currency from './Currency';
 import AccountSupport from './AccountSupport';
 
-import HomePage from './homepage'
+import HomePageModule from './HomePage';
 import WalletConnect from "./WalletConnect";
 import AdminModule from "./Admin";
 import OneRepFileModule from "./OnerepFile";
 import OneRepBoardModule from "./OnerepBoard";
 
 export default {
-	[routes.home]: HomePage,
+	[routes.home]: HomePageModule,
 	[routes.walletconnect]: WalletConnect,
 	[routes.admin]: AdminModule,
 	[routes.onerepfile]: OneRepFileModule,
 	[routes.onerepboard]: OneRepBoardModule,
 	[routes.dashboardpage]: Dashboard,
 	[routes.welcomepage]: Welcome,
-	[routes.loginpage]: HomePage,
+	[routes.loginpage]: HomePageModule,
 	[routes.portfoliopage]: Portfolio,
 	[routes.addcurrencypage]: AddCurrency,
 	[routes.walletspage]: Wallets,
