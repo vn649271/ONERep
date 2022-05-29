@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { FormGroup, Label, Input } from "reactstrap";
 import Table from "react-bootstrap/Table";
 
 /*
@@ -9,7 +8,7 @@ import Table from "react-bootstrap/Table";
  */
 const ORFiwStep2 = props => {
 
-  const {checkAccomplished, stepAction, stepData} = props;
+  const {/*checkAccomplished, stepAction,*/ stepData} = props;
 
   const [tableRows, setTableRows] = useState([]);
   const [values, setValues] = useState([]);
@@ -27,18 +26,18 @@ const ORFiwStep2 = props => {
         setReputation(stepData.reputation);
       }
     }
-  });
+  }, [stepData]);
   
   if (props.currentStep !== 2) {
     return null;
   }
 
-  const handleStepAction = (ev) => {
-    checkAccomplished(2);
-    if (stepAction) {
-      stepAction(ev);
-    }
-  }
+  // const handleStepAction = (ev) => {
+  //   checkAccomplished(2);
+  //   if (stepAction) {
+  //     stepAction(ev);
+  //   }
+  // }
 
   return (
     <>

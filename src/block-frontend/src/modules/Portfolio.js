@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import HeadingModule from '../components/Layout/HeadingComponent/Heading';
-import DatePicker from 'react-datepicker';
+// import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { Link } from 'react-router-dom';
-import Chart from "react-apexcharts";
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+// import Chart from "react-apexcharts";
+// import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
 import UsersService from '../service/user.service'
 
 const PortfolioModule = () => {

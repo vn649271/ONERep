@@ -1,24 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BigNumber, Signer } from "ethers";
 import { connect } from "react-redux";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { USERS } from "../store/actionTypes";
 import Dropdown from "react-bootstrap/Dropdown";
 import Table from "react-bootstrap/Table";
 import Modal from "react-bootstrap/Modal";
-import StepProgressBar from "react-step-progress";
 import ORFileImportWizard from "../components/Modals/ORFileImportWizard";
 import UploadService from "../service/upload-files.service";
-import { TESTNET_ADDRESS, MAINNET_ADDRESS } from "../shared/constants";
 import ONERepDeployedInfo from "../shared/ONERep.json";
-import ERC1238ReceiverMockDeployInfo from "../shared/ERC1238ReceiverMock.json";
 import Papa from "papaparse";
-import { create, CID, IPFSHTTPClient } from "ipfs-http-client";
+// import { CID } from "ipfs-http-client";
 import axios from "axios";
-import $ from "jquery";
-import ReactDOMServer from "react-dom/server";
 import "react-step-progress/dist/index.css";
-import { determineAddress, initContractByAddress } from "../service/contractService";
 import Web3 from "web3";
 import { ethers } from "ethers";
 import { getMintBatchApprovalSignature, orAlert } from "../service/utils";
@@ -27,7 +20,7 @@ const { SERVER_URL } = require("../conf");
 
 
 const OneRepFileModule = (props) => {
-  const { _wallet, _userName, _isAdmin, _badgeTokenAddress } = props;
+  // const { _wallet, _userName, _isAdmin, _badgeTokenAddress } = props;
 
   const [showMintWizard, setShowMintWizard] = useState(false);
   const [showSucces, setshowSucces] = useState(false);
@@ -36,14 +29,14 @@ const OneRepFileModule = (props) => {
   const [daoList,setDaoList] = useState([]);
   const [selectedDao, setSelectedDao] = useState(null);
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
   const [ipfsPath, setipfsPath] = useState("");
   const [ipfsName, setipfsName] = useState("");
   const [reputation, setReputation] = useState(0);
   const [showWatingModalForMint, setShowWatingModalForMint] = useState(false);
-  const [images, setImages] = useState({ cid: CID, path: "" });
-  const [totalMint, setTotalMint] = useState(0);
-  const [file, setFile] = useState(null);
+  // const [images, setImages] = useState({ cid: CID, path: "" });
+  // const [totalMint, setTotalMint] = useState(0);
+  // const [file, setFile] = useState(null);
   const [parsedData, setParsedData] = useState([]);
   const [csvData, setCSVData] = useState([]);
   //State to store table Column name
@@ -90,7 +83,7 @@ const OneRepFileModule = (props) => {
           orAlert("Failed to get information for current logined user");
           return;
         }
-        console.log("Logged in user:", ret.data);
+        // console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.isAdmin);
         setInitedIsAdmin(true);
         let badgeTokenAddress = userInfo.badgeAddress;
@@ -163,11 +156,11 @@ const OneRepFileModule = (props) => {
   const handleCloseMessageBox = () => setShowMessageBox(false);
   const handleShow = () => {
     setShowMintWizard(true);
-    setFile(null);
+    // setFile(null);
     setTableRows([]);
     setValues([]);
     setStep(0);
-    setProgress(0);
+    // setProgress(0);
   };
   const handleCloseSuccess = () => setshowSucces(false);
   const handleCloseFailure = () => setshowFailure(false);
@@ -195,7 +188,7 @@ const OneRepFileModule = (props) => {
       return;
     }
     setShowMintWizard(false);
-    setTotalMint(reputation);
+    // setTotalMint(reputation);
 
     if (badgeTokenAddress === undefined ||
         badgeTokenAddress === null ||
@@ -207,7 +200,7 @@ const OneRepFileModule = (props) => {
     setShowWatingModalForMint(true);
     /*******************************Creating Badge Contract Instance***************/
     const badgeTokenContract = new ethers.Contract(badgeTokenAddress, ONERepDeployedInfo.abi, rpcProvider);
-    let wallet = localStorage.getItem('wallet')
+    // let wallet = localStorage.getItem('wallet')
     // let recipientcontractadd;
 
     /***************************Mint to each individual Recipient Contract***********/
@@ -256,6 +249,9 @@ const OneRepFileModule = (props) => {
         tokenUrisList,
         dataList
       );
+      if (resp) {
+        console.log(resp);
+      }
       /****************************adding information of uploaded files in the mongodb */
       let ret = await axios.post(SERVER_URL + "/files/add", {
         filename: ipfsName,
@@ -312,12 +308,12 @@ const OneRepFileModule = (props) => {
     if (!files || files.length === 0) {
       return;
     }
-    setFile(files[0]);
+    // setFile(files[0]);
     let prefix = "data__" + Date.now() + "__";
     setipfsName(files[0].name);
     setipfsPath(prefix + files[0].name);
     UploadService.upload(files[0], prefix, (event) => {
-      setProgress(Math.round((100 * event.loaded) / event.total));
+      // setProgress(Math.round((100 * event.loaded) / event.total));
     })
     .then((response) => {
       inform("Inform", response.data.message);
@@ -337,6 +333,7 @@ const OneRepFileModule = (props) => {
             rowsArray.push(Object.keys(d));
             valuesArray.push(Object.values(d));
             rep += parseInt(d.received);
+            return true;
           });
           setReputation(rep);
           // Parsed Data Response in array format
@@ -390,8 +387,9 @@ const OneRepFileModule = (props) => {
       daos.map(dao => {
         if (dao.dao === selectedDaoName) {
           selectedDao = dao;
-          return;
+          return true;
         }
+        return false
       })
       setSelectedDao(selectedDao);
       if (selectedDao) {
@@ -506,7 +504,7 @@ const OneRepFileModule = (props) => {
             repfiles.length > 0? repfiles.map((row, i) => (
               <tr key={i}>
                 <td>{row.filename}</td>
-                <td><a href={`${SERVER_URL}` + "/uploads/" + row.ipfsuri}>{row.ipfsuri}</a></td>
+                <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
                 <td className="text-right">{row.reputation}</td>
                 <td>{row.status ? "Completed" : "Failed"}</td>
                 <td>{
@@ -561,7 +559,7 @@ const OneRepFileModule = (props) => {
                 className="btn-connect"
                 onClick={handleCloseFailure}
               >
-                Okay Got it
+                Got it
               </button>
             </div>
           </div>
@@ -591,10 +589,10 @@ const OneRepFileModule = (props) => {
 
 function mapStoreToProps(state) {
     return { 
-        _userName: state.userAction.user,
-        _wallet: state.userAction.wallet,
-        _isAdmin: state.userAction.isAdmin,
-        _badgeTokenAddress: state.userAction.badgeTokenAddress
+    //     _userName: state.userAction.user,
+    //     _wallet: state.userAction.wallet,
+    //     _isAdmin: state.userAction.isAdmin,
+    //     _badgeTokenAddress: state.userAction.badgeTokenAddress
     };
 }
 

@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { TESTNET_ADDRESS } from "../shared/constants";
 
 const MintApprovaltypes = {
   MintApproval: [

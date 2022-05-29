@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Form,
   Button,
   Card,
   CardHeader,
@@ -15,7 +14,6 @@ import ORFiwStep1 from "./ORFiwStep1";
 import ORFiwStep2 from "./ORFiwStep2";
 import ORFiwStep3 from "./ORFiwStep3";
 
-import styled from "styled-components";
 import ORFileImportWizardSPB from "./ORFileImportWizardSPB";
 
 const ORFileImportWizard = props => {
@@ -25,22 +23,22 @@ const ORFileImportWizard = props => {
   const [currentStep, setCurrentStep] = useState(1);
   const [failedPass, setFailedPass] = useState(false);
   const [fileToUpload, setFileToUpload] = useState("");
-  const [username, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  // const [username, setUserName] = useState("");
+  // const [password, setPassword] = useState("");
   const [passedStep, setPassedStep] = useState(0);
   const [_stepData, setStepData] = useState([]);
 
   useEffect(() => {
     setStepData(stepData);
-  });
+  }, [stepData]);
 
   // Use the submitted data to set the state
   const handleChange = event => {
     const { name, value } = event.target;
     if (name === 'currentStep') setCurrentStep(value);
     else if (name === 'fileToUpload') setFileToUpload(value);
-    else if (name === 'username') setUserName(value);
-    else if (name === 'password') setPassword(value);
+    // else if (name === 'username') setUserName(value);
+    // else if (name === 'password') setPassword(value);
     else if (name === 'passedStep') setPassedStep(value);
   }
   // Trigger an alert on form submission
@@ -48,7 +46,7 @@ const ORFileImportWizard = props => {
     setPassedStep(step);
   }
   const validateStep = step => {
-    if (step == 1) {
+    if (step === 1) {
       if (passedStep >= 1) {
         return true;
       }
@@ -70,7 +68,7 @@ const ORFileImportWizard = props => {
     setCurrentStep(_currentStep);
   }
   const _prev = () => {
-    if (currentStep == 2) {
+    if (currentStep === 2) {
       setPassedStep(0);
     }
     // If the current step is 2 or 3, then subtract one on "previous" button click
@@ -81,7 +79,7 @@ const ORFileImportWizard = props => {
     stepActions[stepActions.length - 1](ev);
   }
   // The "next" and "previous" button functions
-  const _PreviousButton = () => {
+  const PreviousButton = () => {
     // If the current step is not 1, then render the "previous" button
     if (currentStep !== 1) {
       return (
@@ -93,7 +91,7 @@ const ORFileImportWizard = props => {
     // ...else return nothing
     return <></>;
   }
-  const _NextButton = () => {
+  const NextButton = () => {
     // If the current step is not 3, then render the "next" button
     if (currentStep < 3) {
       return (
@@ -105,7 +103,7 @@ const ORFileImportWizard = props => {
     // ...else render nothing
     return <></>;
   }
-  const _MintButton = () => {
+  const MintButton = () => {
     // If the current step is the last step, then render the "submit" button
     if (currentStep > 2) {
       return <div className="or-button float-right" onClick={_mint}>Mint</div>;
@@ -155,9 +153,9 @@ const ORFileImportWizard = props => {
               />
             </CardBody>
             <CardFooter>
-              <_PreviousButton />
-              <_NextButton />
-              <_MintButton />
+              <PreviousButton />
+              <NextButton />
+              <MintButton />
             </CardFooter>
           </Card>
         </Modal.Body>

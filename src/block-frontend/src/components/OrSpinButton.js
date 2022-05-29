@@ -1,7 +1,4 @@
-import React, { Component, useStyles } from 'react';
-import OrSpinner from './OrSpinner';
-
-var me;
+import React from 'react';
 
 export default function OrSpinButton(props) {
 

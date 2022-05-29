@@ -1,11 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
 import "./css/Header.css";
+import { connect } from 'react-redux';
 import BasicModal from '../Modals/BasicModal';
 import { orAlert } from "../../service/utils";
-import axios from "axios";
-const {SERVER_URL} = require('../../conf');
 
 const SideBar = (props) => {
 
@@ -28,10 +26,13 @@ const SideBar = (props) => {
         if (metaMaskAccessible) {
             window.ethereum.on('accountsChanged', async (e) => {
                 initialise();
-                if (window.location.pathname == "" || window.location.pathname == "/" || window.location.pathname == "/home")
+                if (window.location.pathname === "" ||
+                window.location.pathname === "/" ||
+                window.location.pathname === "/home") {
                     return;
+                }
                 logout();
-            });            
+            });
         }
         // let wallet = localStorage.getItem("wallet");
         // if (wallet !== undefined && wallet !== null && wallet !== "") {
@@ -68,8 +69,8 @@ const SideBar = (props) => {
     }
 
     async function isMetaMaskConnected() {
-        const {ethereum} = window;
-        const accounts = await ethereum.request({method: 'eth_accounts'});
+        const { ethereum } = window;
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
         return accounts && accounts.length > 0;
     }
 
@@ -82,6 +83,10 @@ const SideBar = (props) => {
         }
         setMetaMaskAccessible(true);
         connected = await isMetaMaskConnected();
+        if (!connected) {
+            orAlert("No wallet connected. Please connect your wallet first");
+            return;
+        }
     }
 
     // hide show header
@@ -94,17 +99,17 @@ const SideBar = (props) => {
     const logout = async () => {
         localStorage.setItem("wallet", "");
         localStorage.setItem('username', "");
-        localStorage.setItem("isAdmin",false);
+        localStorage.setItem("isAdmin", false);
         window.location.href = "/";
     }
 
     return (
         <>
             <section className={`zl_page_sidebar ${send ? "zl_hide_sidebar" : ""}`} title={props.title}>
-                <BasicModal 
-                    show={showMessage} 
-                    modalType={messageType} 
-                    title={messageTitle} 
+                <BasicModal
+                    show={showMessage}
+                    modalType={messageType}
+                    title={messageTitle}
                     closeModal={handleCloseMessageBox}
                 >
                     <p className="text-white">{messageContent}</p>
@@ -146,7 +151,7 @@ const SideBar = (props) => {
                             </Link>
                         </li>
                         <li className="zl_page_sidebar_items" title="onerepfile">
-                            <Link  to={'/onerepfile'}  className="zl_page_sidebar_link position-relative">
+                            <Link to={'/onerepfile'} className="zl_page_sidebar_link position-relative">
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <rect x="0.10527" y="0.10527" width="4" height="4" rx="1.4" fill="#828CAE" />
                                     <rect x="0.10527" y="6.10527" width="4" height="4" rx="1.4" fill="#828CAE" />

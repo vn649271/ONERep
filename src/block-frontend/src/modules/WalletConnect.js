@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {connect} from "react-redux";
 import Form from 'react-bootstrap/Form';
-import { Modal, Button } from 'react-bootstrap';
 import { deployBadgeContract } from "../service/contractService";
 import { SERVER_URL } from "../conf";
 import Web3 from "web3";
-import axios from "axios";
-import WalletAddressBox from '../components/WalletAddressBox';
 import OrSpinButton from "../components/OrSpinButton";
 import BasicModal from "../components/Modals/BasicModal";
 
@@ -42,7 +39,7 @@ const WalletConnectModule = (props) => {
 
     useEffect(() => {
         setWallet(localStorage.getItem('wallet'));
-    })
+    }, [wallet]);
     
     /******************************Deploy badge contract from entered user information************/
     const onSubmitHandler = async params => {
@@ -52,7 +49,7 @@ const WalletConnectModule = (props) => {
         let badgeTokenAddress = "";
         let userNameBox = document.getElementsByName("username");
         let userName = userNameBox[0].value;
-        if (userName == '') {
+        if (userName === '') {
             setErrorUserName('Invalid user name');
             stopWait();
             return;
@@ -62,7 +59,7 @@ const WalletConnectModule = (props) => {
 
         let badge1 = document.getElementsByName("badge");;
         let badgeName = badge1[0].value;
-        if (badgeName == '') {
+        if (badgeName === '') {
             setErrorBadgeName('Invalid badge token name');
             stopWait();
             return;
@@ -70,7 +67,7 @@ const WalletConnectModule = (props) => {
 
         let dao1 = document.getElementsByName("dao");
         let daoName = dao1[0].value;
-        if (daoName == '') {
+        if (daoName === '') {
             setErrorDaoName('Invalid DAO name');
             stopWait();
             return;
@@ -113,13 +110,13 @@ const WalletConnectModule = (props) => {
     const handleUserInput = (ev) => {
         const name = ev.target.name;
         const value = ev.target.value;
-        if (name == 'username') {
+        if (name === 'username') {
             setErrorUserName('');
             setUserName(ev.target.value);
-        } else if (name == 'badge') {
+        } else if (name === 'badge') {
             setErrorBadgeName('');
             setBadgeTokenName(ev.target.value);
-        } else if (name == 'dao') {
+        } else if (name === 'dao') {
             setErrorDaoName('');
             setDaoName(ev.target.value);
         }
@@ -157,7 +154,7 @@ const WalletConnectModule = (props) => {
                         <div className="col-md-6">
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <div className="text-center"><Form.Label className="text-muted-dark">User Name</Form.Label></div>
-                                <Form.Control className={errorUserName !== ''? "invalid-content": ""} type="text" name="username" placeholder="" value={userName} onChange={handleUserInput} required readOnly={status == PENDING?true: false}/>
+                                <Form.Control className={errorUserName !== ''? "invalid-content": ""} type="text" name="username" placeholder="" value={userName} onChange={handleUserInput} required readOnly={status === PENDING?true: false}/>
                                 <div className='error-tooltip'>{errorUserName}</div>
                             </Form.Group>
                         </div>
@@ -177,7 +174,7 @@ const WalletConnectModule = (props) => {
                         <div className="col-md-6">
                             <Form.Group className="mb-3" controlId="formBasicText">
                                 <div className="text-center"><Form.Label className="text-muted-dark">DAO Name</Form.Label></div>
-                                <Form.Control className={errorDaoName !== ''? "invalid-content": ""} type="text" name="dao" placeholder="" value={daoName} onChange={handleUserInput} required readOnly={status == PENDING?true: false}/>
+                                <Form.Control className={errorDaoName !== ''? "invalid-content": ""} type="text" name="dao" placeholder="" value={daoName} onChange={handleUserInput} required readOnly={status === PENDING?true: false}/>
                                 <div className='error-tooltip'>{errorDaoName}</div>
                             </Form.Group>
                         </div>
@@ -205,7 +202,7 @@ const WalletConnectModule = (props) => {
                         <div className="col-12 text-center">
                             <div className="zl_securebackup_btn">
                             {
-                                status == PENDING?
+                                status === PENDING?
                                     <button 
                                         type="submit"  
                                         className="mx-auto"

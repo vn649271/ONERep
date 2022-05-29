@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { connect } from 'react-redux';
-import Modal from "react-bootstrap/Modal";
 
 const WalletAddressBox = props => {
 
@@ -18,7 +17,7 @@ const WalletAddressBox = props => {
 			setWalletAddress(wallet);
 			setUserName(userName);
 		}
-	});
+	}, [wallet, userName]);
 	const onClick = ev => {
 		if (navigator.clipboard) {
 			navigator.clipboard.writeText(_wallet_address).then(function() {
@@ -42,8 +41,8 @@ const WalletAddressBox = props => {
 				{
 					_wallet_address && history.location.pathname !== "/" ? 
 					<div>
-						<div className="flow-layout main-text-color mr-20"><img className="mr-6" src='/assets/image/avatar-3.png' width='30px' height='26px'/>{_user_name}</div>
-						<div className="flow-layout main-text-color"><img src='/assets/image/wallet.png' width='40px' height='40px'/></div>
+						<div className="flow-layout main-text-color mr-20"><img className="mr-6" alt="Avatar" src='/assets/image/avatar-3.png' width='30px' height='26px'/>{_user_name}</div>
+						<div className="flow-layout main-text-color"><img src='/assets/image/wallet.png' alt="Wallet" width='40px' height='40px'/></div>
 						<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
 						{
 							_wallet_address.substring(0, 6) + 

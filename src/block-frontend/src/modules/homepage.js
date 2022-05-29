@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { connect } from "react-redux";
 import { ethers, utils } from "ethers";
@@ -33,7 +33,7 @@ const HomePageModule = (props) => {
     }
   }
   const dispatch = useDispatch();
-  const error = useSelector(({ userAction }) => userAction.error);
+  // const error = useSelector(({ userAction }) => userAction.error);
 
   const showMessageBox = (title, content, _type = "error") => {
     setMessageType(_type);

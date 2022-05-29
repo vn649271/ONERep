@@ -1,13 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import "react-step-progress/dist/index.css";
 import { connect } from "react-redux";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { USERS } from "../store/actionTypes";
-import Web3 from "web3";
-import { initContractByChainId } from "../service/contractService";
 import { orAlert } from "../service/utils";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
-import "react-step-progress/dist/index.css";
 import axios from "axios";
 const { SERVER_URL } = require("../conf");
 
@@ -23,16 +21,16 @@ const OneRepBoardModule = (props) => {
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
-  const [chainId, setChainId] = useState(0);
+  // const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("Dao Data",daoList);
   }, [daoList])
+  
   useEffect(() => {
-    console.log("BoardData",boardData)
   }, [boardData])
+
   useEffect(() => {
     // Init connection info
     if (!badgeTokenAddress) {
@@ -47,12 +45,11 @@ const OneRepBoardModule = (props) => {
           orAlert("Failed to get information for current logined user");
           return;
         }
-        console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.isAdmin);
         localStorage.setItem("isAdmin", userInfo.isAdmin);
         let badgeTokenAddress = userInfo.badgeAddress;
         setBadgeTokenAddress(badgeTokenAddress);
-        setChainId(localStorage.getItem('chainId'));
+        // setChainId(localStorage.getItem('chainId'));
         dispatch({
           type: USERS.CONNECT_WALLET, 
           payload: { 
@@ -94,10 +91,10 @@ const OneRepBoardModule = (props) => {
         orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);        
       });
     }
-  }, []);
+  });
   useEffect(() => {
     if (
-      localStorage.getItem("wallet") == "" ||
+      localStorage.getItem("wallet") === "" ||
       !localStorage.getItem("wallet")
     ) {
       window.location.href = "/";
@@ -149,8 +146,9 @@ const OneRepBoardModule = (props) => {
       daos.map(dao => {
         if (dao.dao === selectedDaoName) {
           selectedDao = dao;
-          return;
+          return true;
         }
+        return false;
       })
       setSelectedDao(selectedDao);
       if (selectedDao) {
@@ -161,14 +159,6 @@ const OneRepBoardModule = (props) => {
       }
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
-    }
-  };
-  const handleInitContract = async () => {
-    let web3 = new Web3(window.ethereum);
-    try {
-      initContractByChainId(web3, await web3.eth.net.getId());
-    } catch (error) {
-      alert(error);
     }
   };
 

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {connect} from "react-redux";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { USERS } from "../store/actionTypes";
 import Table from 'react-bootstrap/Table';
 import { FaPencilAlt, FaUserAlt, FaTrashAlt, FaRegSave } from "react-icons/fa";
@@ -26,7 +26,7 @@ const AdminModule = (props) => {
     }
     const [show, setShow] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
-    const [admin, setSAdmin] = useState(false);
+    // const [admin, setSAdmin] = useState(false);
     const [enable, setEnable] = useState(false);
     const [users, setUsers] = useState([]);
     const [curUser, setCurUser] = useState(defaultUser);
@@ -36,12 +36,12 @@ const AdminModule = (props) => {
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [badgeAddress, setBadgeAddress] = useState(null);
-    const [chainId, setChainId] = useState(0);
+    // const [chainId, setChainId] = useState(0);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (localStorage.getItem('wallet') == '' || !localStorage.getItem('wallet'))
+        if (localStorage.getItem('wallet') === '' || !localStorage.getItem('wallet'))
         {
             window.location.href = "/";
             return;
@@ -64,7 +64,7 @@ const AdminModule = (props) => {
                         badgeAddress: badgeAddress,
                     }
                 });
-                setChainId(localStorage.getItem('chainId'));
+                // setChainId(localStorage.getItem('chainId'));
             });            
         }
         getContributors();
@@ -87,7 +87,7 @@ const AdminModule = (props) => {
     const handleDelete = (user) => {
         if (window.confirm("Are you sure to delete this contributor?"))
         {
-            axios.post(SERVER_URL + '/users/delete', { ... user, master: localStorage.getItem("wallet") }).then(response => {
+            axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
                 setUsers(response.data);
             });
         }
@@ -125,7 +125,7 @@ const AdminModule = (props) => {
                 }
             );
             console.log("response", ret);
-            if (ret.data.success == true)
+            if (ret.data.success)
                 setUsers(ret.data.users);
             else
                 alert(ret.data.error);            
@@ -140,7 +140,7 @@ const AdminModule = (props) => {
    
     const getContributors = () => {
         let parent = localStorage.getItem("parent");
-        if(parent == "" || parent == "undefined")
+        if(parent === "" || parent === "undefined")
         {
             let walletAddress = localStorage.getItem("wallet");
             axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
@@ -171,7 +171,7 @@ const AdminModule = (props) => {
                     <ul className="v-link">
                         <li><button className="btn-connect" onClick={onClickSettings}><FaPencilAlt /> Settings</button></li>
                         <li><button className="btn-connect" onClick={()=>{
-                            setSAdmin(false)
+                            // setSAdmin(false)
                             setEnable(false)
                             handleShow(defaultUser)
                         }}>Add Contributor</button></li>
@@ -209,7 +209,7 @@ const AdminModule = (props) => {
                             <td className="text-center">
                                 <div className="cursor-pointer flow-layout">
                                     <FaPencilAlt onClick={()=>{
-                                        setSAdmin(item.isAdmin);
+                                        // setSAdmin(item.isAdmin);
                                         setEnable(item.status);
                                         handleShow(item)}
                                     }/> 
@@ -232,7 +232,7 @@ const AdminModule = (props) => {
             <Modal centered show={show} onHide={handleClose}>
                 <Modal.Body>
                     <div className="p-4">
-                        <h5 className="text-center text-white">{curUser._id == '' ? "Add Contributor" : "Edit Contributor"}</h5>
+                        <h5 className="text-center text-white">{curUser._id === '' ? "Add Contributor" : "Edit Contributor"}</h5>
                         <br/><br/>
                         <Form className="row">
                             <div className="col-md-12">

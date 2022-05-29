@@ -1,5 +1,4 @@
 import React from "react";
-import { FormGroup, Label, Input, Button } from "reactstrap";
 
 /*
  ***********************************
@@ -8,18 +7,18 @@ import { FormGroup, Label, Input, Button } from "reactstrap";
  */
 const ORFiwStep3 = props => {
 
-  const {checkAccomplished, stepAction} = props;
+  // const {checkAccomplished, stepAction} = props;
 
   if (props.currentStep !== 3) {
     return null;
   }
 
-  const handleStepAction = (ev) => {
-    checkAccomplished(3);
-    if (stepAction) {
-      stepAction(ev);
-    }
-  }
+  // const handleStepAction = (ev) => {
+  //   checkAccomplished(3);
+  //   if (stepAction) {
+  //     stepAction(ev);
+  //   }
+  // }
 
   return (
     <>

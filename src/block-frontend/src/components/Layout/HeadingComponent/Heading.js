@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch/*, useSelector*/ } from 'react-redux'
 import { USERS } from "../../../store/actionTypes";
 import { useHistory } from "react-router-dom";
 // import { mapStateToProps } from './mappers';
