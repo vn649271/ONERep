@@ -191,6 +191,7 @@ const AdminModule = (props) => {
                     <thead>
                     <tr>
                         <th>Name</th>
+                        <th>DAO</th>
                         <th>ETH Wallet</th>
                         <th>Are you admin?</th>
                         <th className="text-right">Reputation Awarded</th>
@@ -202,6 +203,7 @@ const AdminModule = (props) => {
                     users.map((item, i) => (
                         <tr key={i}>
                             <td><FaUserAlt/><span className="pl-2">{item.username}</span></td>
+                            <td>{item.dao}</td>
                             <td>{item.wallet}</td>
                             <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
                             <td className="text-right">{item.received}</td>

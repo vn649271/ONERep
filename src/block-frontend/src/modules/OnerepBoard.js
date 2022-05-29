@@ -219,6 +219,7 @@ const OneRepBoardModule = (props) => {
         <Table striped className="or-table">
           <thead>
             <tr>
+              <th>DAO</th>
               <th
                 onClick={() => {
                   setSortName(-sort_name);
@@ -251,6 +252,7 @@ const OneRepBoardModule = (props) => {
               boardData.length > 0 ? boardData.map((row, i) => {
                 return (
                   <tr key={i}>
+                    <td>{row.dao}</td>
                     <td>{row.name}</td>
                     <td>{row._id}</td>
                     <td className="text-right">

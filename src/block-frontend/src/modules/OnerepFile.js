@@ -492,6 +492,7 @@ const OneRepFileModule = (props) => {
         <Table striped className="or-table table">
           <thead>
             <tr>
+              <th>DAO</th>
               <th>File Name</th>
               <th>IPFS URI</th>
               <th className="text-right">Reputation</th>
@@ -503,6 +504,7 @@ const OneRepFileModule = (props) => {
           {
             repfiles.length > 0? repfiles.map((row, i) => (
               <tr key={i}>
+                <td>{row.userInfo[0].dao}</td>
                 <td>{row.filename}</td>
                 <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
                 <td className="text-right">{row.reputation}</td>

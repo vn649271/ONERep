@@ -109,7 +109,19 @@ exports.getListFiles = async (req, res) => {
             for (let i = 0; i < users.length; i++) {
               let parent = users[i].wallet;
               try {
-                let files = await fUpload.find({parent: parent});
+                let files = await fUpload.aggregate([
+                  {
+                    $match: {parent: parent}
+                  },
+                  {
+                    $lookup: {
+                      from: 'users',
+                      localField: 'parent',
+                      foreignField: 'wallet',
+                      as: 'userInfo'
+                    }
+                  }]
+                );      
                 filesList.push(...files)
               } catch (e) {
                 return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the list of users with the specified DAO: " + error.message});
@@ -124,8 +136,19 @@ exports.getListFiles = async (req, res) => {
     } else {
       fUser.findOne({wallet: req.body.master}).then(async user => {
         if (user.isAdmin) {
-          fUpload.find().then((files) => {
+          fUpload.aggregate([{
+            $lookup: {
+              from: 'users',
+              localField: 'parent',
+              foreignField: 'wallet',
+              as: 'userInfo'
+            }}]
+          )
+          .then((files) => {
             res.status(200).send({error: 0, data: files});
+          })
+          .catch(error => {
+            return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the files: " + error.message});            
           });
         } else {
           fUpload.find({parent: req.body.master}).then((files) => {
