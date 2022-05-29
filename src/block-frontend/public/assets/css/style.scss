@@ -2802,25 +2802,27 @@ margin-left: 0.8em;
 }
 
 .or-table {
-	tr th {
-		vertical-align: bottom;
-		color: #CAD3F2;
-		text-transform: uppercase;
-	}
-
-	tr td {
-		padding: 0.75rem;
-		font-size: 14px;
-		line-height: 15px;
-		text-align: left;
-		color: #828CAE;
-
-		&.text-right {
-			text-align: right !important;
+	tr {
+		th {
+			vertical-align: bottom;
+			color: #CAD3F2;
+			text-transform: uppercase;
 		}
 
-		&.text-center {
-			text-align: center !important;
+		td {
+			padding: 0.75rem;
+			font-size: 14px;
+			line-height: 15px;
+			text-align: left;
+			color: #828CAE;
+
+			&.text-right {
+				text-align: right !important;
+			}
+
+			&.text-center {
+				text-align: center !important;
+			}
 		}
 	}
 }
@@ -2852,6 +2854,7 @@ margin-left: 0.8em;
 	display: inline-block;
 	cursor: pointer;
 	color: #eee;
+
 	&:hover {
 		opacity: 75%;
 	}
