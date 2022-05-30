@@ -169,8 +169,7 @@ const OneRepFileModule = (props) => {
     setMintFailureReason(reason);
     setshowFailure(true);
   }
-  const inform = (title, content) => {
-    setMessageBoxTitle(title);
+  const inform = (content) => {
     setMessageBoxContent(content);
     setShowMessageBox(true);
   }
@@ -268,7 +267,7 @@ const OneRepFileModule = (props) => {
         return;
       }
       loadOneRepFiles();
-      handleShowSuccess();
+      inform("Successfully Minted");
     } catch (error) {
       setShowWatingModalForMint(false);
       let msg = filterContractMessage(error.message);
@@ -316,7 +315,7 @@ const OneRepFileModule = (props) => {
       // setProgress(Math.round((100 * event.loaded) / event.total));
     })
     .then((response) => {
-      inform("Inform", response.data.message);
+      inform(response.data.message);
       step1Completed = true;
       Papa.parse(files[0], {
         header: true,
@@ -521,22 +520,22 @@ const OneRepFileModule = (props) => {
         </Table>
       </div>
       {/******************* "Minted Successfully" Dialog *********************/}
-      <Modal centered show={showSucces} onHide={handleCloseSuccess}>
+      <Modal centered show={showMessageBox} onHide={handleCloseMessageBox}>
         <Modal.Body>
           <div className="p-4">
             <br />
-            <h4 className="text-center text-white">
-              Successfully <br /> Minted
-            </h4>
+            <div className="main-text-color text-center">
+              {messageBoxContent}
+            </div>
             <br />
             <br />
             <div className="text-center">
               <button
                 type="button"
                 className="btn-connect"
-                onClick={handleCloseSuccess}
+                onClick={handleCloseMessageBox}
               >
-                Okay Got it
+                Got it
               </button>
             </div>
           </div>
@@ -580,10 +579,6 @@ const OneRepFileModule = (props) => {
           </div>
         </Modal.Body>
       </Modal>
-      {/******************* Message Dialog *********************/}
-      <BasicModal show={showMessageBox} modalType="success" title={messageBoxTitle} closeModal={handleCloseMessageBox}>
-        <p className="text-white">{messageBoxContent}</p>
-      </BasicModal>
       {/*************************************************************/}
     </section>
   );

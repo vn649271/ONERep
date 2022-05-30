@@ -289,8 +289,7 @@ exports.update = async (req, res) => {
             if (user) {
                 console.log("inside if ETH address");
                 return res.status(200).send({ error: "ETH address duplicated!", success: false });
-            }
-            else {
+            } else {
                 let isAdmin = false;
                 try {
                     let user = await User.findOne({ wallet: req.body.master });
@@ -309,13 +308,11 @@ exports.update = async (req, res) => {
                     badgeAddress: req.body.badgeAddress
                 });
             }
-        }
-        else {
+        } else {
             if (!puser) {
                 console.log("if !puser");
                 return res.status(200).send({ error: "This accout does not exist!", success: false });
-            }
-            else {
+            } else {
                 let isAdmin = false;
                 try {
                     let user = await User.findOne({ wallet: req.body.master });
@@ -328,7 +325,7 @@ exports.update = async (req, res) => {
                 puser.wallet = req.body.wallet;
                 puser.badge = req.body.badge;
                 puser.dao = req.body.dao;
-                puser.isAdmin = isAdmin;
+                // puser.isAdmin = isAdmin;
                 puser.status = req.body.status;
                 badgeAddress = req.body.badgeAddress
             }
