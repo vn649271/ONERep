@@ -148,11 +148,25 @@ const AdminModule = (props) => {
         {
             let walletAddress = localStorage.getItem("wallet");
             axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
-                setUsers(response.data);
+                let users = response.data ? response.data.data ? response.data.data : []: [];
+                for (let i = 0; i < users.length; i++) {
+                    let actions = users[i].actions ? users[i].actions: [];
+                    for (let j = 0; j < actions.length; j++) {
+                        users[i].received += users[i].actions[j].received;
+                    }
+                }
+                setUsers(users);
             });
         } else {
             axios.post(SERVER_URL + '/users', { master: parent }).then(response => {
-                setUsers(response.data);
+                let users = response.data ? response.data.data ? response.data.data : []: [];
+                for (let i = 0; i < users.length; i++) {
+                    let actions = users[i].actions ? users[i].actions: [];
+                    for (let j = 0; j < actions.length; j++) {
+                        users[i].received += users[i].actions[j].received;
+                    }
+                }
+                setUsers(users);
             });
         }
     }

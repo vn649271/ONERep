@@ -131,25 +131,54 @@ exports.getUserList = async (req, res) => {
             return res.status(200).send([]);
         }
         if (user.isAdmin !== undefined && user.isAdmin) {
-            User.find().then((users) => {
-                res.status(200).send(users);
+            User.aggregate([
+                {
+                    $lookup: {
+                        from: 'actions',
+                        localField: 'wallet',
+                        foreignField: 'wallet',
+                        as: 'actions'
+                    }
+                }
+            ])
+            .then((users) => {
+                res.status(200).send({ error: 0, data: users });
+            })
+            .catch(error => {
+                return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
             });
         } else {
-            User.find({ parent: req.body.master, status: true }).then((users) => {
-                res.status(200).send(users);
+            User.aggregate([
+                {
+                    $match: { parent: req.body.master, status: true }
+                },
+                {
+                    $lookup: {
+                        from: 'actions',
+                        localField: 'wallet',
+                        foreignField: 'wallet',
+                        as: 'actions'
+                    }
+                }
+            ])
+            .then((users) => {
+                res.status(200).send({ error: 0, data: users });
+            })
+            .catch(error => {
+                return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
             });
         }
     } catch (error) {
-        res.status(200).send({error: -1, data: error.message});
+        res.status(200).send({ error: -1, data: error.message });
     }
 }
 
 exports.getUserCount = async (req, res) => {
     try {
-        let userCount = await User.count({status: true});
-        res.status(200).send({error: 0, data: userCount});
+        let userCount = await User.count({ status: true });
+        res.status(200).send({ error: 0, data: userCount });
     } catch (error) {
-        res.status(200).send({error: -1, data: "Failed to get number of users"});
+        res.status(200).send({ error: -1, data: "Failed to get number of users" });
     }
 }
 
@@ -217,7 +246,7 @@ exports.getOneRepBoard = async (req, res) => {
             for (let j = 0; j < actions.length; j++) {
                 actions[j]['dao'] = user.dao;
             }
-        res.status(200).send({ error: 0, data: actions });
+            res.status(200).send({ error: 0, data: actions });
         }).catch(error => {
             res.status(200).send({ error: -10, data: error.message })
         });
