@@ -16,7 +16,7 @@ async function main() {
   // We get the contract to deploy
   const [owner, addr1, addr2] = await ethers.getSigners();
   const OneRep = await ethers.getContractFactory("ONERep");
-  const oneRep = await OneRep.deploy(owner.address,"");
+  const oneRep = await OneRep.deploy(owner.address, "ORBDG", "");
 
   await oneRep.deployed();
 

@@ -517,7 +517,7 @@ const OneRepFileModule = (props) => {
                   new Date(row.created_at).toLocaleTimeString()
                 }</td>
               </tr>
-            )): <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+            )): <tr><td colSpan="6" className="text-center main-text-color-second"><i>No Data</i></td></tr>
           }
           </tbody>
         </Table>

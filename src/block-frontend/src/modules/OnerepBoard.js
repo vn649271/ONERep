@@ -260,7 +260,7 @@ const OneRepBoardModule = (props) => {
                     </td>
                   </tr>
                 );
-              }): <tr><td colSpan="4" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+              }): <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
             }
           </tbody>
         </Table>

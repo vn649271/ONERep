@@ -58,8 +58,8 @@ const WalletConnectModule = (props) => {
         let wallet1 = document.getElementsByName("wallet");
 
         let badge1 = document.getElementsByName("badge");;
-        let badgeName = badge1[0].value;
-        if (badgeName === '') {
+        let badgeSymbol = badge1[0].value;
+        if (badgeSymbol === '') {
             setErrorBadgeName('Invalid badge token name');
             stopWait();
             return;
@@ -87,7 +87,7 @@ const WalletConnectModule = (props) => {
                 return;
             }
             setStatus(PENDING);
-            badgeTokenAddress = await deployBadgeContract(web3);
+            badgeTokenAddress = await deployBadgeContract(web3, badgeSymbol);
             stopWait();
             setStatus(IDLE);
             if (badgeTokenAddress === null) {
@@ -97,7 +97,7 @@ const WalletConnectModule = (props) => {
             document.getElementsByName("tokenaddress")[0].value = badgeTokenAddress;
 
             localStorage.setItem("user", userName);
-            localStorage.setItem("badge", badgeName);
+            localStorage.setItem("badge", badgeSymbol);
             localStorage.setItem("badgeTokenAddress", badgeTokenAddress);
             localStorage.setItem("dao", daoName);
             localStorage.setItem("wallet", wallet1[0].value);

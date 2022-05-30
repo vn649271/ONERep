@@ -24,7 +24,7 @@ const determineAddress = async (chainId) => {
 };
 
 /*******************************Deploy badge contract******************/
-export const deployBadgeContract = async web3 => {
+export const deployBadgeContract = async (web3, tokenSymbol) => {
   console.log("Getting account...");
   const accounts = await web3.eth.getAccounts();
   console.log("This account: ", accounts[0]);
@@ -36,7 +36,7 @@ export const deployBadgeContract = async web3 => {
   }
   console.log("Current gas price:", gasPrice);
   const result = await new web3.eth.Contract(ONERepDeployedInfo.abi)
-    .deploy({ data: ONERepDeployedInfo.bytecode, arguments:[localStorage.getItem('wallet') , ''] })
+    .deploy({ data: ONERepDeployedInfo.bytecode, arguments:[localStorage.getItem('wallet') , tokenSymbol, ''] })
     .send({ from: accounts[0], gasPrice: gasPrice });
   console.log("Deployed Badge token Contract: ", result.options.address);
   return result.options.address;

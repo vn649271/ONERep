@@ -7,9 +7,12 @@ import "./utils/AddressMinimal.sol";
 contract ONERep is ERC1238, ERC1238URIStorage {
     using Address for address;
     address public owner;
+    string private _symbol;
 
-    constructor(address owner_, string memory baseURI_) ERC1238(baseURI_) {
+    constructor(address owner_, string memory symbol_, string memory baseURI_) ERC1238(baseURI_) {
         owner = owner_;
+        require(!_compareStrings(symbol_, "") , "Invalid symbol");
+        _symbol = symbol_;
     }
 
     modifier onlyOwner() {
@@ -29,7 +32,11 @@ contract ONERep is ERC1238, ERC1238URIStorage {
      * name.
      */
     function symbol() public view virtual returns (string memory) {
-        return "ORB";
+        return _symbol;
+    }
+
+    function _compareStrings(string memory a, string memory b) public view returns (bool) {
+        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
 
     function setOwner(address newOwner) external onlyOwner {
