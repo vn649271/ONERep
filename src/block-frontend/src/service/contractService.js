@@ -1,5 +1,5 @@
 import { TESTNET_ADDRESS, MAINNET_ADDRESS } from "../shared/constants";
-import { getMintBatchApprovalSignature } from "./utils";
+import { orAlert, getMintBatchApprovalSignature } from "./utils";
 import { ethers } from "ethers";
 import ONERepDeployedInfo from "../shared/ONERep.json";
 import ERC1238ReceiverMockDeployInfo from "../shared/ERC1238ReceiverMock.json";
@@ -25,88 +25,43 @@ const determineAddress = async (chainId) => {
 
 /*******************************Deploy badge contract******************/
 export const deployBadgeContract = async (web3, tokenSymbol) => {
-  console.log("Getting account...");
   const accounts = await web3.eth.getAccounts();
-  console.log("This account: ", accounts[0]);
-  console.log("Getting current gas price...");
   let gasPrice = await web3.eth.getGasPrice();
   if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
-    console.log("Failed to get gas price in deployBadgeContract()");
+    orAlert("deployBadgeContract(): Failed to get the current value of gas price");
     return null;
   }
-  console.log("Current gas price:", gasPrice);
   const result = await new web3.eth.Contract(ONERepDeployedInfo.abi)
     .deploy({ data: ONERepDeployedInfo.bytecode, arguments:[localStorage.getItem('wallet') , tokenSymbol, ''] })
     .send({ from: accounts[0], gasPrice: gasPrice });
-  console.log("Deployed Badge token Contract: ", result.options.address);
   return result.options.address;
 };
 
 /*******************************Deploy New contract******************/
 export const deployRecipientContract = async (web3) => {
 
-  console.log("Deploying Recipient Contract....");
   const toBN1 = (units, decimalPlaces) => ethers.utils.parseUnits(units, 18);
   
   const accounts = await web3.eth.getAccounts();
-  console.log("After getting accounts", accounts)
-  //console.log("bytecode",bytecode)
-  console.log("ABI : ", ERC1238ReceiverMockDeployInfo.abi)
-  console.log("Getting current gas price...");
   let gasPrice = await web3.eth.getGasPrice();
   if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
-    console.log("Failed to get gas price in deployBadgeContract()");
+    orAlert("deployRecipientContract(): Failed to get the current value of gas price");
     return null;
   }
-  console.log("Current gas price:", gasPrice);
-
   const result = await new web3.eth.Contract(ERC1238ReceiverMockDeployInfo.abi)
     .deploy({ data: ERC1238ReceiverMockDeployInfo.bytecode, arguments:[localStorage.getItem('wallet') , ''] })
     .send({ from: accounts[0], gasPrice: parseInt(gasPrice) });
-  
-  console.log("Deployed Recipient Contract: ", result.options.address);
   return result.options.address;
 };
-// export const deployContract = async(web3) =>{
 
-// //   let deploy_contract = new web3.eth.Contract(JSON.parse(abi));
-
-// //   let payload = {
-// //     data: bytecode
-// // }
-
-// // let parameter = {
-// //   from: account,
-// //   gas: web3.utils.toHex(800000),
-// //   gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei'))
-// // }
-
-// // deploy_contract.deploy(payload).send(parameter, (err, transactionHash) => {
-// //   console.log('Transaction Hash :', transactionHash);
-// // }).on('confirmation', () => {}).then((newContractInstance) => {
-
-// //   deployedContractAddress = newContractInstance.options.address; 
-// //   console.log('Deployed Contract Address : ', newContractInstance.options.address);
-// // }) 
-
-// // return deployContractAddress
-
-// }
 export const initContractByChainId = async (web3, chainId) => {
   contract = new web3.eth.Contract(ONERepDeployedInfo.abi, await determineAddress(chainId));
   return contract;
 };
 export const initContractByAddress = async (web3, address, provider) => {
-  console.log("before calling address")
   contract = new ethers.Contract(address, ONERepDeployedInfo.abi, provider)
   return contract;
 };
-
-// export const initContractAddress = async (web3) => {
-//  // contract = new web3.eth.Contract(ONERepDeployedInfo.abi, await determineAddress(1666700000));
- 
-//   return contract.options.address;
-// };
 
 export const getContractInstance = async () => {
   if (contract) {
