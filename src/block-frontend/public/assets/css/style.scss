@@ -2584,10 +2584,17 @@ table {
 	margin-right: 0px !important;
 }
 
-.or-spin-border.large {
-	margin-top: 25px;
-	width: 50px !important;
-	height: 50px !important;
+.or-spin-border {
+	&.medium {
+		width: 25px !important;
+		height: 25px !important;
+	}
+
+	&.large {
+		margin-top: 25px;
+		width: 50px !important;
+		height: 50px !important;
+	}
 }
 
 .or-spin-button div.flex {

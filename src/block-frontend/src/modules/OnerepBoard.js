@@ -7,6 +7,7 @@ import { orAlert } from "../service/utils";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
+import OrSpinner from "../components/OrSpinner";
 const { SERVER_URL } = require("../conf");
 
 const OneRepBoardModule = (props) => {
@@ -23,6 +24,7 @@ const OneRepBoardModule = (props) => {
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
   const [userName, setUserName] = useState(null);
   const [inited, setInited] = useState(false);
+  const [loading, setLoading] = useState(false);
   // const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
@@ -108,11 +110,13 @@ const OneRepBoardModule = (props) => {
   }, [show, sortOption]);
   const loadBoardData = async (wallet, dao) => {
     try {
+      setLoading(true);
       let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
         master: wallet,
         sort: sortOption,
         dao: dao
       });
+      setLoading(false);
       if (ret === null || ret.data === undefined || 
         ret.data.data === undefined || ret.data.data.length === undefined) 
       {
@@ -203,20 +207,20 @@ const OneRepBoardModule = (props) => {
         </div>
         {
           selectedDao ? ([
-              <div key="token-name-label" className='flow-layout mr-20'>
-                Token Name
-                <label className="bordered-label">
-                  {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
-                </label>
-              </div>,
-              <div key="token-token-total-count-label" className='flow-layout mr-10'>
-                Number of Tokens 
-                <label className="bordered-label">
-                  {selectedDaoTokenTotalSupply}
-                </label>
-              </div>
-            ]): 
-            <></>
+            <div key="token-name-label" className='flow-layout mr-20'>
+              Token Name
+              <label className="bordered-label">
+                {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+              </label>
+            </div>,
+            <div key="token-token-total-count-label" className='flow-layout mr-10'>
+              Number of Tokens 
+              <label className="bordered-label">
+                {selectedDaoTokenTotalSupply}
+              </label>
+            </div>
+          ]): 
+          <></>
         }
       </div>
       <br />
@@ -253,6 +257,12 @@ const OneRepBoardModule = (props) => {
             </tr>
           </thead>
           <tbody>
+          {
+            loading?
+            <tr>
+              <td colSpan="5" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
+            </tr>:
+            <>
             {
               boardData.length > 0 ? boardData.map((row, i) => {
                 return (
@@ -267,6 +277,8 @@ const OneRepBoardModule = (props) => {
                 );
               }): <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
             }
+            </>
+          }
           </tbody>
         </Table>
       </div>

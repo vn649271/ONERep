@@ -13,17 +13,8 @@ const OrSpinner = props => {
 	});
 
 	return (
-	    <div className={classNames("or-spinner flex justify-center", `${_margin}`)}>
-	        <div style={{'borderTopColor':'transparent'}}
-	            className={
-	            	classNames(
-	            		`w-${_size} h-${_size}`, 
-	            		"border-2", 
-	            		`border-${color}-500`, 
-	            		"border-solid rounded-full animate-spin"
-	            	)
-	            }
-	        />
+	    <div className="flex items-center justify-center mr-2">
+	      <div className={`or-spin-border spinner-border ${size}`} role="status"/>
 	    </div>
 	);
 }
