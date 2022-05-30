@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import Form from 'react-bootstrap/Form';
 import { deployBadgeContract } from "../service/contractService";
 import { SERVER_URL } from "../conf";
 import Web3 from "web3";
 import OrSpinButton from "../components/OrSpinButton";
 import BasicModal from "../components/Modals/BasicModal";
+import axios from 'axios';
 
 // This function detects most providers injected at window.ethereum
 // import detectEthereumProvider from '@metamask/detect-provider';
@@ -36,16 +37,30 @@ const WalletConnectModule = (props) => {
     const [modalType, setModalType] = useState("error"); // 0: Error, 1: Warning, 2: Success
     const [modalTitle, setModalTitle] = useState("");
     const [modalMessage, setModalMessage] = useState("");
+    const [isFirstLogin, setIsFirstLogin] = useState(false);
+    const [isInited, setIsInited] = useState(false);
 
     useEffect(() => {
-        setWallet(localStorage.getItem('wallet'));
+        let walletAddress = localStorage.getItem('wallet');
+        setWallet(walletAddress);
+        if (!isInited) {
+            axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
+                let users = response.data ? response.data.length ? response.data : [] : [];
+                if (users.length < 1) {
+                    setIsFirstLogin(true);
+                } else {
+                    setIsFirstLogin(false);
+                }
+                setIsInited(true);
+            });
+        }
     }, [wallet]);
-    
+
     /******************************Deploy badge contract from entered user information************/
     const onSubmitHandler = async params => {
         let stopWait = params.stopWait;
         console.log("inside handler")
-       // e.preventDefault();
+        // e.preventDefault();
         let badgeTokenAddress = "";
         let userNameBox = document.getElementsByName("username");
         let userName = userNameBox[0].value;
@@ -79,7 +94,7 @@ const WalletConnectModule = (props) => {
         try {
             const accounts = await web3.eth.getAccounts();
             if (
-                accounts === undefined || accounts === null || 
+                accounts === undefined || accounts === null ||
                 accounts.length < 1 || accounts[0] === null
             ) {
                 warning("No selected account for you");
@@ -142,77 +157,79 @@ const WalletConnectModule = (props) => {
 
     return (
         <section className="">
-            <br/><br/>
+            <br /><br />
             <BasicModal show={showModal} modalType={modalType} title={modalTitle} closeModal={handleCloseModal}>
                 <p className="text-white">{modalMessage}</p>
             </BasicModal>
             <h2 className="header-1 text-center">Create a ONERep Account</h2>
-            <br/><br/>
+            <br /><br />
             <div className="row">
                 <div className="col-md-6 offset-md-3">
-                    <Form className="row mb-40" action={SERVER_URL + "/users/register"} method="post">
-                        <div className="col-md-6">
-                            <Form.Group className="mb-3" controlId="formBasicEmail">
-                                <div className="text-center"><Form.Label className="text-muted-dark">User Name</Form.Label></div>
-                                <Form.Control className={errorUserName !== ''? "invalid-content": ""} type="text" name="username" placeholder="" value={userName} onChange={handleUserInput} required readOnly={status === PENDING?true: false}/>
-                                <div className='error-tooltip'>{errorUserName}</div>
-                            </Form.Group>
-                        </div>
-                        <div className="col-md-6">
-                            <Form.Group className="mb-3" controlId="formBasicText">
-                                <div className="text-center"><Form.Label className="text-muted-dark">Address</Form.Label></div>
-                                <Form.Control type="text" value={wallet} name="wallet" placeholder="" onChange={onChangeAddress} required readOnly/>
-                            </Form.Group>
-                        </div>
-                        <div className="col-md-6">
-                            <Form.Group className="mb-3" controlId="formBasicText">
-                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Name</Form.Label></div>
-                                <Form.Control className={errorBadgeName !== ''? "invalid-content": ""} type="text" name="badge" placeholder="" value={badgeTokenName} onChange={handleUserInput} required readOnly={status == PENDING?true: false}/>
-                                <div className='error-tooltip'>{errorBadgeName}</div>
-                            </Form.Group>
-                        </div>
-                        <div className="col-md-6">
-                            <Form.Group className="mb-3" controlId="formBasicText">
-                                <div className="text-center"><Form.Label className="text-muted-dark">DAO Name</Form.Label></div>
-                                <Form.Control className={errorDaoName !== ''? "invalid-content": ""} type="text" name="dao" placeholder="" value={daoName} onChange={handleUserInput} required readOnly={status === PENDING?true: false}/>
-                                <div className='error-tooltip'>{errorDaoName}</div>
-                            </Form.Group>
-                        </div>
-                        <div className="col-md-6">
-                            <Form.Group className="mb-3" controlId="formBasicText">
-                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Address</Form.Label></div>
-                                {/* <Form.Label name="tokenaddress"></Form.Label> */}
-                                <Form.Control type="text" name="tokenaddress" placeholder="" required readOnly />
-                            </Form.Group>
-                        </div>
-                        <div className="col-12 text-center">
-                            <div className="zl_securebackup_btn">
-{/*                                <button 
-                                    type="button"  
-                                    onClick={onSubmitHandler} 
-                                    className="mx-auto"
-                                >Deploy Token</button>
-*/}
-                                <OrSpinButton 
-                                    onClick={onSubmitHandler}
-                                >Deploy Token
-                                </OrSpinButton>
+                    <Form action={SERVER_URL + "/users/register"} method="post">
+                        <div className="row mb-40">
+                            <div className="col-md-6">
+                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                    <div className="text-center"><Form.Label className="text-muted-dark">User Name</Form.Label></div>
+                                    <Form.Control className={errorUserName !== '' ? "invalid-content" : ""} type="text" name="username" placeholder="" value={userName} onChange={handleUserInput} required readOnly={status === PENDING ? true : false} />
+                                    <div className='error-tooltip'>{errorUserName}</div>
+                                </Form.Group>
                             </div>
-                        </div>
-                        <div className="col-12 text-center">
-                            <div className="zl_securebackup_btn">
+                            <div className="col-md-6">
+                                <Form.Group className="mb-3" controlId="formBasicText">
+                                    <div className="text-center"><Form.Label className="text-muted-dark">Address</Form.Label></div>
+                                    <Form.Control type="text" value={wallet} name="wallet" placeholder="" onChange={onChangeAddress} required readOnly />
+                                </Form.Group>
+                            </div>
                             {
-                                status === PENDING?
-                                    <button 
-                                        type="submit"  
-                                        className="mx-auto"
-                                        disabled
-                                    >Launch this ONERep</button>:
-                                    <button 
-                                        type="submit"  
-                                        className="mx-auto"
-                                    >Launch this ONERep</button>
+                                isFirstLogin ?
+                                    <></> :
+                                    <>
+                                        <div className="col-md-6">
+                                            <Form.Group className="mb-3" controlId="formBasicText">
+                                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Name</Form.Label></div>
+                                                <Form.Control className={errorBadgeName !== '' ? "invalid-content" : ""} type="text" name="badge" placeholder="" value={badgeTokenName} onChange={handleUserInput} required readOnly={status == PENDING ? true : false} />
+                                                <div className='error-tooltip'>{errorBadgeName}</div>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <Form.Group className="mb-3" controlId="formBasicText">
+                                                <div className="text-center"><Form.Label className="text-muted-dark">DAO Name</Form.Label></div>
+                                                <Form.Control className={errorDaoName !== '' ? "invalid-content" : ""} type="text" name="dao" placeholder="" value={daoName} onChange={handleUserInput} required readOnly={status === PENDING ? true : false} />
+                                                <div className='error-tooltip'>{errorDaoName}</div>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <Form.Group className="mb-3" controlId="formBasicText">
+                                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Address</Form.Label></div>
+                                                {/* <Form.Label name="tokenaddress"></Form.Label> */}
+                                                <Form.Control type="text" name="tokenaddress" placeholder="" required readOnly />
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-12 text-center">
+                                            <div className="zl_securebackup_btn">
+                                                <OrSpinButton
+                                                    onClick={onSubmitHandler}
+                                                >Deploy Token
+                                                </OrSpinButton>
+                                            </div>
+                                        </div>
+                                    </>
                             }
+                            <div className="col-12 text-center">
+                                <div className="zl_securebackup_btn">
+                                    {
+                                        status === PENDING ?
+                                            <button
+                                                type="submit"
+                                                className="mx-auto"
+                                                disabled
+                                            >Launch this ONERep</button> :
+                                            <button
+                                                type="submit"
+                                                className="mx-auto"
+                                            >Launch this ONERep</button>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </Form>

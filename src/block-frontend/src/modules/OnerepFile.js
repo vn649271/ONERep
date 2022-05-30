@@ -26,7 +26,7 @@ const OneRepFileModule = (props) => {
   const [showSucces, setshowSucces] = useState(false);
   const [showFailure, setshowFailure] = useState(false);
   const [repfiles, setRepFiles] = useState([]);
-  const [daoList,setDaoList] = useState([]);
+  const [daoList, setDaoList] = useState([]);
   const [selectedDao, setSelectedDao] = useState(null);
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
   // const [progress, setProgress] = useState(0);
@@ -45,7 +45,7 @@ const OneRepFileModule = (props) => {
   const [values, setValues] = useState([]);
   const [step, setStep] = useState(0);
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
-  const [badgecontract,setBadgeContract] = useState(null);
+  const [badgecontract, setBadgeContract] = useState(null);
   const [showMessageBox, setShowMessageBox] = useState(false);
   const [messageBoxTitle, setMessageBoxTitle] = useState(false);
   const [messageBoxContent, setMessageBoxContent] = useState(false);
@@ -69,12 +69,12 @@ const OneRepFileModule = (props) => {
   useEffect(() => {
     let _isAdmin = localStorage.getItem("isAdmin");
     if (_isAdmin !== "undefined" && !initedIsAdmin) {
-      setIsAdmin(_isAdmin === "true"?true:false);
+      setIsAdmin(_isAdmin === "true" ? true : false);
       setInitedIsAdmin(true);
     }
     if (!badgeTokenAddress) {
       axios.post(
-        SERVER_URL + '/users/loggedinuserbywallet', 
+        SERVER_URL + '/users/loggedinuserbywallet',
         {
           wallet: localStorage.getItem("wallet")
         }
@@ -82,6 +82,7 @@ const OneRepFileModule = (props) => {
         let userInfo = ret.data ? ret.data : null;
         if (!userInfo) {
           orAlert("Failed to get information for current logined user");
+          logout();
           return;
         }
         // console.log("Logged in user:", ret.data);
@@ -91,12 +92,12 @@ const OneRepFileModule = (props) => {
         setBadgeTokenAddress(badgeTokenAddress);
         setChainId(localStorage.getItem('chainId'));
         dispatch({
-          type: USERS.CONNECT_WALLET, 
-          payload: { 
-              wallet: userInfo.wallet,
-              user: userInfo.username,
-              isAdmin: userInfo.isAdmin,
-              badgeTokenAddress: badgeTokenAddress,
+          type: USERS.CONNECT_WALLET,
+          payload: {
+            wallet: userInfo.wallet,
+            user: userInfo.username,
+            isAdmin: userInfo.isAdmin,
+            badgeTokenAddress: badgeTokenAddress,
           }
         });
         // Init DAO drop down
@@ -104,7 +105,7 @@ const OneRepFileModule = (props) => {
         // Get all DAO names to fill into DAO name list and select first DAO from it
         axios.post(SERVER_URL + "/getDaoData", {
           master: thisAddress
-        }).then((resp)=> {
+        }).then((resp) => {
           if (resp.data.error !== undefined && resp.data.error === 0) {
             let daos = resp.data.data;
             if (userInfo.isAdmin) {
@@ -125,11 +126,11 @@ const OneRepFileModule = (props) => {
           } else {
             alert("Failed to get DAO data");
           }
-        });        
+        });
       })
-      .catch(error => {
-        orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);        
-      });
+        .catch(error => {
+          orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
+        });
     }
   });
   useEffect(() => {
@@ -144,6 +145,12 @@ const OneRepFileModule = (props) => {
     }
   }, [step]);
 
+  const logout = async () => {
+    localStorage.setItem("wallet", "");
+    localStorage.setItem('username', "");
+    localStorage.setItem("isAdmin", false);
+    window.location.href = "/";
+  }
   const filterContractMessage = (originMessage) => {
     let contractErrorReqExp = /[a-zA-Z\ ]+;[a-zA-Z\ ]+\[[a-zA-Z\:\/\/\-_\.0-9 ]+\] \(reason=\"([a-zA-Z \:]+)\",.+/;
     let msgElems = originMessage.match(contractErrorReqExp);
@@ -193,10 +200,10 @@ const OneRepFileModule = (props) => {
     // setTotalMint(reputation);
 
     if (badgeTokenAddress === undefined ||
-        badgeTokenAddress === null ||
-        badgeTokenAddress === "") {
+      badgeTokenAddress === null ||
+      badgeTokenAddress === "") {
       orAlert("Invalid badge token address");
-      return;        
+      return;
     }
 
     setShowWatingModalForMint(true);
@@ -215,7 +222,7 @@ const OneRepFileModule = (props) => {
       let tokenUrisList = [];
       let dataList = [];
 
-      for(let i = 0; i < values.length;i++) {
+      for (let i = 0; i < values.length; i++) {
         let tokenAmount = values[i][3];
         if (parseInt(tokenAmount) <= 0) {
           continue;
@@ -265,7 +272,7 @@ const OneRepFileModule = (props) => {
       });
       setShowWatingModalForMint(false);
       if (ret.data === undefined || ret.data === null ||
-          ret.data.success === undefined) {
+        ret.data.success === undefined) {
         orAlert("Failed to save file");
         return;
       }
@@ -284,24 +291,24 @@ const OneRepFileModule = (props) => {
   };
   const loadOneRepFiles = (selectedDaoName = null) => {
     let parent = localStorage.getItem("parent");
-    if(parent === "" || parent === "undefined") {
+    if (parent === "" || parent === "undefined") {
       axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), dao: selectedDaoName })
-      .then((response) => {
-        if (response.data.error) {
-          orAlert("Failed to load ONERep files: " + response.data.data);
-          return;
-        }
-        setRepFiles(response.data.data);
-      });
+        .then((response) => {
+          if (response.data.error) {
+            orAlert("Failed to load ONERep files: " + response.data.data);
+            return;
+          }
+          setRepFiles(response.data.data);
+        });
     } else {
       axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), dao: selectedDaoName })
-      .then((response) => {
-        if (response.data.error) {
-          orAlert("Failed to load ONERep files: " + response.data.data);
-          return;
-        }
-        setRepFiles(response.data.data);
-      });
+        .then((response) => {
+          if (response.data.error) {
+            orAlert("Failed to load ONERep files: " + response.data.data);
+            return;
+          }
+          setRepFiles(response.data.data);
+        });
     }
   };
   const onSubmitHandler = (e) => {
@@ -317,56 +324,56 @@ const OneRepFileModule = (props) => {
     UploadService.upload(files[0], prefix, (event) => {
       // setProgress(Math.round((100 * event.loaded) / event.total));
     })
-    .then((response) => {
-      inform("Success", response.data.message, "success");
-      step1Completed = true;
-      Papa.parse(files[0], {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          const rowsArray = [];
-          const valuesArray = [];
+      .then((response) => {
+        inform("Success", response.data.message, "success");
+        step1Completed = true;
+        Papa.parse(files[0], {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            const rowsArray = [];
+            const valuesArray = [];
 
-          setCSVData(results.data);
+            setCSVData(results.data);
 
-          // Iterating data to get column name and their values
-          let rep = 0;
-          results.data.map((d) => {
-            rowsArray.push(Object.keys(d));
-            valuesArray.push(Object.values(d));
-            rep += parseInt(d.received);
-            return true;
-          });
-          setReputation(rep);
-          // Parsed Data Response in array format
-          setParsedData(results.data);
+            // Iterating data to get column name and their values
+            let rep = 0;
+            results.data.map((d) => {
+              rowsArray.push(Object.keys(d));
+              valuesArray.push(Object.values(d));
+              rep += parseInt(d.received);
+              return true;
+            });
+            setReputation(rep);
+            // Parsed Data Response in array format
+            setParsedData(results.data);
 
-          // Filtered Column Names
-          setTableRows(rowsArray[0]);
+            // Filtered Column Names
+            setTableRows(rowsArray[0]);
 
-          // Filtered Values
-          // setValues([...values, ...valuesArray]);
-          setValues(valuesArray);
-        },
+            // Filtered Values
+            // setValues([...values, ...valuesArray]);
+            setValues(valuesArray);
+          },
+        });
+
+        // this.setState({
+        // message: response.data.message,
+        // });
+        // return UploadService.getFiles("data");
+      })
+      .then((files) => {
+        // this.setState({
+        // fileInfos: files.data,
+        // });
+      })
+      .catch((err) => {
+        this.setState({
+          progress: 0,
+          message: "Could not upload the file!",
+          currentFile: undefined,
+        });
       });
-
-      // this.setState({
-      // message: response.data.message,
-      // });
-      // return UploadService.getFiles("data");
-    })
-    .then((files) => {
-      // this.setState({
-      // fileInfos: files.data,
-      // });
-    })
-    .catch((err) => {
-      this.setState({
-        progress: 0,
-        message: "Could not upload the file!",
-        currentFile: undefined,
-      });
-    });
   };
   const onChangedFileUploadInput = (ev) => {
     onSubmitHandler(ev);
@@ -375,7 +382,7 @@ const OneRepFileModule = (props) => {
     try {
       let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
-        dao: selectedDaoName === "All"? null: selectedDaoName
+        dao: selectedDaoName === "All" ? null : selectedDaoName
       };
       // let isAdmin = localStorage.getItem("isAdmin");
       // if (isAdmin) {
@@ -413,7 +420,7 @@ const OneRepFileModule = (props) => {
           <h2>ONERep Files (Cordinape)</h2>
         </div>
         {
-          !isAdmin ? 
+          !isAdmin ?
             <div className="zl_all_page_notify_logout_btn">
               <ul className="v-link">
                 <li>
@@ -422,12 +429,12 @@ const OneRepFileModule = (props) => {
                   </button>
                 </li>
               </ul>
-            </div>:
+            </div> :
             <></>
         }
       </div>
       {
-        showMintWizard?
+        showMintWizard ?
           <ORFileImportWizard
             onClose={handleCloseMintWizard}
             stepActions={[
@@ -444,52 +451,52 @@ const OneRepFileModule = (props) => {
               },
               {}
             ]}
-          />:
-        <></>
+          /> :
+          <></>
       }
       <div className='main-text-color'>
         <div className='flow-layout mr-20'>
           <div className='flow-layout mr-10'>DAO</div>
           <div className='flow-layout mr-10'>
-          {
-            isAdmin ?
-            <Dropdown onSelect={handleDropDown}>
-              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                {selectedDao? selectedDao.dao ? selectedDao.dao: "All": "All"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-              {
-                (daoList.length > 0) ? 
-                  daoList.map(m => {
-                    return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
-                  }): 
-                  <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
-              }
-              </Dropdown.Menu>
-            </Dropdown>:
-            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "Select DAO": "Select Dao"}</label>
-          }
+            {
+              isAdmin ?
+                <Dropdown onSelect={handleDropDown}>
+                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                    {selectedDao ? selectedDao.dao ? selectedDao.dao : "All" : "All"}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {
+                      (daoList.length > 0) ?
+                        daoList.map(m => {
+                          return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>
+                        }) :
+                        <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>
+                    }
+                  </Dropdown.Menu>
+                </Dropdown> :
+                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Select DAO" : "Select Dao"}</label>
+            }
           </div>
         </div>
         {
           selectedDao ? ([
-              <div key="badge-token-name-label" className='flow-layout mr-20'>
-                Token Name
-                <label className="bordered-label">
-                  {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
-                </label>
-              </div>,
-              <div key="badge-token-total-supply-label" className='flow-layout mr-10'>
-                Number of Tokens 
-                <label className="bordered-label">
-                  {selectedDaoTokenTotalSupply}
-                </label>
-              </div>
-            ]): 
+            <div key="badge-token-name-label" className='flow-layout mr-20'>
+              Token Name
+              <label className="bordered-label">
+                {selectedDao ? selectedDao.badge ? selectedDao.badge : " " : " "}
+              </label>
+            </div>,
+            <div key="badge-token-total-supply-label" className='flow-layout mr-10'>
+              Number of Tokens
+              <label className="bordered-label">
+                {selectedDaoTokenTotalSupply}
+              </label>
+            </div>
+          ]) :
             <></>
         }
       </div>
-      <br/>
+      <br />
       <div>
         <Table striped className="or-table table">
           <thead>
@@ -503,22 +510,22 @@ const OneRepFileModule = (props) => {
             </tr>
           </thead>
           <tbody>
-          {
-            repfiles.length > 0? repfiles.map((row, i) => (
-              <tr key={i}>
-                <td>{row.userInfo?row.userInfo.length?row.userInfo[0].dao:"":""}</td>
-                <td>{row.filename}</td>
-                <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
-                <td className="text-right">{row.reputation}</td>
-                <td>{row.status ? "Completed" : "Failed"}</td>
-                <td>{
-                  new Date(row.created_at).toLocaleDateString() + 
-                  " " + 
-                  new Date(row.created_at).toLocaleTimeString()
-                }</td>
-              </tr>
-            )): <tr><td colSpan="6" className="text-center main-text-color-second"><i>No Data</i></td></tr>
-          }
+            {
+              repfiles.length > 0 ? repfiles.map((row, i) => (
+                <tr key={i}>
+                  <td>{row.userInfo ? row.userInfo.length ? row.userInfo[0].dao : "" : ""}</td>
+                  <td>{row.filename}</td>
+                  <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
+                  <td className="text-right">{row.reputation}</td>
+                  <td>{row.status ? "Completed" : "Failed"}</td>
+                  <td>{
+                    new Date(row.created_at).toLocaleDateString() +
+                    " " +
+                    new Date(row.created_at).toLocaleTimeString()
+                  }</td>
+                </tr>
+              )) : <tr><td colSpan="6" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+            }
           </tbody>
         </Table>
       </div>
@@ -562,7 +569,7 @@ const OneRepFileModule = (props) => {
             </div>
             <div className="or-waiting-modal-text main-text-color">
               Minting... Please wait a while.
-            </div>            
+            </div>
           </div>
         </Modal.Body>
       </Modal>
@@ -572,12 +579,12 @@ const OneRepFileModule = (props) => {
 };
 
 function mapStoreToProps(state) {
-    return { 
+  return {
     //     _userName: state.userAction.user,
     //     _wallet: state.userAction.wallet,
     //     _isAdmin: state.userAction.isAdmin,
     //     _badgeTokenAddress: state.userAction.badgeTokenAddress
-    };
+  };
 }
 
 export default connect(mapStoreToProps)(OneRepFileModule);
