@@ -46,7 +46,7 @@ const WalletConnectModule = (props) => {
         if (!isInited) {
             axios.get(SERVER_URL + '/users').then(response => {
                 let nUsers = response.data ? response.data.data? response.data.data : 0: 0;
-                if (nUsers.length < 1) {
+                if (nUsers < 1) {
                     setIsFirstRegister(true);
                 } else {
                     setIsFirstRegister(false);
