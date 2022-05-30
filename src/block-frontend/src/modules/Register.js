@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Form from 'react-bootstrap/Form';
 import { deployBadgeContract } from "../service/contractService";
 import { SERVER_URL } from "../conf";
+import { orAlert } from "../service/utils";
 import Web3 from "web3";
 import OrSpinButton from "../components/OrSpinButton";
 import BasicModal from "../components/Modals/BasicModal";
@@ -119,7 +120,8 @@ const RegisterModule = (props) => {
             inform("Success", "DAO Token deployed, please proceed to launch ONERep Account");
             console.log(">>>>>>>>>>>>>>>>>>>>> New deployed badge token address:", badgeTokenAddress);
         } catch (error) {
-            console.log("!!!!!!!!!!!!! Error occurred in onSubmitHandler(): ", error);
+            stopWait();
+            orAlert(error.message);
         }
     }
     const handleUserInput = (ev) => {

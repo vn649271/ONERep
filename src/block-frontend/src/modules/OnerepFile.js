@@ -222,6 +222,7 @@ const OneRepFileModule = (props) => {
       let tokenUrisList = [];
       let dataList = [];
 
+      let minter = localStorage.getItem("wallet");
       for (let i = 0; i < values.length; i++) {
         let tokenAmount = values[i][3];
         if (parseInt(tokenAmount) <= 0) {
@@ -229,6 +230,7 @@ const OneRepFileModule = (props) => {
         }
         let amounts = [];
         amounts.push(tokenAmount)
+        /////////////////////////////////////////////////////////////////////
         // Get signature for each 
         let ret = await getMintBatchApprovalSignature({
           web3,
@@ -258,6 +260,7 @@ const OneRepFileModule = (props) => {
         tokenUrisList,
         dataList
       );
+
       if (resp) {
         console.log(resp);
       }
@@ -268,8 +271,9 @@ const OneRepFileModule = (props) => {
         status: true,
         reputation: reputation,
         data: values,
-        master: localStorage.getItem("wallet"),
+        master: minter,
       });
+
       setShowWatingModalForMint(false);
       if (ret.data === undefined || ret.data === null ||
         ret.data.success === undefined) {
