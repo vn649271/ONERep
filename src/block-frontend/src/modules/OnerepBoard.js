@@ -22,6 +22,7 @@ const OneRepBoardModule = (props) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [inited, setInited] = useState(false);
   // const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
@@ -34,18 +35,20 @@ const OneRepBoardModule = (props) => {
 
   useEffect(() => {
     // Init connection info
-    if (!userName) {
+    if (!inited) {
       axios.post(
         SERVER_URL + '/users/loggedinuserbywallet', 
         {
           wallet: localStorage.getItem("wallet")
         }
       ).then(ret => {
+
         let userInfo = ret.data ? ret.data : null;
         if (!userInfo) {
           orAlert("Failed to get information for current logined user");
           return;
         }
+        setInited(true);
         setIsAdmin(userInfo.isAdmin);
         localStorage.setItem("isAdmin", userInfo.isAdmin);
         let badgeTokenAddress = userInfo.badgeAddress;

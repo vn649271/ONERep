@@ -14,6 +14,7 @@ let routes = (app) => {
   router.get("/files/:name", fileController.download);
 
   //user manage
+  router.get("/users", userController.getUserCount);
   router.post("/users", userController.getUserList);
   router.post("/users/loggedinuser",userController.getLoggedInUser)
   router.post("/users/loggedinuserbywallet",userController.getLoggedInUserByWallet)

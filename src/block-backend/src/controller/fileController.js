@@ -69,8 +69,8 @@ exports.addFile = async (req, res) => {
               console.log("Failed to update 'sent' value in the user", error);
             });
           });
-
           res.status(200).send({success: true});
+
         }).catch((err) => {
           res.status(200).send({success: false});
         });
@@ -151,8 +151,27 @@ exports.getListFiles = async (req, res) => {
             return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the files: " + error.message});            
           });
         } else {
-          fUpload.find({parent: req.body.master}).then((files) => {
+          // fUpload.find({parent: req.body.master}).then((files) => {
+          //   res.status(200).send({error: 0, data: files});
+          // });
+          fUpload.aggregate([
+            {
+              $match: {parent: req.body.master}
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'parent',
+                foreignField: 'wallet',
+                as: 'userInfo'
+              }
+            }
+          ])
+          .then((files) => {
             res.status(200).send({error: 0, data: files});
+          })
+          .catch(error => {
+            return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the files: " + error.message});            
           });
         }
       });

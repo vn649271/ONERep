@@ -44,9 +44,9 @@ const WalletConnectModule = (props) => {
         let walletAddress = localStorage.getItem('wallet');
         setWallet(walletAddress);
         if (!isInited) {
-            axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
-                let users = response.data ? response.data.length ? response.data : [] : [];
-                if (users.length < 1) {
+            axios.get(SERVER_URL + '/users').then(response => {
+                let nUsers = response.data ? response.data.data? response.data.data : 0: 0;
+                if (nUsers.length < 1) {
                     setIsFirstRegister(true);
                 } else {
                     setIsFirstRegister(false);

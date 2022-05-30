@@ -125,18 +125,31 @@ exports.getLoggedInUserByWallet = async (req, res) => {
 }
 
 exports.getUserList = async (req, res) => {
-    let user = await User.findOne({ wallet: req.body.master });
-    if (user === undefined || user === null) {
-        return res.status(200).send([]);
+    try {
+        let user = await User.findOne({ wallet: req.body.master, status: true });
+        if (user === undefined || user === null) {
+            return res.status(200).send([]);
+        }
+        if (user.isAdmin !== undefined && user.isAdmin) {
+            User.find().then((users) => {
+                res.status(200).send(users);
+            });
+        } else {
+            User.find({ parent: req.body.master, status: true }).then((users) => {
+                res.status(200).send(users);
+            });
+        }
+    } catch (error) {
+        res.status(200).send({error: -1, data: error.message});
     }
-    if (user.isAdmin !== undefined && user.isAdmin) {
-        User.find().then((users) => {
-            res.status(200).send(users);
-        });
-    } else {
-        User.find({ parent: req.body.master }).then((users) => {
-            res.status(200).send(users);
-        });
+}
+
+exports.getUserCount = async (req, res) => {
+    try {
+        let userCount = await User.count({status: true});
+        res.status(200).send({error: 0, data: userCount});
+    } catch (error) {
+        res.status(200).send({error: -1, data: "Failed to get number of users"});
     }
 }
 
