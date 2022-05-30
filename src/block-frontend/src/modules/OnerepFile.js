@@ -16,6 +16,7 @@ import Web3 from "web3";
 import { ethers } from "ethers";
 import { getMintBatchApprovalSignature, orAlert } from "../service/utils";
 import BasicModal from "../components/Modals/BasicModal";
+import OrSpinner from "../components/OrSpinner";
 const { SERVER_URL } = require("../conf");
 
 
@@ -56,6 +57,8 @@ const OneRepFileModule = (props) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [initedIsAdmin, setInitedIsAdmin] = useState(false);
   const [mintFailureReason, setMintFailureReason] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [inited, setInited] = useState(false);
 
   let web3 = null;
   let rpcProvider = null;
@@ -72,7 +75,7 @@ const OneRepFileModule = (props) => {
       setIsAdmin(_isAdmin === "true" ? true : false);
       setInitedIsAdmin(true);
     }
-    if (!badgeTokenAddress) {
+    if (!inited) {
       axios.post(
         SERVER_URL + '/users/loggedinuserbywallet',
         {
@@ -85,6 +88,7 @@ const OneRepFileModule = (props) => {
           logout();
           return;
         }
+        setInited(true);
         // console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.isAdmin);
         setInitedIsAdmin(true);
@@ -133,17 +137,17 @@ const OneRepFileModule = (props) => {
       });
     }
   });
-  useEffect(() => {
-    // setShowWatingModalForMint(true);
-    loadOneRepFiles();
-    if (
-      localStorage.getItem("wallet") === "" ||
-      !localStorage.getItem("wallet")
-    ) {
-      window.location.href = "/";
-      return;
-    }
-  }, [step]);
+  // useEffect(() => {
+  //   // setShowWatingModalForMint(true);
+  //   loadOneRepFiles();
+  //   if (
+  //     localStorage.getItem("wallet") === "" ||
+  //     !localStorage.getItem("wallet")
+  //   ) {
+  //     window.location.href = "/";
+  //     return;
+  //   }
+  // }, [step]);
 
   const logout = async () => {
     localStorage.setItem("wallet", "");
@@ -162,7 +166,7 @@ const OneRepFileModule = (props) => {
   const handleCloseMintWizard = () => setShowMintWizard(false);
   const handleCloseWatingModalForMint = () => setShowWatingModalForMint(false);
   const handleCloseMessageBox = () => setShowMessageBox(false);
-  const handleShow = () => {
+  const handleTriggerFileImportWizard = () => {
     setShowMintWizard(true);
     // setFile(null);
     setTableRows([]);
@@ -294,10 +298,12 @@ const OneRepFileModule = (props) => {
     }
   };
   const loadOneRepFiles = (selectedDaoName = null) => {
+    setLoading(true);
     let parent = localStorage.getItem("parent");
     if (parent === "" || parent === "undefined") {
       axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), dao: selectedDaoName })
         .then((response) => {
+          setLoading(false);
           if (response.data.error) {
             orAlert("Failed to load ONERep files: " + response.data.data);
             return;
@@ -307,6 +313,7 @@ const OneRepFileModule = (props) => {
     } else {
       axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), dao: selectedDaoName })
         .then((response) => {
+          setLoading(false);
           if (response.data.error) {
             orAlert("Failed to load ONERep files: " + response.data.data);
             return;
@@ -428,7 +435,7 @@ const OneRepFileModule = (props) => {
             <div className="zl_all_page_notify_logout_btn">
               <ul className="v-link">
                 <li>
-                  <button onClick={handleShow} className="btn-connect">
+                  <button onClick={handleTriggerFileImportWizard} className="btn-connect">
                     Add ONERep File
                   </button>
                 </li>
@@ -514,6 +521,12 @@ const OneRepFileModule = (props) => {
             </tr>
           </thead>
           <tbody>
+          {
+            loading?
+            <tr>
+              <td colSpan="6" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
+            </tr>:
+            <>
             {
               repfiles.length > 0 ? repfiles.map((row, i) => (
                 <tr key={i}>
@@ -530,6 +543,8 @@ const OneRepFileModule = (props) => {
                 </tr>
               )) : <tr><td colSpan="6" className="text-center main-text-color-second"><i>No Data</i></td></tr>
             }
+            </>
+          }
           </tbody>
         </Table>
       </div>
