@@ -128,9 +128,9 @@ const OneRepFileModule = (props) => {
           }
         });
       })
-        .catch(error => {
-          orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
-        });
+      .catch(error => {
+        orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
+      });
     }
   });
   useEffect(() => {
