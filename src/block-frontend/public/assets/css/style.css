@@ -2690,7 +2690,7 @@ margin-left: 0.8em;
   width: -moz-fit-content;
   width: fit-content;
   padding: 8px 15px;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -2735,30 +2735,47 @@ margin-left: 0.8em;
 
 /**************** Success Modal *************************/
 .or-modal-success .modal-content {
-  background-color: #15803d !important;
+  background: #28292c;
 }
 
 .or-modal-success .modal-content .modal-header {
-  border-bottom: 0px !important;
+  padding: 0.3rem 0.7rem;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.15) !important;
 }
 
 .or-modal-success .modal-content .modal-header button span {
   color: #eee !important;
 }
 
+.or-modal-success .modal-content .modal-header .close {
+  margin: 0.2em 0 0 0 !important;
+  padding: 0 !important;
+}
+
+.or-modal-success .modal-content .modal-body {
+  margin: 1em 1em;
+  border-bottom: 0;
+}
+
 .or-modal-success .modal-content .modal-footer {
-  border-top: 0px !important;
+  border-top: 1px solid rgba(5, 5, 5, 0.15) !important;
+  padding: 0.3em;
 }
 
 .or-modal-success .modal-content .modal-footer button {
-  background-color: transparent;
-  border-color: #eee;
+  color: #d5d3d3;
+  background: transparent;
+  border: 1px solid #828CAE;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 5px 10px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .or-modal-success .modal-content .modal-footer button:hover {
-  background-color: #eee;
-  color: #15803d;
+  opacity: .6;
 }
 
 /**************** Warning Modal *************************/
@@ -2839,6 +2856,14 @@ margin-left: 0.8em;
   padding: 0;
 }
 
+.text-left {
+  text-align: left !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
 .text-right {
   text-align: right !important;
 }
@@ -2885,11 +2910,13 @@ margin-left: 0.8em;
   display: none;
 }
 
-.wallet-address-box, .badge-address-box {
+.wallet-address-box,
+.badge-address-box {
   display: inline-block;
 }
 
-.wallet-address-box div div img, .badge-address-box div div img {
+.wallet-address-box div div img,
+.badge-address-box div div img {
   margin-top: -5px;
 }
 

@@ -49,6 +49,7 @@ const OneRepFileModule = (props) => {
   const [showMessageBox, setShowMessageBox] = useState(false);
   const [messageBoxTitle, setMessageBoxTitle] = useState(false);
   const [messageBoxContent, setMessageBoxContent] = useState(false);
+  const [messageBoxType, setMessageBoxType] = useState("error");
   const [walletAddress, setWalletAddress] = useState(null);
   const [userName, setUserName] = useState(null);
   const [chainId, setChainId] = useState(null);
@@ -169,7 +170,9 @@ const OneRepFileModule = (props) => {
     setMintFailureReason(reason);
     setshowFailure(true);
   }
-  const inform = (content) => {
+  const inform = (title, content, type = 'error') => {
+    setMessageBoxType(type);
+    setMessageBoxTitle(title);
     setMessageBoxContent(content);
     setShowMessageBox(true);
   }
@@ -267,7 +270,7 @@ const OneRepFileModule = (props) => {
         return;
       }
       loadOneRepFiles();
-      inform("Successfully Minted");
+      inform("Success", "Successfully Minted", "success");
     } catch (error) {
       setShowWatingModalForMint(false);
       let msg = filterContractMessage(error.message);
@@ -315,7 +318,7 @@ const OneRepFileModule = (props) => {
       // setProgress(Math.round((100 * event.loaded) / event.total));
     })
     .then((response) => {
-      inform(response.data.message);
+      inform("Success", response.data.message, "success");
       step1Completed = true;
       Papa.parse(files[0], {
         header: true,
@@ -520,27 +523,11 @@ const OneRepFileModule = (props) => {
         </Table>
       </div>
       {/******************* "Minted Successfully" Dialog *********************/}
-      <Modal centered show={showMessageBox} onHide={handleCloseMessageBox}>
-        <Modal.Body>
-          <div className="p-4">
-            <br />
-            <div className="main-text-color text-center">
-              {messageBoxContent}
-            </div>
-            <br />
-            <br />
-            <div className="text-center">
-              <button
-                type="button"
-                className="btn-connect"
-                onClick={handleCloseMessageBox}
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+      <BasicModal show={showMessageBox} title={messageBoxTitle} modalType={messageBoxType} closeModal={handleCloseMessageBox}>
+        <p className="main-text-color text-center">
+          {messageBoxContent}
+        </p>
+      </BasicModal>
       {/******************* "Minted Failure" Dialog *********************/}
       <Modal centered show={showFailure} onHide={handleCloseFailure}>
         <Modal.Body>

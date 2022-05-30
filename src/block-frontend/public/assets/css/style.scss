@@ -2681,12 +2681,12 @@ margin-left: 0.8em;
 	border: 1px solid #828CAE;
 	width: fit-content;
 	padding: 8px 15px;
-	border-radius: 3px;
+	border-radius: 5px;
 	cursor: pointer;
-}
 
-.or-button:hover {
-	opacity: .6;
+	&:hover {
+		opacity: .6;
+	}
 }
 
 .or-small-button {
@@ -2697,10 +2697,10 @@ margin-left: 0.8em;
 	padding: 0px 10px;
 	border-radius: 2px;
 	cursor: pointer;
-}
 
-.or-small-button:hover {
-	opacity: .6;
+	&:hover {
+		opacity: .6;
+	}
 }
 
 .or-wizard-dialog .card-header {
@@ -2720,31 +2720,48 @@ margin-left: 0.8em;
 }
 
 /**************** Success Modal *************************/
-.or-modal-success .modal-content {
-	background-color: rgb(21, 128, 61) !important;
-}
+.or-modal-success {
+	.modal-content {
+		background: rgb(40, 41, 44);
 
-.or-modal-success .modal-content .modal-header {
-	border-bottom: 0px !important;
-}
+		.modal-header {
+			padding: 0.3rem 0.7rem;
+			border-bottom: 1px solid rgba(5, 5, 5, .15) !important;
 
-.or-modal-success .modal-content .modal-header button span {
-	color: #eee !important;
-}
+			button span {
+				color: #eee !important;
+			}
 
-.or-modal-success .modal-content .modal-footer {
-	border-top: 0px !important;
-}
+			.close {
+				margin: 0.2em 0 0 0 !important;
+				padding: 0 !important;
+			}
+		}
 
-.or-modal-success .modal-content .modal-footer button {
-	background-color: transparent;
-	border-color: #eee;
-	border-radius: 5px;
-}
+		.modal-body {
+			margin: 1em 1em;
+			border-bottom: 0;
+		}
 
-.or-modal-success .modal-content .modal-footer button:hover {
-	background-color: #eee;
-	color: rgb(21, 128, 61);
+		.modal-footer {
+			border-top: 1px solid rgba(5, 5, 5, .15) !important;
+			padding: 0.3em;
+
+			button {
+				color: #d5d3d3;
+				background: transparent;
+				border: 1px solid #828CAE;
+				width: fit-content;
+				padding: 5px 10px;
+				border-radius: 5px;
+				cursor: pointer;
+
+				&:hover {
+					opacity: .6;
+				}
+			}
+		}
+	}
 }
 
 /**************** Warning Modal *************************/
@@ -2884,7 +2901,8 @@ margin-left: 0.8em;
 	display: none;
 }
 
-.wallet-address-box, .badge-address-box {
+.wallet-address-box,
+.badge-address-box {
 	display: inline-block;
 
 	div {
