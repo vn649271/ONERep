@@ -21,6 +21,7 @@ const OneRepBoardModule = (props) => {
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
+  const [userName, setUserName] = useState(null);
   // const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ const OneRepBoardModule = (props) => {
 
   useEffect(() => {
     // Init connection info
-    if (!badgeTokenAddress) {
+    if (!userName) {
       axios.post(
         SERVER_URL + '/users/loggedinuserbywallet', 
         {
@@ -49,6 +50,7 @@ const OneRepBoardModule = (props) => {
         localStorage.setItem("isAdmin", userInfo.isAdmin);
         let badgeTokenAddress = userInfo.badgeAddress;
         setBadgeTokenAddress(badgeTokenAddress);
+        setUserName(userInfo.username);
         // setChainId(localStorage.getItem('chainId'));
         dispatch({
           type: USERS.CONNECT_WALLET, 
