@@ -17,6 +17,21 @@ contract ONERep is ERC1238, ERC1238URIStorage {
         _;
     }
 
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() public view virtual returns (string memory) {
+        return "ONE Rep Badge Token";
+    }
+
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the
+     * name.
+     */
+    function symbol() public view virtual returns (string memory) {
+        return "ORB";
+    }
+
     function setOwner(address newOwner) external onlyOwner {
         require(newOwner != address(0), "Invalid address for new owner");
         owner = newOwner;
