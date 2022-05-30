@@ -24,7 +24,7 @@ const OneRepBoardModule = (props) => {
   const [badgeTokenAddress, setBadgeTokenAddress] = useState(null);
   const [userName, setUserName] = useState(null);
   const [inited, setInited] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   // const [chainId, setChainId] = useState(0);
 
   const dispatch = useDispatch();
