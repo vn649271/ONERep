@@ -5,20 +5,28 @@ const jwt = require("jwt-simple");
 
 exports.register = async (req, res) => {
     let errors = [];
-    if (!req.body.username) {
-        errors.push({ text: 'Please Enter UserName.' });
+    let userCount = 0;
+    try {
+        userCount = await User.count();
+    } catch (error) {
+        console.log("Failed get user count");
     }
     if (!req.body.wallet) {
         errors.push({ text: 'Please Enter Address.' });
     }
-    if (!req.body.badge) {
-        errors.push({ text: 'Please Enter Badge Name.' });
+    if (!req.body.username) {
+        errors.push({ text: 'Please Enter UserName.' });
     }
-    if (!req.body.dao) {
-        errors.push({ text: 'Please Enter DAO address.' });
-    }
-    if (!req.body.tokenaddress) {
-        errors.push({ text: 'Badge Address is required' });
+    if (userCount > 0) {
+        if (!req.body.badge) {
+            errors.push({ text: 'Please Enter Badge Name.' });
+        }
+        if (!req.body.dao) {
+            errors.push({ text: 'Please Enter DAO address.' });
+        }
+        if (!req.body.tokenaddress) {
+            errors.push({ text: 'Badge Address is required' });
+        }
     }
     if (errors.length > 0) {
         res.status(200).send({ success: false, error: errors });
@@ -28,7 +36,6 @@ exports.register = async (req, res) => {
         if (user) {
             res.redirect(req.headers.origin + '/admin');
         } else {
-            let ret = await User.aggregate({ $count: "id" });
             let user = new User({
                 username: req.body.username,
                 wallet: req.body.wallet,
@@ -36,15 +43,15 @@ exports.register = async (req, res) => {
                 dao: req.body.dao,
                 badgeAddress: req.body.tokenaddress
             });
-            if (ret.length === undefined || ret.length < 1 || ret[0].id < 1) {
+            if (userCount < 1) {
                 // Is the most first user and super admin
                 user = new User({
                     username: req.body.username,
                     wallet: req.body.wallet,
-                    badge: req.body.badge,
-                    dao: req.body.dao,
+                    badge: "",
+                    dao: "",
                     isAdmin: true,
-                    badgeAddress: req.body.tokenaddress
+                    badgeAddress: ""
                 });
             }
             user.save().then((result) => {

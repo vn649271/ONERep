@@ -37,7 +37,7 @@ const WalletConnectModule = (props) => {
     const [modalType, setModalType] = useState("error"); // 0: Error, 1: Warning, 2: Success
     const [modalTitle, setModalTitle] = useState("");
     const [modalMessage, setModalMessage] = useState("");
-    const [isFirstLogin, setIsFirstLogin] = useState(false);
+    const [isFirstRegister, setIsFirstRegister] = useState(false);
     const [isInited, setIsInited] = useState(false);
 
     useEffect(() => {
@@ -47,9 +47,9 @@ const WalletConnectModule = (props) => {
             axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
                 let users = response.data ? response.data.length ? response.data : [] : [];
                 if (users.length < 1) {
-                    setIsFirstLogin(true);
+                    setIsFirstRegister(true);
                 } else {
-                    setIsFirstLogin(false);
+                    setIsFirstRegister(false);
                 }
                 setIsInited(true);
             });
@@ -74,7 +74,7 @@ const WalletConnectModule = (props) => {
 
         let badge1 = document.getElementsByName("badge");;
         let badgeSymbol = badge1[0].value;
-        if (badgeSymbol === '') {
+        if (!isFirstRegister && badgeSymbol === '') {
             setErrorBadgeName('Invalid badge token name');
             stopWait();
             return;
@@ -82,7 +82,7 @@ const WalletConnectModule = (props) => {
 
         let dao1 = document.getElementsByName("dao");
         let daoName = dao1[0].value;
-        if (daoName === '') {
+        if (!isFirstRegister && daoName === '') {
             setErrorDaoName('Invalid DAO name');
             stopWait();
             return;
@@ -181,7 +181,7 @@ const WalletConnectModule = (props) => {
                                 </Form.Group>
                             </div>
                             {
-                                isFirstLogin ?
+                                isFirstRegister ?
                                     <></> :
                                     <>
                                         <div className="col-md-6">

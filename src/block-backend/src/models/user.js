@@ -65,7 +65,7 @@ const userSchema=new mongoose.Schema({
     },
     badgeAddress:{
         type:String,
-        required: true,
+        required: false,
         default: ''
     }
 });
