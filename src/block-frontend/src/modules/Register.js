@@ -22,7 +22,7 @@ import axios from 'axios';
 // }
 const IDLE = 0, PENDING = 1;
 
-const WalletConnectModule = (props) => {
+const RegisterModule = (props) => {
 
     const [wallet, setWallet] = useState('');
     const [status, setStatus] = useState(IDLE); // IDLE, PENDING
@@ -241,4 +241,4 @@ const WalletConnectModule = (props) => {
 }
 const mapStoreToProps = ({ userAction }) => ({
 });
-export default connect(mapStoreToProps, null)(WalletConnectModule);
+export default connect(mapStoreToProps, null)(RegisterModule);

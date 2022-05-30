@@ -2,7 +2,7 @@ export const contactEmail = "support@soh.com";
 
 export const routes = {
   home: "/home",
-  walletconnect: "/walletconnect",
+  register: "/register",
   admin: "/admin",
   onerepfile: "/onerepfile",
   onerepboard: "/onerepboard",

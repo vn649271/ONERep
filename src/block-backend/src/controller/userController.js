@@ -69,7 +69,6 @@ exports.login = async (req, res) => {
             res.send("Error Happened In auth /token Route");
         } else {
             if (user) {
-                console.log("User in login", user)
                 if (user.status == true) {
                     res.json({
                         success: true,
@@ -80,14 +79,13 @@ exports.login = async (req, res) => {
                         url: '/onerepboard'
                     });
                 } else {
-                    console.log("User in login 1", user)
                     res.json({
                         success: true,
                         username: "",
                         isAdmin: false,
                         parent: "",
                         badgeTokenAddress: null,
-                        url: '/walletconnect'
+                        url: '/register'
                     });
                 }
             } else {
@@ -95,7 +93,7 @@ exports.login = async (req, res) => {
                     success: true,
                     username: "",
                     isAdmin: false,
-                    url: '/walletconnect'
+                    url: '/register'
                 });
             }
         }
@@ -109,17 +107,13 @@ exports.logout = async (req, res) => {
 
 //New end point added to get the current logged in user
 exports.getLoggedInUser = async (req, res) => {
-    console.log("The user in the request is", req.body.user)
     User.findOne({ username: req.body.user }).then((user) => {
-        console.log("The user is", user)
         res.status(200).send(user)
     })
 }
 
 exports.getLoggedInUserByWallet = async (req, res) => {
-    console.log("The user in the request is", req.body.wallet)
     User.findOne({ wallet: req.body.wallet }).then((user) => {
-        console.log("The user is", user)
         res.status(200).send(user)
     })
 }
@@ -334,9 +328,7 @@ exports.update = async (req, res) => {
     User.findOne({ wallet: req.body.wallet }).then(async user => {
         var puser = user;
         if (req.body._id == '') {
-            console.log("Inside if req.body._id")
             if (user) {
-                console.log("inside if ETH address");
                 return res.status(200).send({ error: "ETH address duplicated!", success: false });
             } else {
                 let isAdmin = false;
@@ -359,7 +351,6 @@ exports.update = async (req, res) => {
             }
         } else {
             if (!puser) {
-                console.log("if !puser");
                 return res.status(200).send({ error: "This accout does not exist!", success: false });
             } else {
                 let isAdmin = false;

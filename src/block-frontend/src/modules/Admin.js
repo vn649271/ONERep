@@ -63,7 +63,7 @@ const AdminModule = (props) => {
                         wallet: ret.data.wallet,
                         user: ret.data.username,
                         isAdmin: ret.data.isAdmin,
-                        badgeAddress: badgeAddress,
+                        badgeTokenAddress: ret.data.badgeAddress,
                     }
                 });
                 // setChainId(localStorage.getItem('chainId'));

@@ -47,11 +47,11 @@ ul {
   padding: 26px 20px 20px 110px;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='walletconnect'] {
+.zl_all_pages_content .zl_page_sidebar[title='register'] {
   display: none;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='walletconnect'] ~ .zl_all_pages_inner_content {
+.zl_all_pages_content .zl_page_sidebar[title='register'] ~ .zl_all_pages_inner_content {
   padding: 10px;
   overflow-x: hidden;
 }

@@ -14,14 +14,14 @@ import Currency from './Currency';
 import AccountSupport from './AccountSupport';
 
 import HomePageModule from './HomePage';
-import WalletConnect from "./WalletConnect";
+import RegisterModule from "./Register";
 import AdminModule from "./Admin";
 import OneRepFileModule from "./OnerepFile";
 import OneRepBoardModule from "./OnerepBoard";
 
 export default {
 	[routes.home]: HomePageModule,
-	[routes.walletconnect]: WalletConnect,
+	[routes.register]: RegisterModule,
 	[routes.admin]: AdminModule,
 	[routes.onerepfile]: OneRepFileModule,
 	[routes.onerepboard]: OneRepBoardModule,
