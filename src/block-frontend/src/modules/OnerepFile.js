@@ -485,7 +485,7 @@ const OneRepFileModule = (props) => {
                     }
                   </Dropdown.Menu>
                 </Dropdown> :
-                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Unknown Dao" : "Unknown Dao"}</label>
+                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Unknown" : "Unknown"}</label>
             }
           </div>
         </div>
