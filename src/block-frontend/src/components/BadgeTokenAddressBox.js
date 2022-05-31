@@ -38,14 +38,14 @@ const BadgeTokenAddressBox = props => {
 				<div className="badge-address-box w-full text-right">
 				{
 					_badgeTokenAddress && history.location.pathname !== "/" ? 
-					<div>
+					<div title="Badge Token Address">
 						<div className="flow-layout main-text-color mr-1"><img src='/assets/image/badge-token.png' alt="ONERep Token" width='26px' height='26px'/></div>
-						<div className="wallet-address main-text-color" onClick={onClick} toolTip="Wallet Address">
-						{
-							_badgeTokenAddress.substring(0, 6) + 
-							"..." + 
-							_badgeTokenAddress.substring(_badgeTokenAddress.length-5, _badgeTokenAddress.length-1)
-						}
+						<div className="flow-layout wallet-address main-text-color" onClick={onClick}>
+							{
+								_badgeTokenAddress.substring(0, 6) + 
+								"..." + 
+								_badgeTokenAddress.substring(_badgeTokenAddress.length-5, _badgeTokenAddress.length-1)
+							}
 						</div>
 						{/******************* "Minting..." Dialog *********************/}
 						<div className={`${showCopiedMessage?"show-toast-box ml-40":"hide-toast-box"}`} onClick={hideCopiedMessage}>

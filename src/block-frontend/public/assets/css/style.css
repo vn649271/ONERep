@@ -47,37 +47,37 @@ ul {
   padding: 26px 20px 20px 110px;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='register'] {
+.zl_all_pages_content .zl_page_sidebar[title="register"] {
   display: none;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='register'] ~ .zl_all_pages_inner_content {
+.zl_all_pages_content .zl_page_sidebar[title="register"] ~ .zl_all_pages_inner_content {
   padding: 10px;
   overflow-x: hidden;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='login'] {
+.zl_all_pages_content .zl_page_sidebar[title="login"] {
   display: none;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='login'] ~ .zl_all_pages_inner_content {
+.zl_all_pages_content .zl_page_sidebar[title="login"] ~ .zl_all_pages_inner_content {
   padding: 0;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='home'] {
+.zl_all_pages_content .zl_page_sidebar[title="home"] {
   display: none;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title='home'] ~ .zl_all_pages_inner_content {
+.zl_all_pages_content .zl_page_sidebar[title="home"] ~ .zl_all_pages_inner_content {
   padding: 10px;
   overflow-x: hidden;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title=''] {
+.zl_all_pages_content .zl_page_sidebar[title=""] {
   display: none;
 }
 
-.zl_all_pages_content .zl_page_sidebar[title=''] ~ .zl_all_pages_inner_content {
+.zl_all_pages_content .zl_page_sidebar[title=""] ~ .zl_all_pages_inner_content {
   padding: 38px;
   overflow-x: hidden;
 }
@@ -329,7 +329,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -389,27 +389,27 @@ table td {
   margin-right: 5px;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:first-child[title='1'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:first-child[title="1"] {
   background: #C4C4C4;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title='2'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title="2"] {
   background: #C4C4C4;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(3)[title='3'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(3)[title="3"] {
   background: #C4C4C4;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title='1'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title="1"] {
   background: #c4c4c499;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(3)[title='2'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(3)[title="2"] {
   background: #c4c4c499;
 }
 
-.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title='3'] {
+.zl_welcome_slide_section .zl_welcome_slide_content .zl_welcome_slide_indicator .zl_welcome_slide_indicator_items:nth-child(2)[title="3"] {
   background: #c4c4c499;
 }
 
@@ -2301,7 +2301,7 @@ table td {
 .zl_securebackup_btn a:hover,
 .zl_securebackup_btn button:hover {
   text-decoration: none;
-  opacity: .8;
+  opacity: 0.8;
   color: #252F47;
 }
 
@@ -2564,7 +2564,7 @@ table td {
 }
 
 .or-spin-button {
-  background: #828CAE;
+  background: #828cae;
   border-radius: 10px;
   min-width: 180px;
   display: block;
@@ -2578,7 +2578,7 @@ table td {
   width: fit-content;
   font-size: 20px;
   line-height: 24px;
-  color: #252F47;
+  color: #252f47;
   text-align: center;
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -2608,8 +2608,8 @@ table td {
 
 .or-spin-button:hover {
   text-decoration: none;
-  opacity: .8;
-  color: #252F47;
+  opacity: 0.8;
+  color: #252f47;
 }
 
 .or-spin-button label {
@@ -2656,11 +2656,37 @@ margin-top: -2em;
 margin-left: 0.8em;
 */
   height: 1em;
-  color: #C33;
+  color: #c33;
+}
+
+.or-tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+  /* If you want dots under the hoverable text */
+  /* Tooltip text */
+  /* Show the tooltip text when you mouse over the tooltip container */
+}
+
+.or-tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+.or-tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 
 .invalid-content {
-  border: 2px solid #D33 !important;
+  border: 2px solid #d33 !important;
 }
 
 .flow-layout {
@@ -2677,7 +2703,7 @@ margin-left: 0.8em;
 }
 
 .bordered-label {
-  border: 1px solid #828CAE;
+  border: 1px solid #828cae;
   margin: 5px;
   padding: 6px 12px;
   border-radius: 4px;
@@ -2690,7 +2716,7 @@ margin-left: 0.8em;
 .or-button {
   color: #f5f3f3;
   background: transparent;
-  border: 1px solid #828CAE;
+  border: 1px solid #828cae;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
@@ -2700,13 +2726,13 @@ margin-left: 0.8em;
 }
 
 .or-button:hover {
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .or-small-button {
   color: #f5f3f3;
   background: transparent;
-  border: 1px solid #828CAE;
+  border: 1px solid #828cae;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
@@ -2716,7 +2742,7 @@ margin-left: 0.8em;
 }
 
 .or-small-button:hover {
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .or-wizard-dialog .card-header {
@@ -2770,7 +2796,7 @@ margin-left: 0.8em;
 .or-modal-success .modal-content .modal-footer button {
   color: #d5d3d3;
   background: transparent;
-  border: 1px solid #828CAE;
+  border: 1px solid #828cae;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
@@ -2780,7 +2806,7 @@ margin-left: 0.8em;
 }
 
 .or-modal-success .modal-content .modal-footer button:hover {
-  opacity: .6;
+  opacity: 0.6;
 }
 
 /**************** Warning Modal *************************/
@@ -2875,7 +2901,7 @@ margin-left: 0.8em;
 
 .or-table tr th {
   vertical-align: bottom;
-  color: #CAD3F2;
+  color: #cad3f2;
   text-transform: uppercase;
 }
 
@@ -2884,7 +2910,7 @@ margin-left: 0.8em;
   font-size: 14px;
   line-height: 15px;
   text-align: left;
-  color: #828CAE;
+  color: #828cae;
 }
 
 .or-table tr td.text-right {
@@ -3447,7 +3473,7 @@ margin-left: 0.8em;
   .zl_all_pages_content .react-datepicker__input-container input {
     width: 100%;
   }
-  .zl_all_pages_content .zl_page_sidebar[title=''] ~ .zl_all_pages_inner_content {
+  .zl_all_pages_content .zl_page_sidebar[title=""] ~ .zl_all_pages_inner_content {
     padding: 35px 15px;
   }
   .zl_wallet_chart_bottom_content .zl_wallet_chart_send_recive_btn {

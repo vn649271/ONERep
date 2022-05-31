@@ -8,7 +8,7 @@
 } */
 
 body {
-	font-family: $fontfamily  !important;
+	font-family: $fontfamily !important;
 }
 
 .zl_page_dark_mode {
@@ -48,41 +48,41 @@ ul {
 	}
 
 	.zl_page_sidebar.zl_hide_sidebar {
-		&~.zl_all_pages_inner_content {
+		& ~ .zl_all_pages_inner_content {
 			padding: 26px 20px 20px 110px;
 		}
 	}
 
-	.zl_page_sidebar[title='register'] {
+	.zl_page_sidebar[title="register"] {
 		display: none;
 
-		&~.zl_all_pages_inner_content {
+		& ~ .zl_all_pages_inner_content {
 			padding: 10px;
 			overflow-x: hidden;
 		}
 	}
 
-	.zl_page_sidebar[title='login'] {
+	.zl_page_sidebar[title="login"] {
 		display: none;
 
-		&~.zl_all_pages_inner_content {
+		& ~ .zl_all_pages_inner_content {
 			padding: 0;
 		}
 	}
 
-	.zl_page_sidebar[title='home'] {
+	.zl_page_sidebar[title="home"] {
 		display: none;
 
-		&~.zl_all_pages_inner_content {
+		& ~ .zl_all_pages_inner_content {
 			padding: 10px;
 			overflow-x: hidden;
 		}
 	}
 
-	.zl_page_sidebar[title=''] {
+	.zl_page_sidebar[title=""] {
 		display: none;
 
-		&~.zl_all_pages_inner_content {
+		& ~ .zl_all_pages_inner_content {
 			padding: 38px;
 			overflow-x: hidden;
 		}
@@ -134,7 +134,7 @@ ul {
 		&::before {
 			content: "";
 			position: absolute;
-			background-image: url('../image/calendar.svg');
+			background-image: url("../image/calendar.svg");
 			width: 16px;
 			height: 16px;
 			right: 10px;
@@ -151,7 +151,7 @@ ul {
 		background: $gradian-color2;
 		box-shadow: 0px 48px 69px rgb(23, 18, 43);
 		border: 0;
-		font-family: $fontfamily  !important;
+		font-family: $fontfamily !important;
 	}
 
 	.react-datepicker__header {
@@ -353,7 +353,7 @@ input {
 	}
 }
 
-input[type=number] {
+input[type="number"] {
 	-moz-appearance: textfield;
 }
 
@@ -399,27 +399,27 @@ table {
 				border-radius: 10px;
 				margin-right: 5px;
 
-				&:first-child[title='1'] {
+				&:first-child[title="1"] {
 					background: $color23;
 				}
 
-				&:nth-child(2)[title='2'] {
+				&:nth-child(2)[title="2"] {
 					background: $color23;
 				}
 
-				&:nth-child(3)[title='3'] {
+				&:nth-child(3)[title="3"] {
 					background: $color23;
 				}
 
-				&:nth-child(2)[title='1'] {
+				&:nth-child(2)[title="1"] {
 					background: $color24;
 				}
 
-				&:nth-child(3)[title='2'] {
+				&:nth-child(3)[title="2"] {
 					background: $color24;
 				}
 
-				&:nth-child(2)[title='3'] {
+				&:nth-child(2)[title="3"] {
 					background: $color24;
 				}
 			}
@@ -683,7 +683,7 @@ table {
 		}
 
 		.show {
-			>.btn-primary.dropdown-toggle {
+			> .btn-primary.dropdown-toggle {
 				&:focus {
 					box-shadow: 0px 4px 31px $color27;
 				}
@@ -756,7 +756,11 @@ table {
 							display: block;
 						}
 
-						background: linear-gradient(224.09deg, rgba(61, 71, 106, 0.45) 0%, rgba(61, 71, 106, 0.49) 98.47%);
+						background: linear-gradient(
+							224.09deg,
+							rgba(61, 71, 106, 0.45) 0%,
+							rgba(61, 71, 106, 0.49) 98.47%
+						);
 
 						.zl_all_page_notification_list_body {
 							.zl_all_page_notification_list_heading {
@@ -770,7 +774,7 @@ table {
 					}
 
 					.show {
-						>.btn-primary.dropdown-toggle {
+						> .btn-primary.dropdown-toggle {
 							&:focus {
 								box-shadow: none !important;
 								outline: 0 !important;
@@ -976,7 +980,7 @@ table {
 		fill: $color3;
 		font-weight: 600;
 		font-size: 12px;
-		font-family: $fontfamily  !important;
+		font-family: $fontfamily !important;
 	}
 
 	.apexcharts-toolbar {
@@ -1034,7 +1038,7 @@ table {
 }
 
 .zl_all_page_comman_content {
-	+.zl_add_currency_content {
+	+ .zl_add_currency_content {
 		padding-top: 27px;
 	}
 }
@@ -1239,7 +1243,7 @@ table {
 
 				svg {
 					polyline {
-						stroke: $color13  !important;
+						stroke: $color13 !important;
 					}
 				}
 			}
@@ -1356,7 +1360,7 @@ table {
 
 			svg {
 				polyline {
-					stroke: $color13  !important;
+					stroke: $color13 !important;
 				}
 			}
 		}
@@ -1476,7 +1480,7 @@ table {
 	}
 
 	.custom-control-input {
-		&:checked~.custom-control-label {
+		&:checked ~ .custom-control-label {
 			&::after {
 				left: -39px;
 				transform: translateX(0);
@@ -1524,7 +1528,7 @@ table {
 }
 
 .zl_add_currency_content {
-	+.zl_all_page_comman_content {
+	+ .zl_all_page_comman_content {
 		margin-top: 27px;
 	}
 }
@@ -1535,11 +1539,11 @@ table {
 	display: flex !important;
 
 	.apexcharts-legend-text {
-		color: $color12  !important;
+		color: $color12 !important;
 		font-weight: 600 !important;
 		font-size: 12px !important;
 		padding-left: 10px;
-		font-family: $fontfamily  !important;
+		font-family: $fontfamily !important;
 	}
 }
 
@@ -1613,7 +1617,7 @@ table {
 
 				svg {
 					polyline {
-						stroke: $color13  !important;
+						stroke: $color13 !important;
 					}
 				}
 			}
@@ -1730,7 +1734,7 @@ table {
 
 			svg {
 				polyline {
-					stroke: $color13  !important;
+					stroke: $color13 !important;
 				}
 			}
 		}
@@ -1815,12 +1819,12 @@ table {
 
 		button {
 			border: 0;
-			background-color: $color3  !important;
+			background-color: $color3 !important;
 			border-radius: 10px;
 			font-weight: bold;
 			font-size: 20px;
 			line-height: 24px;
-			color: $color4  !important;
+			color: $color4 !important;
 			padding: 17px;
 			max-width: 180px;
 			min-width: 180px;
@@ -1828,12 +1832,12 @@ table {
 
 			&:active {
 				border: 0;
-				background-color: $color3  !important;
+				background-color: $color3 !important;
 				border-radius: 10px;
 				font-weight: bold;
 				font-size: 20px;
 				line-height: 24px;
-				color: $color4  !important;
+				color: $color4 !important;
 				padding: 17px;
 				max-width: 180px;
 				min-width: 180px;
@@ -1860,12 +1864,12 @@ table {
 .zl_send_currency_btn_text {
 	.zl_send_currency_btn {
 		border: 0;
-		background-color: $color3  !important;
+		background-color: $color3 !important;
 		border-radius: 10px;
 		font-weight: bold;
 		font-size: 20px;
 		line-height: 24px;
-		color: $color4  !important;
+		color: $color4 !important;
 		padding: 17px;
 		max-width: 180px;
 		min-width: 180px;
@@ -1874,12 +1878,12 @@ table {
 
 		&:active {
 			border: 0;
-			background-color: $color3  !important;
+			background-color: $color3 !important;
 			border-radius: 10px;
 			font-weight: bold;
 			font-size: 20px;
 			line-height: 24px;
-			color: $color4  !important;
+			color: $color4 !important;
 			padding: 17px;
 			max-width: 180px;
 			min-width: 180px;
@@ -2046,9 +2050,9 @@ table {
 			margin-right: 12px;
 
 			&:active {
-				border: 1px solid $color21  !important;
+				border: 1px solid $color21 !important;
 				background: transparent !important;
-				color: $color3  !important;
+				color: $color3 !important;
 			}
 
 			&:last-child {
@@ -2109,7 +2113,7 @@ table {
 			margin-right: 20px;
 
 			&:active {
-				background: $color12  !important;
+				background: $color12 !important;
 			}
 		}
 
@@ -2308,7 +2312,7 @@ table {
 
 		&:hover {
 			text-decoration: none;
-			opacity: .8;
+			opacity: 0.8;
 			color: $color4;
 		}
 	}
@@ -2556,13 +2560,12 @@ table {
 	}
 }
 
-
 .or-header {
-	margin-bottom: 30px
+	margin-bottom: 30px;
 }
 
 .or-spin-button {
-	background: #828CAE;
+	background: #828cae;
 	border-radius: 10px;
 	min-width: 180px;
 	display: block;
@@ -2572,7 +2575,7 @@ table {
 	width: fit-content;
 	font-size: 20px;
 	line-height: 24px;
-	color: #252F47;
+	color: #252f47;
 	text-align: center;
 	box-shadow: none;
 	border: none;
@@ -2603,8 +2606,8 @@ table {
 
 .or-spin-button:hover {
 	text-decoration: none;
-	opacity: .8;
-	color: #252F47;
+	opacity: 0.8;
+	color: #252f47;
 }
 
 .or-spin-button label {
@@ -2629,7 +2632,8 @@ table {
 	text-align: center;
 }
 
-.or-waiting-modal {}
+.or-waiting-modal {
+}
 
 .w-fit-content {
 	width: fit-content;
@@ -2651,11 +2655,38 @@ margin-top: -2em;
 margin-left: 0.8em;
 */
 	height: 1em;
-	color: #C33;
+	color: #c33;
+}
+
+.or-tooltip {
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+	/* Tooltip text */
+	.tooltip-text {
+		visibility: hidden;
+		width: 120px;
+		background-color: black;
+		color: #fff;
+		text-align: center;
+		padding: 5px 0;
+		border-radius: 6px;
+
+		/* Position the tooltip text - see examples below! */
+		position: absolute;
+		z-index: 1;
+	}
+
+	/* Show the tooltip text when you mouse over the tooltip container */
+	&:hover {
+		.tooltiptext {
+			visibility: visible;
+		}
+	}
 }
 
 .invalid-content {
-	border: 2px solid #D33 !important;
+	border: 2px solid #d33 !important;
 }
 
 .flow-layout {
@@ -2672,7 +2703,7 @@ margin-left: 0.8em;
 }
 
 .bordered-label {
-	border: 1px solid #828CAE;
+	border: 1px solid #828cae;
 	margin: 5px;
 	padding: 6px 12px;
 	border-radius: 4px;
@@ -2685,28 +2716,28 @@ margin-left: 0.8em;
 .or-button {
 	color: #f5f3f3;
 	background: transparent;
-	border: 1px solid #828CAE;
+	border: 1px solid #828cae;
 	width: fit-content;
 	padding: 8px 15px;
 	border-radius: 5px;
 	cursor: pointer;
 
 	&:hover {
-		opacity: .6;
+		opacity: 0.6;
 	}
 }
 
 .or-small-button {
 	color: #f5f3f3;
 	background: transparent;
-	border: 1px solid #828CAE;
+	border: 1px solid #828cae;
 	width: fit-content;
 	padding: 0px 10px;
 	border-radius: 2px;
 	cursor: pointer;
 
 	&:hover {
-		opacity: .6;
+		opacity: 0.6;
 	}
 }
 
@@ -2733,7 +2764,7 @@ margin-left: 0.8em;
 
 		.modal-header {
 			padding: 0.3rem 0.7rem;
-			border-bottom: 1px solid rgba(5, 5, 5, .15) !important;
+			border-bottom: 1px solid rgba(5, 5, 5, 0.15) !important;
 
 			button span {
 				color: #eee !important;
@@ -2751,20 +2782,20 @@ margin-left: 0.8em;
 		}
 
 		.modal-footer {
-			border-top: 1px solid rgba(5, 5, 5, .15) !important;
+			border-top: 1px solid rgba(5, 5, 5, 0.15) !important;
 			padding: 0.3em;
 
 			button {
 				color: #d5d3d3;
 				background: transparent;
-				border: 1px solid #828CAE;
+				border: 1px solid #828cae;
 				width: fit-content;
 				padding: 5px 10px;
 				border-radius: 5px;
 				cursor: pointer;
 
 				&:hover {
-					opacity: .6;
+					opacity: 0.6;
 				}
 			}
 		}
@@ -2843,7 +2874,6 @@ margin-left: 0.8em;
 .or-wizard {
 	margin: auto;
 	width: 40%;
-	;
 }
 
 .or-wizard-modal {
@@ -2868,7 +2898,7 @@ margin-left: 0.8em;
 	tr {
 		th {
 			vertical-align: bottom;
-			color: #CAD3F2;
+			color: #cad3f2;
 			text-transform: uppercase;
 		}
 
@@ -2877,7 +2907,7 @@ margin-left: 0.8em;
 			font-size: 14px;
 			line-height: 15px;
 			text-align: left;
-			color: #828CAE;
+			color: #828cae;
 
 			&.text-right {
 				text-align: right !important;
@@ -3065,8 +3095,6 @@ margin-left: 0.8em;
 		margin-left: 190px;
 	}
 }
-
-
 
 /**********************/
 /**** margin-right ****/
@@ -3261,7 +3289,6 @@ margin-left: 0.8em;
 			left: 8em;
 		}
 	}
-
 }
 
 @media (max-width: 1150px) {
@@ -3351,7 +3378,7 @@ margin-left: 0.8em;
 		}
 
 		.zl_page_sidebar.zl_hide_sidebar {
-			&~.zl_all_pages_inner_content {
+			& ~ .zl_all_pages_inner_content {
 				padding: 26px 20px;
 			}
 		}
@@ -3467,7 +3494,7 @@ margin-left: 0.8em;
 		}
 
 		.zl_page_sidebar.zl_hide_sidebar {
-			&~.zl_all_pages_inner_content {
+			& ~ .zl_all_pages_inner_content {
 				padding: 38px 15px;
 			}
 		}
@@ -3591,8 +3618,8 @@ margin-left: 0.8em;
 			}
 		}
 
-		.zl_page_sidebar[title=''] {
-			&~.zl_all_pages_inner_content {
+		.zl_page_sidebar[title=""] {
+			& ~ .zl_all_pages_inner_content {
 				padding: 35px 15px;
 			}
 		}

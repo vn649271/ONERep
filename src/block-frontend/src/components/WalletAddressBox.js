@@ -41,16 +41,20 @@ const WalletAddressBox = props => {
 				{
 					_wallet_address && history.location.pathname !== "/" ? 
 					<div>
-						<div className="flow-layout main-text-color mr-20"><img className="mr-6" alt="Avatar" src='/assets/image/avatar-3.png' width='30px' height='26px'/>{_user_name}</div>
-						<div className="flow-layout main-text-color"><img src='/assets/image/wallet.png' alt="Wallet" width='40px' height='40px'/></div>
-						<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
-						{
-							_wallet_address.substring(0, 6) + 
-							"..." + 
-							_wallet_address.substring(_wallet_address.length-5, _wallet_address.length-1)
-						}
+						<div className="flow-layout main-text-color mr-20"><img className="mr-6" alt="Avatar" src='/assets/image/avatar-3.png' width='30px' height='26px'/>
+							{_user_name}
 						</div>
-						{/******************* "Minting..." Dialog *********************/}
+						<div className="flow-layout" title="Your Wallet Address">
+							<div className="flow-layout main-text-color"><img src='/assets/image/wallet.png' alt="Wallet" width='40px' height='40px'/></div>
+							<div className="wallet-address main-text-color" onClick={onClick} tooltip="Copy to clipboard">
+							{
+								_wallet_address.substring(0, 6) + 
+								"..." + 
+								_wallet_address.substring(_wallet_address.length-5, _wallet_address.length-1)
+							}
+							</div>
+						</div>
+						{/******************* "Copied" toast *********************/}
 						<div className={`${showCopiedMessage?"show-toast-box ml-130":"hide-toast-box"}`} onClick={hideCopiedMessage}>
 							<div className="check-icon flow-layout">
 						    	<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
