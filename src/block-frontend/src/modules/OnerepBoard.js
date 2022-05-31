@@ -201,7 +201,7 @@ const OneRepBoardModule = (props) => {
               }
               </Dropdown.Menu>
             </Dropdown>:
-            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "": ""}</label>
+            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "Unknown Dao": "Unknown Dao"}</label>
           }
           </div>
         </div>
