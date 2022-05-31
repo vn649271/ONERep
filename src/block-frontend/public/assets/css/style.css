@@ -2765,35 +2765,52 @@ margin-left: 0.8em;
 }
 
 /**************** Success Modal *************************/
-.or-modal-success .modal-content {
+.or-modal .modal-content {
   background: #28292c;
 }
 
-.or-modal-success .modal-content .modal-header {
+.or-modal .modal-content .modal-header {
   padding: 0.3rem 0.7rem;
   border-bottom: 1px solid rgba(5, 5, 5, 0.15) !important;
 }
 
-.or-modal-success .modal-content .modal-header button span {
+.or-modal .modal-content .modal-header .modal-title span {
+  color: rgba(250, 250, 250, 0.8);
+}
+
+.or-modal .modal-content .modal-header .modal-title span.success {
+  color: rgba(12, 250, 13, 0.7);
+}
+
+.or-modal .modal-content .modal-header .modal-title span.warning {
+  color: rgba(202, 138, 4, 0.9);
+}
+
+.or-modal .modal-content .modal-header .modal-title span.error {
+  color: rgba(255, 49, 49, 0.9);
+}
+
+.or-modal .modal-content .modal-header button span {
   color: #eee !important;
 }
 
-.or-modal-success .modal-content .modal-header .close {
+.or-modal .modal-content .modal-header .close {
   margin: 0.2em 0 0 0 !important;
   padding: 0 !important;
 }
 
-.or-modal-success .modal-content .modal-body {
+.or-modal .modal-content .modal-body {
+  color: #d5d3d3;
   margin: 1em 1em;
   border-bottom: 0;
 }
 
-.or-modal-success .modal-content .modal-footer {
+.or-modal .modal-content .modal-footer {
   border-top: 1px solid rgba(5, 5, 5, 0.15) !important;
   padding: 0.3em;
 }
 
-.or-modal-success .modal-content .modal-footer button {
+.or-modal .modal-content .modal-footer button {
   color: #d5d3d3;
   background: transparent;
   border: 1px solid #828cae;
@@ -2805,64 +2822,8 @@ margin-left: 0.8em;
   cursor: pointer;
 }
 
-.or-modal-success .modal-content .modal-footer button:hover {
+.or-modal .modal-content .modal-footer button:hover {
   opacity: 0.6;
-}
-
-/**************** Warning Modal *************************/
-.or-modal-warning .modal-content {
-  background-color: #ca8a04 !important;
-}
-
-.or-modal-warning .modal-content .modal-header {
-  border-bottom: 0px !important;
-}
-
-.or-modal-warning .modal-content .modal-header button span {
-  color: #eee !important;
-}
-
-.or-modal-warning .modal-content .modal-footer {
-  border-top: 0px !important;
-}
-
-.or-modal-warning .modal-content .modal-footer button {
-  background-color: transparent;
-  border-color: #eee;
-  border-radius: 5px;
-}
-
-.or-modal-warning .modal-content .modal-footer button:hover {
-  background-color: #eee;
-  color: #ca8a04;
-}
-
-/**************** Error Modal *************************/
-.or-modal-error .modal-content {
-  background-color: #dc2626 !important;
-}
-
-.or-modal-error .modal-content .modal-header {
-  border-bottom: 0px !important;
-}
-
-.or-modal-error .modal-content .modal-header button span {
-  color: #eee !important;
-}
-
-.or-modal-error .modal-content .modal-footer {
-  border-top: 0px !important;
-}
-
-.or-modal-error .modal-content .modal-footer button {
-  background-color: transparent;
-  border-color: #eee;
-  border-radius: 5px;
-}
-
-.or-modal-error .modal-content .modal-footer button:hover {
-  background-color: #eee;
-  color: #dc2626;
 }
 
 /**************************************************/

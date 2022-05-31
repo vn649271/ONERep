@@ -19,9 +19,9 @@ const BasicModal = props => {
   	};
 
     return (
-	    <Modal centered show={show_modal} onHide={_closeModal} className={`or-modal-${modalType}`}>
+	    <Modal centered show={show_modal} onHide={_closeModal} className="or-modal">
 	        <Modal.Header closeButton>
-	          <Modal.Title><span className="text-white">{title}</span></Modal.Title>
+	          <Modal.Title><span className={modalType}>{title}</span></Modal.Title>
 	        </Modal.Header>
 	        <Modal.Body>
 	            {children}

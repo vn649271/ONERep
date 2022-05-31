@@ -4,6 +4,7 @@ import "./css/Header.css";
 import { connect } from 'react-redux';
 import BasicModal from '../Modals/BasicModal';
 import { orAlert } from "../../service/utils";
+import OrConfirm from '../Modals/OrConfirm';
 
 const SideBar = (props) => {
 
@@ -14,6 +15,8 @@ const SideBar = (props) => {
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [metaMaskAccessible, setMetaMaskAccessible] = useState(true);
+    const [confirmText, setConfirmText] = useState("");
+    const [showConfirm, setShowConfirm] = useState(false);
     // const [isAdmin, setIsAdmin] = useState(false);
 
     let connected = false;
@@ -66,6 +69,21 @@ const SideBar = (props) => {
         setShowMessage(false);
     }
 
+    const openConfirm = (text) => {
+        setConfirmText(text);
+        setShowConfirm(true);
+    }
+
+    const closeConfirm = (ret) => {
+        setShowConfirm(false);
+        if (ret) {
+            localStorage.setItem("wallet", "");
+            localStorage.setItem('username', "");
+            localStorage.setItem("isAdmin", false);
+            window.location.href = "/";    
+        }
+    }
+
     function isMetaMaskInstalled() {
         return Boolean(window.ethereum && window.ethereum.isMetaMask);
     }
@@ -96,10 +114,7 @@ const SideBar = (props) => {
     };
 
     const logout = async () => {
-        localStorage.setItem("wallet", "");
-        localStorage.setItem('username', "");
-        localStorage.setItem("isAdmin", false);
-        window.location.href = "/";
+        openConfirm('Are you sure to logout?');
     }
 
     return (
@@ -113,6 +128,12 @@ const SideBar = (props) => {
                 >
                     <p className="text-white">{messageContent}</p>
                 </BasicModal>
+                <OrConfirm
+                    show={showConfirm}
+                    closeConfirm={closeConfirm}
+                >
+                    {confirmText}
+                </OrConfirm>
                 <div className="zl_page_sidebar_content">
                     <div className="zl_page_sidebar_logo">
                         <button className="zl_page_sidebar_toggle_btn" onClick={handleToggle}>
