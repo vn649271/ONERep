@@ -148,9 +148,13 @@ exports.getUserList = async (req, res) => {
                 return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
             });
         } else {
+            let matchClause = { parent: req.body.master, status: true };
+            if (req.body.excludeInactive === undefined || !req.body.excludeInactive) {
+                matchClause = { parent: req.body.master };
+            }
             User.aggregate([
                 {
-                    $match: { parent: req.body.master, status: true }
+                    $match: matchClause
                 },
                 {
                     $lookup: {

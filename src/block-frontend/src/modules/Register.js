@@ -48,7 +48,7 @@ const RegisterModule = (props) => {
         let walletAddress = localStorage.getItem('wallet');
         setWallet(walletAddress);
         if (!isInited) {
-            axios.get(SERVER_URL + '/users').then(response => {
+            axios.get(SERVER_URL + '/users', {excludeInactive: true}).then(response => {
                 let nUsers = response.data ? response.data.data ? response.data.data : 0 : 0;
                 if (nUsers < 1) {
                     setIsFirstRegister(true);
