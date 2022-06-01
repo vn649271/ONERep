@@ -14,10 +14,11 @@ const OneRepBoardModule = (props) => {
   const [show, setShow] = useState(false);
   const [boardData, setBoardData] = useState([]);
   const [sort_name, setSortName] = useState(1);
+  const [sort_badge, setSortBadge] = useState(1);
   const [sort_id, setSortId] = useState(1);
   const [sort_sum, setSortSum] = useState(1);
-  const [sortOption, setSortOption] = useState({ name: 1 });
-  const [daoList,setDaoList] = useState([]);
+  const [sortOption, setSortOption] = useState({ badge: 1 });
+  const [daoList, setDaoList] = useState([]);
   const [selectedDao, setSelectedDao] = useState(null);
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -31,7 +32,7 @@ const OneRepBoardModule = (props) => {
 
   useEffect(() => {
   }, [daoList])
-  
+
   useEffect(() => {
   }, [boardData])
 
@@ -39,7 +40,7 @@ const OneRepBoardModule = (props) => {
     // Init connection info
     if (!inited) {
       axios.post(
-        SERVER_URL + '/users/loggedinuserbywallet', 
+        SERVER_URL + '/users/loggedinuserbywallet',
         {
           wallet: localStorage.getItem("wallet")
         }
@@ -58,12 +59,12 @@ const OneRepBoardModule = (props) => {
         setUserName(userInfo.username);
         // setChainId(localStorage.getItem('chainId'));
         dispatch({
-          type: USERS.CONNECT_WALLET, 
-          payload: { 
-              wallet: userInfo.wallet,
-              user: userInfo.username,
-              isAdmin: userInfo.isAdmin,
-              badgeTokenAddress: badgeTokenAddress,
+          type: USERS.CONNECT_WALLET,
+          payload: {
+            wallet: userInfo.wallet,
+            user: userInfo.username,
+            isAdmin: userInfo.isAdmin,
+            badgeTokenAddress: badgeTokenAddress,
           }
         });
         // Init DAO drop down
@@ -71,7 +72,7 @@ const OneRepBoardModule = (props) => {
         // Get all DAO names to fill into DAO name list and select first DAO from it
         axios.post(SERVER_URL + "/getDaoData", {
           master: thisAddress
-        }).then((resp)=> {
+        }).then((resp) => {
           if (resp.data.error !== undefined && resp.data.error === 0) {
             let daos = resp.data.data;
             if (userInfo.isAdmin) {
@@ -92,11 +93,11 @@ const OneRepBoardModule = (props) => {
           } else {
             alert("Failed to get DAO data");
           }
-        });        
+        });
       })
-      .catch(error => {
-        orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);        
-      });
+        .catch(error => {
+          orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);
+        });
     }
   });
   useEffect(() => {
@@ -117,14 +118,13 @@ const OneRepBoardModule = (props) => {
         dao: dao
       });
       setLoading(false);
-      if (ret === null || ret.data === undefined || 
-        ret.data.data === undefined || ret.data.data.length === undefined) 
-      {
+      if (ret === null || ret.data === undefined ||
+        ret.data.data === undefined || ret.data.data.length === undefined) {
         orAlert("Failed to get all board data for super admin");
         return;
       }
       setBoardData(ret.data.data);
-    } catch(error) {
+    } catch (error) {
       orAlert("Failed to loadBoardData(): ", error.message);
     }
   };
@@ -141,7 +141,7 @@ const OneRepBoardModule = (props) => {
     try {
       let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
-        dao: selectedDaoName === "All"? null: selectedDaoName
+        dao: selectedDaoName === "All" ? null : selectedDaoName
       };
       // let isAdmin = localStorage.getItem("isAdmin");
       // if (isAdmin) {
@@ -185,24 +185,24 @@ const OneRepBoardModule = (props) => {
         <div className='flow-layout mr-20'>
           <div className='flow-layout mr-10'>DAO</div>
           <div className='flow-layout mr-10'>
-          {
-            isAdmin ?
-            <Dropdown onSelect={handleDropDown}>
-              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                {selectedDao? selectedDao.dao ? selectedDao.dao: "All": "All"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-              {
-                (daoList.length > 0) ? 
-                  daoList.map(m => {
-                    return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>          
-                  }): 
-                  <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>  
-              }
-              </Dropdown.Menu>
-            </Dropdown>:
-            <label className="bordered-label">{selectedDao? selectedDao.dao ? selectedDao.dao: "Unknown": "Unknown"}</label>
-          }
+            {
+              isAdmin ?
+                <Dropdown onSelect={handleDropDown}>
+                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                    {selectedDao ? selectedDao.dao ? selectedDao.dao : "All" : "All"}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {
+                      (daoList.length > 0) ?
+                        daoList.map(m => {
+                          return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>
+                        }) :
+                        <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>
+                    }
+                  </Dropdown.Menu>
+                </Dropdown> :
+                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Unknown" : "Unknown"}</label>
+            }
           </div>
         </div>
         {
@@ -210,17 +210,17 @@ const OneRepBoardModule = (props) => {
             <div key="token-name-label" className='flow-layout mr-20'>
               Token Name
               <label className="bordered-label">
-                {selectedDao ? selectedDao.badge ? selectedDao.badge: " ": " "}
+                {selectedDao ? selectedDao.badge ? selectedDao.badge : " " : " "}
               </label>
             </div>,
             <div key="token-token-total-count-label" className='flow-layout mr-10'>
-              Number of Tokens 
+              Number of Tokens
               <label className="bordered-label">
                 {selectedDaoTokenTotalSupply}
               </label>
             </div>
-          ]): 
-          <></>
+          ]) :
+            <></>
         }
       </div>
       <br />
@@ -229,7 +229,11 @@ const OneRepBoardModule = (props) => {
           <thead>
             <tr>
               <th>DAO</th>
-              <th>Badge</th>
+              <th onClick={() => {
+                setSortBadge(-sort_badge);
+                setSortOption({ badge: -sort_badge });
+              }}
+              >Badge</th>
               <th
                 onClick={() => {
                   setSortName(-sort_name);
@@ -258,29 +262,29 @@ const OneRepBoardModule = (props) => {
             </tr>
           </thead>
           <tbody>
-          {
-            loading?
-            <tr>
-              <td colSpan="5" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
-            </tr>:
-            <>
             {
-              boardData.length > 0 ? boardData.map((row, i) => {
-                return (
-                  <tr key={i}>
-                    <td>{row.dao}</td>
-                    <td>{row.badge}</td>
-                    <td>{row.name}</td>
-                    <td>{row._id}</td>
-                    <td className="text-right">
-                      {row.sum}
-                    </td>
-                  </tr>
-                );
-              }): <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+              loading ?
+                <tr>
+                  <td colSpan="5" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
+                </tr> :
+                <>
+                  {
+                    boardData.length > 0 ? boardData.map((row, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{row.dao}</td>
+                          <td>{row.badge}</td>
+                          <td>{row.name}</td>
+                          <td>{row._id}</td>
+                          <td className="text-right">
+                            {row.sum}
+                          </td>
+                        </tr>
+                      );
+                    }) : <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
+                  }
+                </>
             }
-            </>
-          }
           </tbody>
         </Table>
       </div>

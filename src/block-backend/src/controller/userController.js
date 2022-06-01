@@ -237,6 +237,16 @@ exports.getOneRepBoard = async (req, res) => {
                     actions[j]['badge'] = daos[i].badge;
                 }
                 result.push(...actions);
+                if (req.body.sort.badge !== undefined) {
+                    result.sort((a, b) => {
+                        if (a['badge'] === b['badge']) {
+                            return 0;
+                        }
+                        else {
+                            return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
+                        }
+                    });
+                }
             } catch (error) {
                 return res.status(200).send({ error: -10, data: error.message });
             }
@@ -261,7 +271,8 @@ exports.getOneRepBoard = async (req, res) => {
                 $group: {
                     _id: "$wallet",
                     name: { $first: '$name' },
-                    sum: { $sum: "$received" }
+                    sum: { $sum: "$received" },
+                    user: { $first: "$user" }
                 }
             },
             {
@@ -274,6 +285,16 @@ exports.getOneRepBoard = async (req, res) => {
             for (let j = 0; j < actions.length; j++) {
                 actions[j]['dao'] = leadUser.dao;
                 actions[j]['badge'] = leadUser.badge;
+            }
+            if (req.body.sort.badge !== undefined) {
+                result.sort((a, b) => {
+                    if (a['badge'] === b['badge']) {
+                        return 0;
+                    }
+                    else {
+                        return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
+                    }
+                });
             }
             res.status(200).send({ error: 0, data: actions });
         }).catch(error => {
