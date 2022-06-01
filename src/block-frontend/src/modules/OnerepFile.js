@@ -158,7 +158,7 @@ const OneRepFileModule = (props) => {
   const filterContractMessage = (originMessage) => {
     let contractErrorReqExp = /[a-zA-Z\ ]+;[a-zA-Z\ ]+\[[a-zA-Z\:\/\/\-_\.0-9 ]+\] \(reason=\"([a-zA-Z \:]+)\",.+/;
     let msgElems = originMessage.match(contractErrorReqExp);
-    if (msgElems.length > 1) {
+    if (msgElems.length !== undefined && msgElems.length > 1) {
       return msgElems[1].replace("execution reverted:", "");
     }
     return originMessage;
