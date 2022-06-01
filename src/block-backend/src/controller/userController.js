@@ -228,7 +228,7 @@ exports.getOneRepBoard = async (req, res) => {
     } else {
         await fAction.aggregate([
             {
-                $match: { parent: parentAddress }
+                $match: { parent: user.parent?user.parent: user.wallet }
             },
             {
                 $group: {

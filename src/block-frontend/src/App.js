@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import autobind from 'react-autobind';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
@@ -13,34 +12,34 @@ import Layout from './components/Layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-    autobind(this);
+function App(props) {
 
-    this._routes = null;
-  }
+  const [routes, setRoutes] = useState(null);
+  const [showMessageBox, setShowMessageBox] = useState(true);
+  const [messageTitle, setMessageTitle] = useState(null);
+  const [messageType, setMessageType] = useState('error');
+  const [messageContent, setMessageContent] = useState(null);
 
-  renderRoutes() {
-    if (this._routes) {
-      return this._routes;
+  useEffect(() => {
+    renderRoutes();
+  });
+
+  const renderRoutes = () => {
+    if (routes) {
+      return;
     }
 
-    this._routes = Object.keys(modules).map((item) => {
+    let _routes = Object.keys(modules).map((item) => {
       return (
         <Route key={`route_${item}`} exact path={item}>
           {withRouter(modules[item])}
         </Route>
       );
     });
-
-    return this._routes;
+    setRoutes(_routes);
   }
-
-  render() {
-    const routes = this.renderRoutes();
-
-    return (
+  return (
+    <>
       <Provider store={store}>
         <BrowserRouter>
           <Layout>
@@ -59,7 +58,8 @@ export default class App extends Component {
           </Layout>
         </BrowserRouter>
       </Provider>
-    );
-  }
+    </>
+  );
 }
 
+export default App;
