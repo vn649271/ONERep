@@ -141,12 +141,14 @@ const AdminModule = (props) => {
                     wallet: localStorage.getItem("wallet")
                 }
             );
-            curUser.isAdmin = ret.isAdmin;
-            console.log("The fetched user", ret);
+            if (ret.status !== 200 || ret.data !== undefined || ret.data === null)  {
+                orAlert("Failed to get user information by wallet address");
+                return;                
+            }
+            curUser.isAdmin = ret.data.isAdmin;
             curUser.badgeAddress = ret.data.badgeAddress;
             curUser.dao = ret.data.dao;
             curUser.badge = ret.data.badge;
-            console.log("current user", curUser)
         } catch (error) {
             showMessageBox("Error", "Failed to verify this user");
             return;
