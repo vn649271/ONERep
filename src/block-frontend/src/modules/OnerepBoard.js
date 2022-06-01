@@ -232,12 +232,14 @@ const OneRepBoardModule = (props) => {
               <th onClick={() => {
                 setSortBadge(-sort_badge);
                 setSortOption({ badge: -sort_badge });
+                loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
               }}
               >Badge</th>
               <th
                 onClick={() => {
                   setSortName(-sort_name);
                   setSortOption({ name: -sort_name });
+                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >
                 Name
@@ -246,6 +248,7 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortId(-sort_id);
                   setSortOption({ _id: -sort_id });
+                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >
                 Wallet
@@ -255,6 +258,7 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortSum(-sort_sum);
                   setSortOption({ sum: -sort_sum });
+                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >
                 ONERep Tokens

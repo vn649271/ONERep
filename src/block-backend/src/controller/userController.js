@@ -237,13 +237,22 @@ exports.getOneRepBoard = async (req, res) => {
                     actions[j]['badge'] = daos[i].badge;
                 }
                 result.push(...actions);
-                if (req.body.sort.badge !== undefined) {
+                if (req.body.sort.badge) {
                     result.sort((a, b) => {
                         if (a['badge'] === b['badge']) {
                             return 0;
                         }
                         else {
                             return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
+                        }
+                    });
+                } else if (req.body.sort.name) {
+                    result.sort((a, b) => {
+                        if (a['name'] === b['name']) {
+                            return 0;
+                        }
+                        else {
+                            return (a['name'] < b['name']) ? -1 * req.body.sort.name : req.body.sort.name;
                         }
                     });
                 }
@@ -286,13 +295,22 @@ exports.getOneRepBoard = async (req, res) => {
                 actions[j]['dao'] = leadUser.dao;
                 actions[j]['badge'] = leadUser.badge;
             }
-            if (req.body.sort.badge !== undefined) {
-                result.sort((a, b) => {
+            if (req.body.sort.badge) {
+                actions.sort((a, b) => {
                     if (a['badge'] === b['badge']) {
                         return 0;
                     }
                     else {
                         return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
+                    }
+                });
+            } else if (req.body.sort.name) {
+                actions.sort((a, b) => {
+                    if (a['name'] === b['name']) {
+                        return 0;
+                    }
+                    else {
+                        return (a['name'] < b['name']) ? -1 * req.body.sort.name : req.body.sort.name;
                     }
                 });
             }
