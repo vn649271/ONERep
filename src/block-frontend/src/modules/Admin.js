@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import { useDispatch } from "react-redux";
 import { USERS } from "../store/actionTypes";
 import Table from 'react-bootstrap/Table';
@@ -11,6 +11,7 @@ import BasicModal from '../components/Modals/BasicModal';
 import axios from 'axios';
 import { SERVER_URL } from '../conf';
 import SettingModule from './Settings';
+import OrConfirm from '../components/Modals/OrConfirm';
 
 const AdminModule = (props) => {
 
@@ -22,7 +23,7 @@ const AdminModule = (props) => {
         dao: '',
         isAdmin: false,
         status: false,
-        badgeAddress : '0x0000000000000000000000000000000000000000'
+        badgeAddress: '0x0000000000000000000000000000000000000000'
     }
     const [show, setShow] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
@@ -38,28 +39,33 @@ const AdminModule = (props) => {
     const [badgeAddress, setBadgeAddress] = useState(null);
     const [userNameAdded, setUserNameAdded] = useState(null);
     const [walletAdded, setWalletAdded] = useState(null);
+    const [inited, setInited] = useState(false);
     // const [chainId, setChainId] = useState(0);
+    
+    const [confirmContext, setConfirmContext] = useState("");
+    const [confirmText, setConfirmText] = useState("");
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (localStorage.getItem('wallet') === '' || !localStorage.getItem('wallet'))
-        {
+        if (localStorage.getItem('wallet') === '' || !localStorage.getItem('wallet')) {
             window.location.href = "/";
             return;
         }
-        if (!badgeAddress) {
+        if (!inited) {
             axios.post(
-                SERVER_URL + '/users/loggedinuserbywallet', 
+                SERVER_URL + '/users/loggedinuserbywallet',
                 {
                     wallet: localStorage.getItem("wallet")
                 }
             ).then(ret => {
+                setInited(true);
                 console.log("Logged in user:", ret.data);
                 setBadgeAddress(ret.data.badgeAddress);
                 dispatch({
-                    type: USERS.CONNECT_WALLET, 
-                    payload: { 
+                    type: USERS.CONNECT_WALLET,
+                    payload: {
                         wallet: ret.data.wallet,
                         user: ret.data.username,
                         isAdmin: ret.data.isAdmin,
@@ -67,10 +73,23 @@ const AdminModule = (props) => {
                     }
                 });
                 // setChainId(localStorage.getItem('chainId'));
-            });            
+            });
         }
         getContributors();
     })
+    const openConfirm = (text, context) => {
+        setConfirmContext(context);
+        setConfirmText(text);
+        setShowConfirm(true);
+    }
+    const closeConfirm = (ret, context) => {
+        setShowConfirm(false);
+        if (ret) {
+            if (context && context.onCloseWithYes) {
+                context.onCloseWithYes(context ? context.params ? context.params: null: null);
+            }
+        }
+    }
     const showMessageBox = (title, content, _type = "error") => {
         setMessageType(_type);
         setMessageTitle(title);
@@ -86,13 +105,16 @@ const AdminModule = (props) => {
     const handleCloseMessageBox = () => {
         setShowMessage(false);
     }
+    const _handleDelete = (user) => {
+        axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
+            setUsers(response.data);
+        });
+    }
     const handleDelete = (user) => {
-        if (window.confirm("Are you sure to delete this contributor?"))
-        {
-            axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
-                setUsers(response.data);
-            });
-        }
+        openConfirm("Are you sure to delete this contributor?", {
+            onCloseWithYes: _handleDelete,
+            params: user
+        });
     }
     const onClickSave = ev => {
         handleSave(ev);
@@ -101,10 +123,10 @@ const AdminModule = (props) => {
         curUser.status = enable;
         curUser.username = userNameAdded;
         curUser.wallet = walletAdded;
-        
+
         try {
             let ret = await axios.post(
-                SERVER_URL + '/users/loggedinuserbywallet', 
+                SERVER_URL + '/users/loggedinuserbywallet',
                 {
                     wallet: localStorage.getItem("wallet")
                 }
@@ -114,7 +136,7 @@ const AdminModule = (props) => {
             curUser.badgeAddress = ret.data.badgeAddress;
             curUser.dao = ret.data.dao;
             curUser.badge = ret.data.badge;
-            console.log("current user", curUser)            
+            console.log("current user", curUser)
         } catch (error) {
             showMessageBox("Error", "Failed to verify this user");
             return;
@@ -122,9 +144,9 @@ const AdminModule = (props) => {
 
         try {
             let ret = await axios.post(
-                SERVER_URL + '/users/update', 
-                { 
-                    ...curUser, 
+                SERVER_URL + '/users/update',
+                {
+                    ...curUser,
                     master: localStorage.getItem("wallet")
                 }
             );
@@ -132,7 +154,7 @@ const AdminModule = (props) => {
             if (ret.data.success)
                 setUsers(ret.data.users);
             else
-                alert(ret.data.error);            
+                alert(ret.data.error);
         } catch (error) {
             showMessageBox("Error", "Failed to update information for the user");
             return;
@@ -140,17 +162,16 @@ const AdminModule = (props) => {
         window.location.reload(true);
     }
 
-    const borderRadiusStyle = { borderRadius: 2, height: 40,}
-   
+    const borderRadiusStyle = { borderRadius: 2, height: 40, }
+
     const getContributors = () => {
         let parent = localStorage.getItem("parent");
-        if(parent === "" || parent === "undefined")
-        {
+        if (parent === "" || parent === "undefined") {
             let walletAddress = localStorage.getItem("wallet");
             axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
-                let users = response.data ? response.data.data ? response.data.data : []: [];
+                let users = response.data ? response.data.data ? response.data.data : [] : [];
                 for (let i = 0; i < users.length; i++) {
-                    let actions = users[i].actions ? users[i].actions: [];
+                    let actions = users[i].actions ? users[i].actions : [];
                     for (let j = 0; j < actions.length; j++) {
                         users[i].received += users[i].actions[j].received;
                     }
@@ -159,9 +180,9 @@ const AdminModule = (props) => {
             });
         } else {
             axios.post(SERVER_URL + '/users', { master: parent }).then(response => {
-                let users = response.data ? response.data.data ? response.data.data : []: [];
+                let users = response.data ? response.data.data ? response.data.data : [] : [];
                 for (let i = 0; i < users.length; i++) {
-                    let actions = users[i].actions ? users[i].actions: [];
+                    let actions = users[i].actions ? users[i].actions : [];
                     for (let j = 0; j < actions.length; j++) {
                         users[i].received += users[i].actions[j].received;
                     }
@@ -175,20 +196,20 @@ const AdminModule = (props) => {
     }
     const themHandler = (val) => {
         setColor(val ? 'zl_light_theme_active' : 'zl_page_dark_mode');
-        if(typeof window !== 'undefined') {
+        if (typeof window !== 'undefined') {
             localStorage.setItem("themColor", val ? 'zl_light_theme_active' : 'zl_page_dark_mode');
         }
     }
-    
+
     return (
         <section className="">
-            <br/><br/>
+            <br /><br />
             <div className="zl_all_page_heading_section">
                 <div className="zl_all_page_heading"><h2>My ONERep Account</h2></div>
                 <div className="zl_all_page_notify_logout_btn">
                     <ul className="v-link">
                         <li><button className="btn-connect" onClick={onClickSettings}><FaPencilAlt /> Settings</button></li>
-                        <li><button className="btn-connect" onClick={()=>{
+                        <li><button className="btn-connect" onClick={() => {
                             // setSAdmin(false)
                             setEnable(false)
                             handleShow(defaultUser)
@@ -196,50 +217,60 @@ const AdminModule = (props) => {
                     </ul>
                 </div>
             </div>
-            <BasicModal 
-                show={showMessage} 
-                modalType={messageType} 
-                title={messageTitle} 
+            <BasicModal
+                show={showMessage}
+                modalType={messageType}
+                title={messageTitle}
                 closeModal={handleCloseMessageBox}
             >
                 <p className="text-white">{messageContent}</p>
             </BasicModal>
+            <OrConfirm
+                show={showConfirm}
+                context={confirmContext}
+                closeConfirm={closeConfirm}
+            >
+                {confirmText}
+            </OrConfirm>
             <div>
                 <Table striped className="or-table table">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>DAO</th>
-                        <th>ETH Wallet</th>
-                        <th>Are you admin?</th>
-                        <th className="text-right">Reputation Awarded</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>DAO</th>
+                            <th>ETH Wallet</th>
+                            <th>Are you admin?</th>
+                            <th className="text-right">Reputation Awarded</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>{
-                    users.map((item, i) => (
-                        <tr key={i}>
-                            <td><FaUserAlt/><span className="pl-2">{item.username}</span></td>
-                            <td>{item.dao}</td>
-                            <td>{item.wallet}</td>
-                            <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
-                            <td className="text-right">{item.received}</td>
-                            <td className="text-center">{!item.status?'Inactive':'Active'}</td>
-                            <td className="text-center">
-                                <div className="cursor-pointer flow-layout">
-                                    <FaPencilAlt onClick={()=>{
-                                        // setSAdmin(item.isAdmin);
-                                        setEnable(item.status);
-                                        handleShow(item)}
-                                    }/> 
-                                </div>
-                                <div className="cursor-pointer flow-layout ml-20">
-                                    <FaTrashAlt onClick={()=>{handleDelete(item)}} className="text-danger"/>
-                                </div>
-                            </td>
-                        </tr>
-                    ))
+                        users.length ?
+                            users.map((item, i) => (
+                                <tr key={i}>
+                                    <td><FaUserAlt /><span className="pl-2">{item.username}</span></td>
+                                    <td>{item.dao}</td>
+                                    <td>{item.wallet}</td>
+                                    <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
+                                    <td className="text-right">{item.received}</td>
+                                    <td className="text-center">{!item.status ? 'Inactive' : 'Active'}</td>
+                                    <td className="text-center">
+                                        <div className="cursor-pointer flow-layout">
+                                            <FaPencilAlt onClick={() => {
+                                                // setSAdmin(item.isAdmin);
+                                                setEnable(item.status);
+                                                handleShow(item)
+                                            }
+                                            } />
+                                        </div>
+                                        <div className="cursor-pointer flow-layout ml-20">
+                                            <FaTrashAlt onClick={() => { handleDelete(item) }} className="text-danger" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            )):
+                            <tr><td colSpan="7" className="text-center main-text-color-second"><i>No Data</i></td></tr>
                     }</tbody>
                 </Table>
             </div>
@@ -253,18 +284,18 @@ const AdminModule = (props) => {
                 <Modal.Body>
                     <div className="p-4">
                         <h5 className="text-center text-white">{curUser._id === '' ? "Add Contributor" : "Edit Contributor"}</h5>
-                        <br/><br/>
+                        <br /><br />
                         <Form className="row">
                             <div className="col-md-12">
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <div className="text-center"><Form.Label className="text-muted-dark">Contributor Name</Form.Label></div>
-                                    <Form.Control type="text" name="username" value={userNameAdded} placeholder="" onChange={(e)=>setUserNameAdded(e.target.value)} required/>
+                                    <Form.Control type="text" name="username" value={userNameAdded} placeholder="" onChange={(e) => setUserNameAdded(e.target.value)} required />
                                 </Form.Group>
                             </div>
                             <div className="col-md-12">
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <div className="text-center"><Form.Label className="text-muted-dark">Contributor ETH address</Form.Label></div>
-                                    <Form.Control type="text" name="wallet" value={walletAdded} onChange={(e)=>setWalletAdded(e.target.value)} placeholder="" />
+                                    <Form.Control type="text" name="wallet" value={walletAdded} onChange={(e) => setWalletAdded(e.target.value)} placeholder="" />
                                 </Form.Group>
                             </div>
                             {/*{<div className="col-md-6">
@@ -290,18 +321,18 @@ const AdminModule = (props) => {
                                 <Form.Label className="text-muted-dark">Enable</Form.Label>
                                 <ToggleButton
                                     name="status"
-                                    value={ enable|| false }
+                                    value={enable || false}
                                     inactiveLabel="No"
                                     activeLabel="Yes"
                                     thumbStyle={borderRadiusStyle}
                                     trackStyle={borderRadiusStyle}
                                     onToggle={value => {
                                         setEnable(!value);
-                                    }} 
+                                    }}
                                 />
                             </div>
                             <div className="col-12 text-center">
-                                <div className="zl_securebackup_btn"><button type="button" onClick={onClickSave} className="mx-auto"><FaRegSave/><span className="ml-2">Save</span></button></div>
+                                <div className="zl_securebackup_btn"><button type="button" onClick={onClickSave} className="mx-auto"><FaRegSave /><span className="ml-2">Save</span></button></div>
                             </div>
                         </Form>
                     </div>

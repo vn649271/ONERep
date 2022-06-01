@@ -3,25 +3,27 @@ import { Modal, Button } from 'react-bootstrap';
 
 const OrConfirm = props => {
 
-    const { show, children, closeConfirm } = props;
+    const { show, children, closeConfirm, context } = props;
 
     const [show_modal, setShowModal] = useState(false);
+    const [_context, setContext] = useState(null);
 
     useEffect(() => {
         setShowModal(show);
+        setContext(context?context:null);
     });
 
     const _closeConfirmWithYes = () => {
         setShowModal(false);
         if (closeConfirm) {
-            closeConfirm(true);
+            closeConfirm(true, _context);
         }
     };
 
     const _closeConfirmWithNo = () => {
         setShowModal(false);
         if (closeConfirm) {
-            closeConfirm(false);
+            closeConfirm(false, null);
         }
     };
 
