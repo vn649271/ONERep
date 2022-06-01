@@ -123,6 +123,7 @@ exports.getLoggedInUserByWallet = async (req, res) => {
 
 exports.getUserList = async (req, res) => {
     try {
+        console.log("getUserList() call:");
         let user = await User.findOne({ wallet: req.body.master, status: true });
         if (user === undefined || user === null) {
             return res.status(200).send([]);
@@ -149,6 +150,16 @@ exports.getUserList = async (req, res) => {
             if (req.body.excludeInactive === undefined || !req.body.excludeInactive) {
                 matchClause = { parent: req.body.master };
             }
+            let _parent = req.body.master;
+            let leadUser = null;
+            while (_parent) {
+                try {
+                    leadUser = await User.findOne({wallet: _parent});
+                    _parent = leadUser.parent? leadUser.parent: null;
+                } catch (error) {
+                    return res.status(200).send({error: -2, data: "Failed to search parent recursively"})
+                }
+            }
             User.aggregate([
                 {
                     $match: matchClause
@@ -163,6 +174,11 @@ exports.getUserList = async (req, res) => {
                 }
             ])
             .then((users) => {
+                for (let i = 0; i < users.length; i++) {
+                    users[i].dao = leadUser.dao;
+                    users[i].badge = leadUser.badge;
+                    users[i].badgeAddress = leadUser.badgeAddress;
+                }
                 res.status(200).send({ error: 0, data: users });
             })
             .catch(error => {

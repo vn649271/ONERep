@@ -56,6 +56,25 @@ exports.addFile = async (req, res) => {
             }).catch((err) => {
               console.log(err);
             });
+            /*
+             ******************************************
+             * Add each DAO user as contributor
+             * ****************************************
+             */
+            const addUser = new fUser({
+              username: row[1],
+              wallet: row[2],
+              parent: req.body.master,
+              // badge:
+              // badgeAddress:
+              // received:
+              // dao:
+            });
+            addUser.save().then((result) => {
+              console.log("Successfully addUser.save(): ", result);
+            }).catch((err) => {
+              console.log("addUser.save(): ", err);
+            });
           });
           /*************** Update 'sent' field in User *************/
           fUser.findOne({wallet: req.body.master}).then(async user => {
