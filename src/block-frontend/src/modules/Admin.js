@@ -38,8 +38,8 @@ const AdminModule = (props) => {
     const [messageTitle, setMessageTitle] = useState("");
     const [messageContent, setMessageContent] = useState("");
     const [badgeAddress, setBadgeAddress] = useState(null);
-    const [userNameAdded, setUserNameAdded] = useState(null);
-    const [walletAdded, setWalletAdded] = useState(null);
+    const [_userName, setUserName] = useState(null);
+    const [_wallet, setWallet] = useState(null);
     const [inited, setInited] = useState(false);
     // const [chainId, setChainId] = useState(0);
     
@@ -101,6 +101,8 @@ const AdminModule = (props) => {
     const handleCloseSettings = () => setShowSettings(false);
     const handleShow = (user) => {
         setCurUser(user);
+        setUserName(user.username);
+        setWallet(user.wallet);
         setShow(true);
     }
     const handleCloseMessageBox = () => {
@@ -129,8 +131,8 @@ const AdminModule = (props) => {
     }
     const handleSave = async ev => {
         curUser.status = enable;
-        curUser.username = userNameAdded;
-        curUser.wallet = walletAdded;
+        curUser.username = _userName;
+        curUser.wallet = _wallet;
 
         try {
             let ret = await axios.post(
@@ -297,13 +299,13 @@ const AdminModule = (props) => {
                             <div className="col-md-12">
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <div className="text-center"><Form.Label className="text-muted-dark">Contributor Name</Form.Label></div>
-                                    <Form.Control type="text" name="username" value={userNameAdded} placeholder="" onChange={(e) => setUserNameAdded(e.target.value)} required />
+                                    <Form.Control type="text" name="username" value={_userName} placeholder="" onChange={(e) => setUserName(e.target.value)} required />
                                 </Form.Group>
                             </div>
                             <div className="col-md-12">
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <div className="text-center"><Form.Label className="text-muted-dark">Contributor ETH address</Form.Label></div>
-                                    <Form.Control type="text" name="wallet" value={walletAdded} onChange={(e) => setWalletAdded(e.target.value)} placeholder="" />
+                                    <Form.Control type="text" name="wallet" value={_wallet} onChange={(e) => setWallet(e.target.value)} placeholder="" />
                                 </Form.Group>
                             </div>
                             {/*{<div className="col-md-6">
