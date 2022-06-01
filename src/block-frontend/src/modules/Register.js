@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import Form from 'react-bootstrap/Form';
 import { deployBadgeContract } from "../service/contractService";
@@ -28,7 +28,8 @@ const RegisterModule = (props) => {
     const [wallet, setWallet] = useState('');
     const [status, setStatus] = useState(IDLE); // IDLE, PENDING
     const [userName, setUserName] = useState("");
-    const [badgeTokenName, setBadgeTokenName] = useState("");
+    const [badgeSymbol, setBadgeSymbol] = useState("");
+    const [_badgeTokenAddress, setBadgeTokenAddress] = useState("");
     const [daoName, setDaoName] = useState("");
     const [errorUserName, setErrorUserName] = useState("");
     const [errorBadgeName, setErrorBadgeName] = useState("");
@@ -40,13 +41,15 @@ const RegisterModule = (props) => {
     const [modalMessage, setModalMessage] = useState("");
     const [isFirstRegister, setIsFirstRegister] = useState(false);
     const [isInited, setIsInited] = useState(false);
+    
+    const registerForm = useRef();
 
     useEffect(() => {
         let walletAddress = localStorage.getItem('wallet');
         setWallet(walletAddress);
         if (!isInited) {
             axios.get(SERVER_URL + '/users').then(response => {
-                let nUsers = response.data ? response.data.data? response.data.data : 0: 0;
+                let nUsers = response.data ? response.data.data ? response.data.data : 0 : 0;
                 if (nUsers < 1) {
                     setIsFirstRegister(true);
                 } else {
@@ -62,28 +65,17 @@ const RegisterModule = (props) => {
         let stopWait = params.stopWait;
         console.log("inside handler")
         // e.preventDefault();
-        let badgeTokenAddress = "";
-        let userNameBox = document.getElementsByName("username");
-        let userName = userNameBox[0].value;
         if (userName === '') {
             setErrorUserName('Invalid user name');
             stopWait();
             return;
         }
-
-        let wallet1 = document.getElementsByName("wallet");
-
-        let badge1 = document.getElementsByName("badge");;
-        let badgeSymbol = badge1[0].value;
-        if (!isFirstRegister && badgeSymbol === '') {
+        if (!isFirstRegister && badgeSymbol === null) {
             setErrorBadgeName('Invalid badge token name');
             stopWait();
             return;
         }
-
-        let dao1 = document.getElementsByName("dao");
-        let daoName = dao1[0].value;
-        if (!isFirstRegister && daoName === '') {
+        if (!isFirstRegister && daoName === null) {
             setErrorDaoName('Invalid DAO name');
             stopWait();
             return;
@@ -93,32 +85,34 @@ const RegisterModule = (props) => {
         let address1;
 
         try {
-            const accounts = await web3.eth.getAccounts();
-            if (
-                accounts === undefined || accounts === null ||
-                accounts.length < 1 || accounts[0] === null
-            ) {
-                warning("No selected account for you");
+            if (badgeSymbol) {
+                const accounts = await web3.eth.getAccounts();
+                if (
+                    accounts === undefined || accounts === null ||
+                    accounts.length < 1 || accounts[0] === null
+                ) {
+                    warning("No selected account for you");
+                    stopWait();
+                    return;
+                }
+                setStatus(PENDING);
+                let badgeTokenAddress = await deployBadgeContract(web3, badgeSymbol);
+                setBadgeTokenAddress(badgeTokenAddress);
                 stopWait();
-                return;
+                setStatus(IDLE);
+                if (badgeTokenAddress === null) {
+                    warning("Failed to deploy badge token for you. Please try again");
+                    return;
+                }
+                localStorage.setItem("badgeTokenAddress", badgeTokenAddress);
+                localStorage.setItem("badge", badgeSymbol);
             }
-            setStatus(PENDING);
-            badgeTokenAddress = await deployBadgeContract(web3, badgeSymbol);
-            stopWait();
-            setStatus(IDLE);
-            if (badgeTokenAddress === null) {
-                warning("Failed to deploy badge token for you. Please try again");
-                return;
+            if (daoName) {
+                localStorage.setItem("dao", daoName);
             }
-            document.getElementsByName("tokenaddress")[0].value = badgeTokenAddress;
-
             localStorage.setItem("user", userName);
-            localStorage.setItem("badge", badgeSymbol);
-            localStorage.setItem("badgeTokenAddress", badgeTokenAddress);
-            localStorage.setItem("dao", daoName);
-            localStorage.setItem("wallet", wallet1[0].value);
+            localStorage.setItem("wallet", wallet);
             inform("Success", "DAO Token deployed, please proceed to launch ONERep Account");
-            console.log(">>>>>>>>>>>>>>>>>>>>> New deployed badge token address:", badgeTokenAddress);
         } catch (error) {
             stopWait();
             orAlert(error.message);
@@ -127,12 +121,12 @@ const RegisterModule = (props) => {
     const handleUserInput = (ev) => {
         const name = ev.target.name;
         const value = ev.target.value;
-        if (name === 'username') {
+        if (name === 'userName') {
             setErrorUserName('');
             setUserName(ev.target.value);
         } else if (name === 'badge') {
             setErrorBadgeName('');
-            setBadgeTokenName(ev.target.value);
+            setBadgeSymbol(ev.target.value);
         } else if (name === 'dao') {
             setErrorDaoName('');
             setDaoName(ev.target.value);
@@ -156,6 +150,11 @@ const RegisterModule = (props) => {
     const onChangeAddress = ev => {
         console.log("Wallet address changed: ", ev.target.value);
     }
+    const onClickRegister = ev => {
+        if (registerForm.current){
+            registerForm.current.submit();
+        }
+    }
 
     return (
         <section className="">
@@ -167,19 +166,40 @@ const RegisterModule = (props) => {
             <br /><br />
             <div className="row">
                 <div className="col-md-6 offset-md-3">
-                    <Form action={SERVER_URL + "/users/register"} method="post">
+                    <Form ref={registerForm} action={SERVER_URL + "/users/register"} method="post">
                         <div className="row mb-40">
                             <div className="col-md-6">
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <div className="text-center"><Form.Label className="text-muted-dark">User Name</Form.Label></div>
-                                    <Form.Control className={errorUserName !== '' ? "invalid-content" : ""} type="text" name="username" placeholder="" value={userName} onChange={handleUserInput} required readOnly={status === PENDING ? true : false} />
+                                    <div className="text-center">
+                                        <Form.Label className="text-muted-dark">User Name</Form.Label>
+                                    </div>
+                                    <Form.Control 
+                                        className={errorUserName !== '' ? "invalid-content" : ""} 
+                                        type="text" 
+                                        name="userName" 
+                                        placeholder="" 
+                                        value={userName} 
+                                        onChange={handleUserInput} 
+                                        required 
+                                        readOnly={status === PENDING ? true : false} 
+                                    />
                                     <div className='error-tooltip'>{errorUserName}</div>
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
                                 <Form.Group className="mb-3" controlId="formBasicText">
-                                    <div className="text-center"><Form.Label className="text-muted-dark">Address</Form.Label></div>
-                                    <Form.Control type="text" value={wallet} name="wallet" placeholder="" onChange={onChangeAddress} required readOnly />
+                                    <div className="text-center">
+                                        <Form.Label className="text-muted-dark">Address</Form.Label>
+                                    </div>
+                                    <Form.Control 
+                                        type="text" 
+                                        value={wallet} 
+                                        name="wallet" 
+                                        placeholder="" 
+                                        onChange={onChangeAddress} 
+                                        required 
+                                        readOnly
+                                    />
                                 </Form.Group>
                             </div>
                             {
@@ -188,23 +208,52 @@ const RegisterModule = (props) => {
                                     <>
                                         <div className="col-md-6">
                                             <Form.Group className="mb-3" controlId="formBasicText">
-                                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Name</Form.Label></div>
-                                                <Form.Control className={errorBadgeName !== '' ? "invalid-content" : ""} type="text" name="badge" placeholder="" value={badgeTokenName} onChange={handleUserInput} required readOnly={status == PENDING ? true : false} />
+                                                <div className="text-center">
+                                                    <Form.Label className="text-muted-dark">Badge Name</Form.Label>
+                                                </div>
+                                                <Form.Control 
+                                                    className={ errorBadgeName !== '' ? "invalid-content" : "" } 
+                                                    type="text" 
+                                                    name="badge" 
+                                                    placeholder="" 
+                                                    value={badgeSymbol} 
+                                                    onChange={handleUserInput} 
+                                                    required 
+                                                    readOnly={status == PENDING ? true : false} 
+                                                />
                                                 <div className='error-tooltip'>{errorBadgeName}</div>
                                             </Form.Group>
                                         </div>
                                         <div className="col-md-6">
                                             <Form.Group className="mb-3" controlId="formBasicText">
-                                                <div className="text-center"><Form.Label className="text-muted-dark">DAO Name</Form.Label></div>
-                                                <Form.Control className={errorDaoName !== '' ? "invalid-content" : ""} type="text" name="dao" placeholder="" value={daoName} onChange={handleUserInput} required readOnly={status === PENDING ? true : false} />
+                                                <div className="text-center">
+                                                    <Form.Label className="text-muted-dark">DAO Name</Form.Label>
+                                                </div>
+                                                <Form.Control 
+                                                    className={errorDaoName !== '' ? "invalid-content" : ""} 
+                                                    type="text" 
+                                                    name="dao" 
+                                                    placeholder="" 
+                                                    value={daoName} 
+                                                    onChange={handleUserInput} 
+                                                    required 
+                                                    readOnly={status === PENDING ? true : false} 
+                                                />
                                                 <div className='error-tooltip'>{errorDaoName}</div>
                                             </Form.Group>
                                         </div>
                                         <div className="col-md-6">
                                             <Form.Group className="mb-3" controlId="formBasicText">
-                                                <div className="text-center"><Form.Label className="text-muted-dark">Badge Address</Form.Label></div>
-                                                {/* <Form.Label name="tokenaddress"></Form.Label> */}
-                                                <Form.Control type="text" name="tokenaddress" placeholder="" required readOnly />
+                                                <div className="text-center">
+                                                    <Form.Label className="text-muted-dark">Badge Address</Form.Label>
+                                                </div>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    name="tokenAddress" 
+                                                    value={_badgeTokenAddress}
+                                                    placeholder="" 
+                                                    required readOnly 
+                                                />
                                             </Form.Group>
                                         </div>
                                         <div className="col-12 text-center">
@@ -220,16 +269,11 @@ const RegisterModule = (props) => {
                             <div className="col-12 text-center">
                                 <div className="zl_securebackup_btn">
                                     {
-                                        status === PENDING ?
-                                            <button
-                                                type="submit"
-                                                className="mx-auto"
-                                                disabled
-                                            >Launch this ONERep</button> :
-                                            <button
-                                                type="submit"
-                                                className="mx-auto"
-                                            >Launch this ONERep</button>
+                                        <OrSpinButton
+                                            onClick={onClickRegister}
+                                            disabled={status === PENDING}
+                                        >Launch this ONERep
+                                        </OrSpinButton>
                                     }
                                 </div>
                             </div>
@@ -237,7 +281,6 @@ const RegisterModule = (props) => {
                     </Form>
                 </div>
             </div>
-
         </section>
     );
 }

@@ -12,6 +12,7 @@ import axios from 'axios';
 import { SERVER_URL } from '../conf';
 import SettingModule from './Settings';
 import OrConfirm from '../components/Modals/OrConfirm';
+import { orAlert } from "../service/utils";
 
 const AdminModule = (props) => {
 
@@ -107,7 +108,14 @@ const AdminModule = (props) => {
     }
     const _handleDelete = (user) => {
         axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
-            setUsers(response.data);
+            let errorCode = response.data? response.data.error ? response.data.error: -100: -100;
+            let retData = response.data? response.data.data? response.data.data: null: null;
+            if (!errorCode) {
+                setUsers(retData);
+                orAlert("Successfully deleted the user");
+                return;
+            }
+            orAlert(retData? retData: "");
         });
     }
     const handleDelete = (user) => {

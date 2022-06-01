@@ -54,6 +54,11 @@ const userSchema=new mongoose.Schema({
         required:false,
         default:false
     },
+    isRoot: {
+        type:Boolean,
+        required:false,
+        default:false
+    },
     status: {
         type:Boolean,
         required:false,

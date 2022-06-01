@@ -2586,20 +2586,13 @@ table td {
   cursor: pointer;
 }
 
+.or-spin-button.or-spin-button-disabled {
+  opacity: 0.7;
+}
+
 .or-spin-button div.overlapped {
   position: absolute;
   margin-right: 0px !important;
-}
-
-.or-spin-border.medium {
-  width: 25px !important;
-  height: 25px !important;
-}
-
-.or-spin-border.large {
-  margin-top: 25px;
-  width: 50px !important;
-  height: 50px !important;
 }
 
 .or-spin-button div.flex {
@@ -2608,7 +2601,7 @@ table td {
 
 .or-spin-button:hover {
   text-decoration: none;
-  opacity: 0.8;
+  opacity: 0.7;
   color: #252f47;
 }
 
@@ -2621,6 +2614,17 @@ table td {
   height: 1em !important;
   border: 0.1em solid currentColor !important;
   border-right-color: transparent !important;
+}
+
+.or-spin-border.medium {
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.or-spin-border.large {
+  margin-top: 25px;
+  width: 50px !important;
+  height: 50px !important;
 }
 
 .or-spin-border-white {

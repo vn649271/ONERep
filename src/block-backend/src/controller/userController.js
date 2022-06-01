@@ -6,16 +6,17 @@ const jwt = require("jwt-simple");
 exports.register = async (req, res) => {
     let errors = [];
     let userCount = 0;
+    if (!req.body.wallet) {
+        errors.push({ text: 'Please Enter Address.' });
+    }
+    if (!req.body.userName) {
+        errors.push({ text: 'Please Enter UserName.' });
+    }
     try {
         userCount = await User.count();
     } catch (error) {
         console.log("Failed get user count");
-    }
-    if (!req.body.wallet) {
-        errors.push({ text: 'Please Enter Address.' });
-    }
-    if (!req.body.username) {
-        errors.push({ text: 'Please Enter UserName.' });
+        errors.push({ text: 'Failed to get the number of registered users' });
     }
     if (userCount > 0) {
         if (!req.body.badge) {
@@ -24,7 +25,7 @@ exports.register = async (req, res) => {
         if (!req.body.dao) {
             errors.push({ text: 'Please Enter DAO address.' });
         }
-        if (!req.body.tokenaddress) {
+        if (!req.body.tokenAddress) {
             errors.push({ text: 'Badge Address is required' });
         }
     }
@@ -36,26 +37,31 @@ exports.register = async (req, res) => {
         if (user) {
             res.redirect(req.headers.origin + '/admin');
         } else {
-            let user = new User({
-                username: req.body.username,
-                wallet: req.body.wallet,
-                badge: req.body.badge,
-                dao: req.body.dao,
-                badgeAddress: req.body.tokenaddress
-            });
+            let user = null;
             if (userCount < 1) {
                 // Is the most first user and super admin
                 user = new User({
-                    username: req.body.username,
+                    username: req.body.userName,
                     wallet: req.body.wallet,
                     badge: "",
                     dao: "",
                     isAdmin: true,
+                    isRoot: true,
                     badgeAddress: ""
+                });
+            } else {
+                user = new User({
+                    username: req.body.userName,
+                    wallet: req.body.wallet,
+                    badge: req.body.badge,
+                    dao: req.body.dao,
+                    badgeAddress: req.body.tokenAddress,
+                    isAdmin: false,
+                    isRoot: false
                 });
             }
             user.save().then((result) => {
-                res.redirect(req.headers.origin + '/admin');
+                return res.redirect(req.headers.origin + '/admin');
             }).catch((err) => {
                 res.status(200).send({ success: false, error: err });
             });
@@ -382,10 +388,21 @@ exports.update = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-    User.deleteOne({ _id: req.body._id }).then((user) => {
-        User.find({ parent: req.body.master }).then((users) => {
-            res.status(200).send(users);
+    User.findOne({ _id: req.body._id }).then(user => {
+        if (user === undefined || user === null) {
+            return res.status(200).send({error: -1, data: "Failed to find specified user"});
+        }
+        if (user.isRoot) {
+            return res.status(200).send({error: 1, data: "Couldn't delete super administrator"});
+        }
+        User.deleteOne({ _id: req.body._id }).then((user) => {
+            User.find({ parent: req.body.master }).then((users) => {
+                res.status(200).send({error: 0, data: users});
+            });
         });
+    })
+    .catch(error => {
+        res.status(200).send({error: -10, data: error.message});
     });
 }
 
