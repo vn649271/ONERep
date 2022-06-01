@@ -141,7 +141,7 @@ const AdminModule = (props) => {
                     wallet: localStorage.getItem("wallet")
                 }
             );
-            if (ret.status !== 200 || ret.data !== undefined || ret.data === null)  {
+            if (ret.status !== 200 || ret.data === undefined || ret.data === null)  {
                 orAlert("Failed to get user information by wallet address");
                 return;                
             }

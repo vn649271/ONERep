@@ -86,12 +86,9 @@ exports.login = async (req, res) => {
                     });
                 } else {
                     res.json({
-                        success: true,
-                        username: "",
-                        isAdmin: false,
-                        parent: "",
-                        badgeTokenAddress: null,
-                        url: '/register'
+                        success: false,
+                        data: "Your account is not activated now",
+                        url: '/'
                     });
                 }
             } else {

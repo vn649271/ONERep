@@ -7,6 +7,7 @@ import { USERS } from "../store/actionTypes";
 import { useHistory } from "react-router-dom";
 import BasicModal from '../components/Modals/BasicModal';
 import OrSpinButton from '../components/OrSpinButton';
+import { orAlert } from "../service/utils";
 import axios from "axios";
 import { SERVER_URL } from "../conf";
 import Web3 from "web3";
@@ -81,6 +82,9 @@ const HomePageModule = (props) => {
               // chainId: chainId
             }
           });
+          history.push(response.data.url);
+        } else {
+          orAlert(response.data.data);
           history.push(response.data.url);
         }
       });
