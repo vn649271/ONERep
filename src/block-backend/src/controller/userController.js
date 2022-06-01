@@ -199,8 +199,11 @@ exports.getUserCount = async (req, res) => {
     }
 }
 
+const _getOneRepBoard = async (daos, sortOption) => {}
+
 exports.getOneRepBoard = async (req, res) => {
     let parentAddress = req.body.master;
+    let sortOption = req.body.sort? req.body.sort: {};
     let user = await User.findOne({ wallet: parentAddress });
     if (user.isAdmin) {
         let daoFilter = { dao: req.body.dao };
@@ -209,6 +212,7 @@ exports.getOneRepBoard = async (req, res) => {
         }
         let daos = await User.find(daoFilter);
         let result = [];
+        let respObj = null;
         for (let i = 0; i < daos.length; i++) {
             try {
                 let actions = await fAction.aggregate([
@@ -216,7 +220,7 @@ exports.getOneRepBoard = async (req, res) => {
                         $match: { parent: daos[i].wallet }
                     },
                     {
-                        $sort: req.body.sort
+                        $sort: sortOption
                     },
                     {
                         $group: {
@@ -237,30 +241,31 @@ exports.getOneRepBoard = async (req, res) => {
                     actions[j]['badge'] = daos[i].badge;
                 }
                 result.push(...actions);
-                if (req.body.sort.badge) {
+                if (sortOption.badge) {
                     result.sort((a, b) => {
                         if (a['badge'] === b['badge']) {
                             return 0;
                         }
                         else {
-                            return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
+                            return (a['badge'] < b['badge']) ? -1 * sortOption.badge : sortOption.badge;
                         }
                     });
-                } else if (req.body.sort.name) {
+                } else if (sortOption.name) {
                     result.sort((a, b) => {
                         if (a['name'] === b['name']) {
                             return 0;
                         }
                         else {
-                            return (a['name'] < b['name']) ? -1 * req.body.sort.name : req.body.sort.name;
+                            return (a['name'] < b['name']) ? -1 * sortOption.name : sortOption.name;
                         }
                     });
                 }
+                respObj = { error: 0, data: result };
             } catch (error) {
-                return res.status(200).send({ error: -10, data: error.message });
+                respObj = { error: -10, data: error.message };
             }
         }
-        return res.status(200).send({ error: 0, data: result });
+        return res.status(200).send(respObj);
     } else {
         let _parent = req.body.master;
         let leadUser = null;

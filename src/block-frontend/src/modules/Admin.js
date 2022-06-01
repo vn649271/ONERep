@@ -42,7 +42,7 @@ const AdminModule = (props) => {
     const [_wallet, setWallet] = useState(null);
     const [inited, setInited] = useState(false);
     // const [chainId, setChainId] = useState(0);
-    
+
     const [confirmContext, setConfirmContext] = useState("");
     const [confirmText, setConfirmText] = useState("");
     const [showConfirm, setShowConfirm] = useState(false);
@@ -76,7 +76,9 @@ const AdminModule = (props) => {
                 // setChainId(localStorage.getItem('chainId'));
             });
         }
-        getContributors();
+        if (!users || !users.length) {
+            getContributors();
+        }
     })
     const openConfirm = (text, context) => {
         setConfirmContext(context);
@@ -87,7 +89,7 @@ const AdminModule = (props) => {
         setShowConfirm(false);
         if (ret) {
             if (context && context.onCloseWithYes) {
-                context.onCloseWithYes(context ? context.params ? context.params: null: null);
+                context.onCloseWithYes(context ? context.params ? context.params : null : null);
             }
         }
     }
@@ -110,14 +112,14 @@ const AdminModule = (props) => {
     }
     const _handleDelete = (user) => {
         axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
-            let errorCode = response.data? response.data.error ? response.data.error: -100: -100;
-            let retData = response.data? response.data.data? response.data.data: null: null;
+            let errorCode = response.data ? response.data.error ? response.data.error : -100 : -100;
+            let retData = response.data ? response.data.data ? response.data.data : null : null;
             if (!errorCode) {
                 setUsers(retData);
                 orAlert("Successfully deleted the user");
                 return;
             }
-            orAlert(retData? retData: "");
+            orAlert(retData ? retData : "");
         });
     }
     const handleDelete = (user) => {
@@ -141,9 +143,9 @@ const AdminModule = (props) => {
                     wallet: localStorage.getItem("wallet")
                 }
             );
-            if (ret.status !== 200 || ret.data === undefined || ret.data === null)  {
+            if (ret.status !== 200 || ret.data === undefined || ret.data === null) {
                 orAlert("Failed to get user information by wallet address");
-                return;                
+                return;
             }
             curUser.isAdmin = ret.data.isAdmin;
             curUser.badgeAddress = ret.data.badgeAddress;
