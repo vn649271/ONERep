@@ -139,12 +139,12 @@ exports.getUserList = async (req, res) => {
                     }
                 }
             ])
-            .then((users) => {
-                res.status(200).send({ error: 0, data: users });
-            })
-            .catch(error => {
-                return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-            });
+                .then((users) => {
+                    res.status(200).send({ error: 0, data: users });
+                })
+                .catch(error => {
+                    return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+                });
         } else {
             let matchClause = { parent: req.body.master, status: true };
             if (req.body.excludeInactive === undefined || !req.body.excludeInactive) {
@@ -154,10 +154,10 @@ exports.getUserList = async (req, res) => {
             let leadUser = null;
             while (_parent) {
                 try {
-                    leadUser = await User.findOne({wallet: _parent});
-                    _parent = leadUser.parent? leadUser.parent: null;
+                    leadUser = await User.findOne({ wallet: _parent });
+                    _parent = leadUser.parent ? leadUser.parent : null;
                 } catch (error) {
-                    return res.status(200).send({error: -2, data: "Failed to search parent recursively"})
+                    return res.status(200).send({ error: -2, data: "Failed to search parent recursively" })
                 }
             }
             User.aggregate([
@@ -173,17 +173,17 @@ exports.getUserList = async (req, res) => {
                     }
                 }
             ])
-            .then((users) => {
-                for (let i = 0; i < users.length; i++) {
-                    users[i].dao = leadUser.dao;
-                    users[i].badge = leadUser.badge;
-                    users[i].badgeAddress = leadUser.badgeAddress;
-                }
-                res.status(200).send({ error: 0, data: users });
-            })
-            .catch(error => {
-                return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-            });
+                .then((users) => {
+                    for (let i = 0; i < users.length; i++) {
+                        users[i].dao = leadUser.dao;
+                        users[i].badge = leadUser.badge;
+                        users[i].badgeAddress = leadUser.badgeAddress;
+                    }
+                    res.status(200).send({ error: 0, data: users });
+                })
+                .catch(error => {
+                    return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+                });
         }
     } catch (error) {
         res.status(200).send({ error: -1, data: error.message });
@@ -234,6 +234,7 @@ exports.getOneRepBoard = async (req, res) => {
                 }
                 for (let j = 0; j < actions.length; j++) {
                     actions[j]['dao'] = daos[i].dao;
+                    actions[j]['badge'] = daos[i].badge;
                 }
                 result.push(...actions);
             } catch (error) {
@@ -242,9 +243,19 @@ exports.getOneRepBoard = async (req, res) => {
         }
         return res.status(200).send({ error: 0, data: result });
     } else {
+        let _parent = req.body.master;
+        let leadUser = null;
+        while (_parent) {
+            try {
+                leadUser = await User.findOne({ wallet: _parent });
+                _parent = leadUser.parent ? leadUser.parent : null;
+            } catch (error) {
+                return res.status(200).send({ error: -2, data: "Failed to search parent recursively" })
+            }
+        }
         await fAction.aggregate([
             {
-                $match: { parent: user.parent?user.parent: user.wallet }
+                $match: { parent: user.parent ? user.parent : user.wallet }
             },
             {
                 $group: {
@@ -261,7 +272,8 @@ exports.getOneRepBoard = async (req, res) => {
                 res.status(200).send({ error: -1, data: "Failed to get board data" });
             }
             for (let j = 0; j < actions.length; j++) {
-                actions[j]['dao'] = user.dao;
+                actions[j]['dao'] = leadUser.dao;
+                actions[j]['badge'] = leadUser.badge;
             }
             res.status(200).send({ error: 0, data: actions });
         }).catch(error => {
@@ -407,19 +419,19 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     User.findOne({ _id: req.body._id }).then(user => {
         if (user === undefined || user === null) {
-            return res.status(200).send({error: -1, data: "Failed to find specified user"});
+            return res.status(200).send({ error: -1, data: "Failed to find specified user" });
         }
         if (user.isRoot) {
-            return res.status(200).send({error: 1, data: "Couldn't delete super administrator"});
+            return res.status(200).send({ error: 1, data: "Couldn't delete super administrator" });
         }
         User.deleteOne({ _id: req.body._id }).then((user) => {
             User.find({ parent: req.body.master }).then((users) => {
-                res.status(200).send({error: 0, data: users});
+                res.status(200).send({ error: 0, data: users });
             });
         });
     })
-    .catch(error => {
-        res.status(200).send({error: -10, data: error.message});
-    });
+        .catch(error => {
+            res.status(200).send({ error: -10, data: error.message });
+        });
 }
 

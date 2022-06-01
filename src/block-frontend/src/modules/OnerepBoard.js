@@ -229,6 +229,7 @@ const OneRepBoardModule = (props) => {
           <thead>
             <tr>
               <th>DAO</th>
+              <th>Badge</th>
               <th
                 onClick={() => {
                   setSortName(-sort_name);
@@ -268,6 +269,7 @@ const OneRepBoardModule = (props) => {
                 return (
                   <tr key={i}>
                     <td>{row.dao}</td>
+                    <td>{row.badge}</td>
                     <td>{row.name}</td>
                     <td>{row._id}</td>
                     <td className="text-right">
