@@ -199,11 +199,11 @@ exports.getUserCount = async (req, res) => {
     }
 }
 
-const _getOneRepBoard = async (daos, sortOption) => {}
+const _getOneRepBoard = async (daos, sortOption) => { }
 
 exports.getOneRepBoard = async (req, res) => {
     let parentAddress = req.body.master;
-    let sortOption = req.body.sort? req.body.sort: {};
+    let sortOption = req.body.sort ? req.body.sort : {};
     let user = await User.findOne({ wallet: parentAddress });
     if (user.isAdmin) {
         let daoFilter = { dao: req.body.dao };
@@ -365,10 +365,20 @@ exports.getDaoData = async (req, res) => {
         } else {
             let daos = [];
             try {
+                let _parent = req.body.master;
+                let leadUser = null;
+                while (_parent) {
+                    try {
+                        leadUser = await User.findOne({ wallet: _parent });
+                        _parent = leadUser.parent ? leadUser.parent : null;
+                    } catch (error) {
+                        return res.status(200).send({ error: -2, data: "Failed to search parent recursively" })
+                    }
+                }
                 if (req.body.dao) {
-                    daos = await User.find({ wallet: req.body.master, dao: req.body.dao });
+                    daos = await User.find({ wallet: leadUser.wallet, dao: req.body.dao });
                 } else {
-                    daos = await User.find({ wallet: req.body.master });
+                    daos = await User.find({ wallet: leadUser.wallet });
                 }
                 return res.status(200).send({ error: 0, data: daos });
             } catch (error) {
