@@ -61,19 +61,26 @@ exports.addFile = async (req, res) => {
              * Add each DAO user as contributor
              * ****************************************
              */
-            const addUser = new fUser({
-              username: row[1],
-              wallet: row[2],
-              parent: req.body.master,
-              // badge:
-              // badgeAddress:
-              // received:
-              // dao:
-            });
-            addUser.save().then((result) => {
-              console.log("Successfully addUser.save(): ", result);
-            }).catch((err) => {
-              console.log("addUser.save(): ", err);
+            fUser.count({wallet: row[2]}).then(bExist => {
+              if (!bExist) {
+                const addUser = new fUser({
+                  username: row[1],
+                  wallet: row[2],
+                  parent: req.body.master,
+                  // badge:
+                  // badgeAddress:
+                  // received:
+                  // dao:
+                });
+                addUser.save().then((result) => {
+                  console.log("Successfully addUser.save(): ", result);
+                }).catch((err) => {
+                  console.log("addUser.save(): ", err);
+                });
+              }
+            })
+            .catch(error => {
+              console.log("fUser.count({wallet: ...}): ", error);
             });
           });
           /*************** Update 'sent' field in User *************/
