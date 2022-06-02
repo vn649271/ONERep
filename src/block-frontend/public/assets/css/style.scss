@@ -2860,6 +2860,10 @@ margin-left: 0.8em;
 			vertical-align: bottom;
 			color: #cad3f2;
 			text-transform: uppercase;
+
+			&.or-table-sortable-column {
+				cursor: pointer;
+			}
 		}
 
 		td {

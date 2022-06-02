@@ -2870,6 +2870,10 @@ margin-left: 0.8em;
   text-transform: uppercase;
 }
 
+.or-table tr th.or-table-sortable-column {
+  cursor: pointer;
+}
+
 .or-table tr td {
   padding: 0.75rem;
   font-size: 14px;

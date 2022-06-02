@@ -200,6 +200,16 @@ exports.getUserCount = async (req, res) => {
 }
 
 const _getOneRepBoard = async (daos, sortOption) => { }
+const _sort = (arr, field, direction) =>{
+    arr.sort((a, b) => {
+        if (a[field] === b[field]) {
+            return 0;
+        }
+        else {
+            return (a[field] < b[field]) ? -1 * direction : direction;
+        }
+    });
+}
 
 exports.getOneRepBoard = async (req, res) => {
     let parentAddress = req.body.master;
@@ -220,9 +230,6 @@ exports.getOneRepBoard = async (req, res) => {
                         $match: { parent: daos[i].wallet }
                     },
                     {
-                        $sort: sortOption
-                    },
-                    {
                         $group: {
                             _id: "$wallet",
                             name: { $first: '$name' },
@@ -241,30 +248,15 @@ exports.getOneRepBoard = async (req, res) => {
                     actions[j]['badge'] = daos[i].badge;
                 }
                 result.push(...actions);
-                if (sortOption.badge) {
-                    result.sort((a, b) => {
-                        if (a['badge'] === b['badge']) {
-                            return 0;
-                        }
-                        else {
-                            return (a['badge'] < b['badge']) ? -1 * sortOption.badge : sortOption.badge;
-                        }
-                    });
-                } else if (sortOption.name) {
-                    result.sort((a, b) => {
-                        if (a['name'] === b['name']) {
-                            return 0;
-                        }
-                        else {
-                            return (a['name'] < b['name']) ? -1 * sortOption.name : sortOption.name;
-                        }
-                    });
-                }
-                respObj = { error: 0, data: result };
             } catch (error) {
                 respObj = { error: -10, data: error.message };
             }
         }
+        // Sort
+        for (let k in sortOption) {
+            _sort(result, k, sortOption[k]);
+        }
+        respObj = { error: 0, data: result };
         return res.status(200).send(respObj);
     } else {
         let _parent = req.body.master;
@@ -286,7 +278,6 @@ exports.getOneRepBoard = async (req, res) => {
                     _id: "$wallet",
                     name: { $first: '$name' },
                     sum: { $sum: "$received" },
-                    user: { $first: "$user" }
                 }
             },
             {
@@ -300,24 +291,9 @@ exports.getOneRepBoard = async (req, res) => {
                 actions[j]['dao'] = leadUser.dao;
                 actions[j]['badge'] = leadUser.badge;
             }
-            if (req.body.sort.badge) {
-                actions.sort((a, b) => {
-                    if (a['badge'] === b['badge']) {
-                        return 0;
-                    }
-                    else {
-                        return (a['badge'] < b['badge']) ? -1 * req.body.sort.badge : req.body.sort.badge;
-                    }
-                });
-            } else if (req.body.sort.name) {
-                actions.sort((a, b) => {
-                    if (a['name'] === b['name']) {
-                        return 0;
-                    }
-                    else {
-                        return (a['name'] < b['name']) ? -1 * req.body.sort.name : req.body.sort.name;
-                    }
-                });
+            // Sort
+            for (let k in sortOption) {
+                _sort(actions, k, sortOption[k]);
             }
             res.status(200).send({ error: 0, data: actions });
         }).catch(error => {

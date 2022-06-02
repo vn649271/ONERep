@@ -229,13 +229,16 @@ const OneRepBoardModule = (props) => {
           <thead>
             <tr>
               <th>DAO</th>
-              <th onClick={() => {
-                setSortBadge(-sort_badge);
-                setSortOption({ badge: -sort_badge });
-                loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
-              }}
+              <th 
+                className="or-table-sortable-column"
+                onClick={() => {
+                  setSortBadge(-sort_badge);
+                  setSortOption({ badge: -sort_badge });
+                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
+                }}
               >Badge</th>
               <th
+                className="or-table-sortable-column"
                 onClick={() => {
                   setSortName(-sort_name);
                   setSortOption({ name: -sort_name });
@@ -245,6 +248,7 @@ const OneRepBoardModule = (props) => {
                 Name
               </th>
               <th
+                className="or-table-sortable-column"
                 onClick={() => {
                   setSortId(-sort_id);
                   setSortOption({ _id: -sort_id });
@@ -254,7 +258,7 @@ const OneRepBoardModule = (props) => {
                 Wallet
               </th>
               <th
-                className="text-right"
+                className="or-table-sortable-column text-right"
                 onClick={() => {
                   setSortSum(-sort_sum);
                   setSortOption({ sum: -sort_sum });
