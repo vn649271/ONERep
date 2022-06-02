@@ -200,7 +200,7 @@ exports.getUserCount = async (req, res) => {
 }
 
 const _getOneRepBoard = async (daos, sortOption) => { }
-const _sort = (arr, field, direction) =>{
+const _sort = (arr, field, direction) => {
     arr.sort((a, b) => {
         if (a[field] === b[field]) {
             return 0;
@@ -301,6 +301,19 @@ exports.getOneRepBoard = async (req, res) => {
         });
     }
 }
+const _getTopParentUser = async wallet => {
+    let _parentAddress = wallet;
+    let topParent = null;
+    while (_parentAddress) {
+        try {
+            topParent = await User.findOne({ wallet: _parentAddress });
+            _parentAddress = topParent.parent ? topParent.parent : null;
+        } catch (error) {
+            return null;
+        }
+    }
+    return topParent;
+}
 /*******************************Get DAO data********************** */
 exports.getDaoData = async (req, res) => {
     try {
@@ -341,20 +354,11 @@ exports.getDaoData = async (req, res) => {
         } else {
             let daos = [];
             try {
-                let _parent = req.body.master;
-                let leadUser = null;
-                while (_parent) {
-                    try {
-                        leadUser = await User.findOne({ wallet: _parent });
-                        _parent = leadUser.parent ? leadUser.parent : null;
-                    } catch (error) {
-                        return res.status(200).send({ error: -2, data: "Failed to search parent recursively" })
-                    }
-                }
+                let topParent = await _getTopParentUser(req.body.master);
                 if (req.body.dao) {
-                    daos = await User.find({ wallet: leadUser.wallet, dao: req.body.dao });
+                    daos = await User.find({ wallet: topParent.wallet, dao: req.body.dao });
                 } else {
-                    daos = await User.find({ wallet: leadUser.wallet });
+                    daos = await User.find({ wallet: topParent.wallet });
                 }
                 return res.status(200).send({ error: 0, data: daos });
             } catch (error) {
@@ -426,11 +430,10 @@ exports.update = async (req, res) => {
                     console.log(error);
                 }
                 puser.username = req.body.username;
-                puser.parent = req.body.master;
+                puser.parent = req.body.parent;
                 puser.wallet = req.body.wallet;
                 puser.badge = req.body.badge;
                 puser.dao = req.body.dao;
-                // puser.isAdmin = isAdmin;
                 puser.status = req.body.status;
                 badgeAddress = req.body.badgeAddress
             }
