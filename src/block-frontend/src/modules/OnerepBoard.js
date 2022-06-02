@@ -100,6 +100,7 @@ const OneRepBoardModule = (props) => {
         });
     }
   });
+
   useEffect(() => {
     if (
       localStorage.getItem("wallet") === "" ||
@@ -109,6 +110,11 @@ const OneRepBoardModule = (props) => {
       return;
     }
   }, [show, sortOption]);
+
+  useEffect(() => {
+    loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
+  }, [sortOption]);
+
   const loadBoardData = async (wallet, dao) => {
     try {
       setLoading(true);
@@ -162,10 +168,8 @@ const OneRepBoardModule = (props) => {
       setSelectedDao(selectedDao);
       if (selectedDao) {
         setSelectedDaoTokenTotalSupply(selectedDao.sent);
-        loadBoardData(localStorage.getItem('wallet'), selectedDao.dao);
-      } else {
-        loadBoardData(localStorage.getItem('wallet'), null);
       }
+      loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
     }
@@ -234,7 +238,6 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortBadge(-sort_badge);
                   setSortOption({ badge: -sort_badge });
-                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >Badge</th>
               <th
@@ -242,7 +245,6 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortName(-sort_name);
                   setSortOption({ name: -sort_name });
-                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >
                 Name
@@ -252,7 +254,6 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortId(-sort_id);
                   setSortOption({ _id: -sort_id });
-                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
                 }}
               >
                 Wallet
