@@ -365,7 +365,7 @@ exports.getOneRepBoard = async (req, res) => {
     let parentAddress = req.body.master;
     let sortOption = req.body.sort ? req.body.sort : {};
     let user = await User.findOne({ wallet: parentAddress });
-    if (user.userType === 0) {
+    if (user && user.userType === 0) {
         let daoFilter = { dao: req.body.dao };
         if (!req.body.dao) {
             daoFilter = {};
@@ -491,7 +491,7 @@ exports.getDaoData = async (req, res) => {
                             if (daoRelations && daoRelations.length) {
                                 sent = daoRelations[0].sent;
                             }
-                            dao['sent'] = sent;
+                            dao.set({'sent': sent});
                             return res.status(200).send({ success: true, data: [dao] });
                         }).catch(error => {
                             return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
@@ -503,15 +503,14 @@ exports.getDaoData = async (req, res) => {
                     UserDao.aggregate([
                         {
                             $group: {
-                                _id: '$userAddress',
-                                badgeAddress: { $first: '$badgeAddress' },
+                                _id: '$badgeAddress',
                                 sent: { $sum: "$received" }
                             }
                         },
                         {
                             $lookup: {
                                 from: 'daos',
-                                localField: 'badgeAddress',
+                                localField: '_id',
                                 foreignField: 'badgeAddress',
                                 as: 'dao'
                             }
@@ -523,8 +522,9 @@ exports.getDaoData = async (req, res) => {
                                     daos[i].dao[0] :
                                     null :
                                 null;
-                            daos[i]['name'] = daoDetail ? daoDetail.name : null;
-                            daos[i]['badge'] = daoDetail ? daoDetail.badge : null;
+                            daos[i]['name'] = (daoDetail ? daoDetail.name : null);
+                            daos[i]['badge'] = (daoDetail ? daoDetail.badge : null);
+                            daos[i]['badgeAddress'] = (daoDetail ? daoDetail.badgeAddress : null);
                         }
                         return res.status(200).send({ success: true, data: daos });
                     }).catch(error => {

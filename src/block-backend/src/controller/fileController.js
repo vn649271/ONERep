@@ -67,9 +67,9 @@ exports.addFile = async (req, res) => {
                     parent: req.body.master,
                     userType: 3, // DAO member
                   });
-                  let retForNewUser = await addUser.save();
+                  userInfo = await addUser.save();
                 }
-                if (ret && ret.id) {
+                if (userInfo && userInfo.id) {
                   // Save User-DAO relation
                   const addUserDaoRelation = new fUserDao({
                     userAddress: row[2],
@@ -77,11 +77,11 @@ exports.addFile = async (req, res) => {
                     received: parseInt(row[3]),
                     isCreator: false,
                   });
-                  addUserDaoRelation.save();
-                  console.log("Successfully addUser.save(): ", ret);
+                  let ret = await addUserDaoRelation.save();
+                  console.log("Successfully addUserDaoRelation.save(): ", ret);
                 }
               }).catch(error => {
-                return res.staus(200).send({ success: false, error: error.message })
+                return res.status(200).send({ success: false, error: error.message })
               })
             });
             /*************** Update 'sent' field in User *************/
@@ -90,7 +90,7 @@ exports.addFile = async (req, res) => {
               console.log("Not found the user with the specified wallet", req.body.master);
               return;
             }
-            user.sent += req.body.reputation;
+            user.set({'sent': user.sent + req.body.reputation });
             let retForUpdatedSentAmount = await user.save();
             return res.status(200).send({ success: true });
           }).catch(error => {
@@ -146,28 +146,6 @@ exports.getOneRepFiles = async (req, res) => {
               fileInfo['badgeAddress'] = dao.badgeAddress;
               fileList.push(fileInfo);
             }
-            // for (let i = 0; i < files.length; i++) {
-            //   let parent = users[i].wallet;
-            //   try {
-            //     let files = await fUpload.aggregate([
-            //       {
-            //         $match: { parent: parent }
-            //       },
-            //       {
-            //         $lookup: {
-            //           from: 'users',
-            //           localField: 'parent',
-            //           foreignField: 'wallet',
-            //           as: 'userInfo'
-            //         }
-            //       }]
-            //     );
-            //     filesList.push(...files)
-            //   } catch (e) {
-            //     return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
-            //   }
-            // }
-
           }
           return res.status(200).send({ error: 0, data: fileList });
         });
@@ -175,7 +153,7 @@ exports.getOneRepFiles = async (req, res) => {
         return resizeTo.status(200).send({ error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
       }
     } else {
-      // Get files for all DAO to which he belongs
+      // Get files for all DAO to which user belongs
       fUser.findOne({ wallet: req.body.master }).then(async user => {
         if (user.userType === 0) {
           fUpload.aggregate([{

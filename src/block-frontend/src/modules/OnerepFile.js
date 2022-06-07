@@ -292,7 +292,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      // loadOneRepFiles();
+      loadOneRepFiles();
       inform("Success", "Successfully Minted", "success");
     } catch (error) {
       setShowWatingModalForMint(false);
