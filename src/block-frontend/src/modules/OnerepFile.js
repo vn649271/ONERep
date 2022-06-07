@@ -82,7 +82,7 @@ const OneRepFileModule = (props) => {
           wallet: localStorage.getItem("wallet")
         }
       ).then(ret => {
-        let userInfo = ret.data ? ret.data : null;
+        let userInfo = ret.data ? ret.data ? ret.data.data : null : null;
         if (!userInfo) {
           orAlert("Failed to get information for current logined user");
           logout();
@@ -90,9 +90,13 @@ const OneRepFileModule = (props) => {
         }
         setInited(true);
         // console.log("Logged in user:", ret.data);
-        setIsAdmin(userInfo.isAdmin);
+        setIsAdmin(userInfo.userType === 0);
         setInitedIsAdmin(true);
-        let badgeTokenAddress = userInfo.badgeAddress;
+        let badgeTokenAddress = userInfo.daoRelation ? 
+                                  userInfo.daoRelation.length ? 
+                                    userInfo.daoRelation[0].badgeAddress :
+                                  null :
+                                null;
         setBadgeTokenAddress(badgeTokenAddress);
         setChainId(localStorage.getItem('chainId'));
         dispatch({
@@ -100,7 +104,7 @@ const OneRepFileModule = (props) => {
           payload: {
             wallet: userInfo.wallet,
             user: userInfo.username,
-            isAdmin: userInfo.isAdmin,
+            isAdmin: userInfo.userType === 0,
             badgeTokenAddress: badgeTokenAddress,
           }
         });
@@ -110,22 +114,23 @@ const OneRepFileModule = (props) => {
         axios.post(SERVER_URL + "/getDaoData", {
           master: thisAddress
         }).then((resp) => {
-          if (resp.data.error !== undefined && resp.data.error === 0) {
+          if (resp.data.success) {
             let daos = resp.data.data;
-            if (userInfo.isAdmin) {
+            if (userInfo.userType === 0) { // is admin?
               daos = [
                 {
                   _id: '',
-                  dao: 'All'
+                  badgeAddress: null,
+                  name: 'All'
                 },
                 ...daos
               ];
             }
             setDaoList(daos);
-            if (userInfo.isAdmin) {
+            if (userInfo.userType === 0) { // is admin?
               handleDropDown(null);
             } else {
-              handleDropDown(daos[0].dao);
+              handleDropDown(daos[0].name);
             }
           } else {
             alert("Failed to get DAO data");
@@ -151,7 +156,7 @@ const OneRepFileModule = (props) => {
 
   const logout = async () => {
     localStorage.setItem("wallet", "");
-    localStorage.setItem('username', "");
+    localStorage.setItem('user', "");
     localStorage.setItem("isAdmin", false);
     window.location.href = "/";
   }
@@ -287,7 +292,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      loadOneRepFiles();
+      // loadOneRepFiles();
       inform("Success", "Successfully Minted", "success");
     } catch (error) {
       setShowWatingModalForMint(false);
@@ -300,11 +305,11 @@ const OneRepFileModule = (props) => {
       console.error("Failed to mintToEOA(): ", error);
     }
   };
-  const loadOneRepFiles = (selectedDaoName = null) => {
+  const loadOneRepFiles = (badgeAddressForSelectedDao = null) => {
     setLoading(true);
     let parent = localStorage.getItem("parent");
     if (parent === "" || parent === "undefined") {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), dao: selectedDaoName })
+      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), badgeAddress: badgeAddressForSelectedDao })
         .then((response) => {
           setLoading(false);
           if (response.data.error) {
@@ -314,7 +319,7 @@ const OneRepFileModule = (props) => {
           setRepFiles(response.data.data);
         });
     } else {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), dao: selectedDaoName })
+      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), badgeAddress: badgeAddressForSelectedDao })
         .then((response) => {
           setLoading(false);
           if (response.data.error) {
@@ -405,19 +410,13 @@ const OneRepFileModule = (props) => {
       //   };
       // }
       let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
-      let daos = resp.data.data;
-      let selectedDao = null;
-      daos.map(dao => {
-        if (dao.dao === selectedDaoName) {
-          selectedDao = dao;
-          return true;
+      if (resp.data.success) {
+        let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+        if (selectedDao) {
+          setSelectedDao(selectedDao);
+          setSelectedDaoTokenTotalSupply(selectedDao.sent);
+          loadOneRepFiles(selectedDao.badgeAddress);          
         }
-        return false
-      })
-      setSelectedDao(selectedDao);
-      if (selectedDao) {
-        setSelectedDaoTokenTotalSupply(selectedDao.sent);
-        loadOneRepFiles(selectedDao.dao);
       } else {
         loadOneRepFiles();
       }
@@ -476,19 +475,19 @@ const OneRepFileModule = (props) => {
               isAdmin ?
                 <Dropdown onSelect={handleDropDown}>
                   <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                    {selectedDao ? selectedDao.dao ? selectedDao.dao : "All" : "All"}
+                    {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     {
                       (daoList.length > 0) ?
                         daoList.map(m => {
-                          return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>
+                          return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
                         }) :
-                        <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>
+                        <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
                     }
                   </Dropdown.Menu>
                 </Dropdown> :
-                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Unknown" : "Unknown"}</label>
+                <label className="bordered-label">{selectedDao ? selectedDao.name ? selectedDao.name : "Unknown" : "Unknown"}</label>
             }
           </div>
         </div>
@@ -533,7 +532,7 @@ const OneRepFileModule = (props) => {
             {
               repfiles.length > 0 ? repfiles.map((row, i) => (
                 <tr key={i}>
-                  <td>{row.userInfo ? row.userInfo.length ? row.userInfo[0].dao : "" : ""}</td>
+                  <td>{row.dao}</td>
                   <td>{row.filename}</td>
                   <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
                   <td className="text-right">{row.reputation}</td>

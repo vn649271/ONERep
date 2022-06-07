@@ -63,13 +63,22 @@ const AdminModule = (props) => {
             ).then(ret => {
                 setInited(true);
                 console.log("Logged in user:", ret.data);
-                setBadgeAddress(ret.data.badgeAddress);
+                if (
+                    ret.data &&
+                    ret.data.data &&
+                    ret.data.data.daoRelation &&
+                    ret.data.data.daoRelation.length
+                ) {
+                    setBadgeAddress(ret.data.data.daoRelation[0].badgeAddress);
+                } else {
+                    setBadgeAddress(null);
+                }
                 dispatch({
                     type: USERS.CONNECT_WALLET,
                     payload: {
                         wallet: ret.data.wallet,
                         user: ret.data.username,
-                        isAdmin: ret.data.isAdmin,
+                        isAdmin: (ret.data.userType === 0),
                         badgeTokenAddress: ret.data.badgeAddress,
                     }
                 });
@@ -112,9 +121,13 @@ const AdminModule = (props) => {
     }
     const _handleDelete = (user) => {
         axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
-            let errorCode = response.data ? response.data.error ? response.data.error : -100 : -100;
+            let success = response.data ? response.data.success ? response.data.success : false : false;
             let retData = response.data ? response.data.data ? response.data.data : null : null;
-            if (!errorCode) {
+            if (success) {
+                if (retData === null || retData.length < 1) {
+                    window.location.href = "/";
+                    return;
+                }
                 setUsers(retData);
                 orAlert("Successfully deleted the user");
                 return;
@@ -143,14 +156,26 @@ const AdminModule = (props) => {
                     wallet: localStorage.getItem("wallet")
                 }
             );
-            if (ret.status !== 200 || ret.data === undefined || ret.data === null) {
+            if (
+                ret.status !== 200 || 
+                ret.data === undefined || 
+                ret.data === null ||
+                ret.data.data === undefined ||
+                ret.data.data === null
+            ) {
                 orAlert("Failed to get user information by wallet address");
                 return;
             }
-            curUser.isAdmin = ret.data.isAdmin;
-            curUser.badgeAddress = ret.data.badgeAddress;
-            curUser.dao = ret.data.dao;
-            curUser.badge = ret.data.badge;
+            curUser.userType = ret.data.data.userType;
+            setBadgeAddress(
+                ret.data.data.daoRelation ?
+                ret.data.data.daoRelation.length ?
+                ret.data.data.daoRelation[0].badgeAddress:
+                null:
+                null
+            );
+            // curUser.dao = ret.data.data.dao;
+            // curUser.badge = ret.data.data.badge;
         } catch (error) {
             showMessageBox("Error", "Failed to verify this user");
             return;
@@ -161,14 +186,16 @@ const AdminModule = (props) => {
                 SERVER_URL + '/users/update',
                 {
                     ...curUser,
+                    badgeAddress: badgeAddress,
                     master: localStorage.getItem("wallet")
                 }
             );
             console.log("response", ret);
-            if (ret.data.success)
+            if (ret.data.success) {
                 setUsers(ret.data.users);
-            else
+            } else {
                 alert(ret.data.error);
+            }
         } catch (error) {
             showMessageBox("Error", "Failed to update information for the user");
             return;
@@ -178,32 +205,16 @@ const AdminModule = (props) => {
 
     const borderRadiusStyle = { borderRadius: 2, height: 40, }
 
-    const getContributors = () => {
-        let parent = localStorage.getItem("parent");
-        if (parent === "" || parent === "undefined") {
-            let walletAddress = localStorage.getItem("wallet");
-            axios.post(SERVER_URL + '/users', { master: walletAddress }).then(response => {
-                let users = response.data ? response.data.data ? response.data.data : [] : [];
-                for (let i = 0; i < users.length; i++) {
-                    let actions = users[i].actions ? users[i].actions : [];
-                    for (let j = 0; j < actions.length; j++) {
-                        users[i].received += users[i].actions[j].received;
-                    }
-                }
-                setUsers(users);
-            });
-        } else {
-            axios.post(SERVER_URL + '/users', { master: parent }).then(response => {
-                let users = response.data ? response.data.data ? response.data.data : [] : [];
-                for (let i = 0; i < users.length; i++) {
-                    let actions = users[i].actions ? users[i].actions : [];
-                    for (let j = 0; j < actions.length; j++) {
-                        users[i].received += users[i].actions[j].received;
-                    }
-                }
-                setUsers(users);
-            });
-        }
+    const getContributors = async () => {
+        await axios.post(
+            SERVER_URL + '/users', 
+            { 
+                master: localStorage.getItem("wallet") 
+            }
+        ).then(response => {
+            let users = response.data ? response.data.data ? response.data.data : [] : [];
+            setUsers(users);
+        });
     }
     const onClickSettings = ev => {
         setShowSettings(true);
@@ -264,15 +275,15 @@ const AdminModule = (props) => {
                             users.map((item, i) => (
                                 <tr key={i}>
                                     <td><FaUserAlt /><span className="pl-2">{item.username}</span></td>
-                                    <td>{item.dao}</td>
+                                    <td>{item.daos ? item.daos.length? item.daos[0].name: null: null}</td>
                                     <td>{item.wallet}</td>
-                                    <td className="text-center">{item.isAdmin ? 'Admin' : '-'}</td>
+                                    <td className="text-center">{item.userType === 0 ? 'Admin' : '-'}</td>
                                     <td className="text-right">{item.received}</td>
                                     <td className="text-center">{!item.status ? 'Inactive' : 'Active'}</td>
                                     <td className="text-center">
                                         <div className="cursor-pointer flow-layout">
                                             <FaPencilAlt onClick={() => {
-                                                // setSAdmin(item.isAdmin);
+                                                // setSAdmin(item.userType === 0);
                                                 setEnable(item.status);
                                                 handleShow(item)
                                             }

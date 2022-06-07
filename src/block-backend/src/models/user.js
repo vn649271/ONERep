@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require("passport-local-mongoose");
-const bcrypt=require('bcrypt');
-const userSchema=new mongoose.Schema({
 
+const userSchema = new mongoose.Schema({
     username:{
         type:String,
         required:true
@@ -21,21 +20,6 @@ const userSchema=new mongoose.Schema({
         required:false,
         default: ''
     },
-    badge:{
-        type:String,
-        required:false,
-        default:''
-    },
-    dao:{
-        type:String,
-        required:false,
-        default:''
-    },
-    received: {
-        type:Number,
-        require: false,
-        default: 0
-    },
     sent: {
         type:Number,
         require: false,
@@ -49,10 +33,10 @@ const userSchema=new mongoose.Schema({
         type:Date,
         default:Date.now()
     },
-    isAdmin: {
-        type:Boolean,
+    userType: {
+        type:Number,
         required:false,
-        default:false
+        default:1
     },
     isRoot: {
         type:Boolean,
@@ -68,26 +52,7 @@ const userSchema=new mongoose.Schema({
         type:Date,
         default:Date.now()
     },
-    badgeAddress:{
-        type:String,
-        required: false,
-        default: ''
-    }
 });
-// userSchema.pre('save',function(next){
-//     var user=this;
-//     if(user.isModified('password')){
-//         bcrypt.genSalt(10,(err,salt)=>{
-//             bcrypt.hash(user.password,salt,(err,hash)=>{
-//                 user.password=hash;
-//                 next();
-//             });
-            
-//         });
-//     }else{
-//         next();
-//     }
-// });
 
 userSchema.plugin(passportLocalMongoose);
-module.exports=mongoose.model('User',userSchema);;
+module.exports = mongoose.model('user', userSchema);;

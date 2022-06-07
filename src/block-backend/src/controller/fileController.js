@@ -1,107 +1,106 @@
 // 
 const fs = require('fs');
 const uploadFile = require("../middleware/upload");
-const fUpload  = require('../models/upload');
-const fAction  = require('../models/action');
-const fUser  = require('../models/user');
+const fUserDao = require('../models/userdao');
+const fUpload = require('../models/upload');
+const fAction = require('../models/action');
+const fUser = require('../models/user');
+const fDao = require('../models/dao');
 const ipfsAPI = require('ipfs-api');
 
 exports.upload = async (req, res) => {
-  try { 
+  try {
     await uploadFile(req, res);
     if (req.file == undefined) {
-      return res.status(400).send({ message: "Please upload a file!" });
+      return res.status(200).send({ success: false, error: "Please upload a file!" });
     }
     res.status(200).send({
+      success: true,
       message: "Uploaded the file successfully: " + req.file.originalname,
     });
   } catch (err) {
-    res.status(500).send({
+    res.status(200).send({
+      success: false,
       message: `Could not upload the file: ${req.file.originalname}. ${err}`,
     });
   }
 };
 
 exports.addFile = async (req, res) => {
-  try { 
-    fUpload.findOne({ipfsuri: req.body.ipfsuri}).then(data => {
-      if (data) {
-        res.status(200).send({success: false});
-      } else {
-       /****************creating file object***************************/
-       const addfile = new fUpload({
-          filename: req.body.filename,
-          ipfsuri: req.body.ipfsuri,
-          status: req.body.status,
-          reputation: req.body.reputation,
-          parent: req.body.master
-        });
-
-        /***************saving file information in mongodb*************/
-        addfile.save().then(result => {
-          const data = req.body.data;
-          data.map( (row, i) => {
-            const addAction = new fAction({
-              name: row[1],
-              wallet: row[2],
-              received: parseInt(row[3]),
-              sent: parseInt(row[4]),
-              epoch_number: row[5],
-              date: row[6],
-              parent: req.body.master,
-              recipientContractAddress:row[7]
-            });
-            /***************saving each user information in mongodb***********/
-            addAction.save().then((result) => {
-            }).catch((err) => {
-              console.log(err);
-            });
-            /*
-             ******************************************
-             * Add each DAO user as contributor
-             * ****************************************
-             */
-            fUser.count({wallet: row[2]}).then(bExist => {
-              if (!bExist) {
-                const addUser = new fUser({
-                  username: row[1],
-                  wallet: row[2],
-                  parent: req.body.master,
-                  // badge:
-                  // badgeAddress:
-                  // received:
-                  // dao:
-                });
-                addUser.save().then((result) => {
-                  console.log("Successfully addUser.save(): ", result);
-                }).catch((err) => {
-                  console.log("addUser.save(): ", err);
-                });
-              }
-            })
-            .catch(error => {
-              console.log("fUser.count({wallet: ...}): ", error);
-            });
+  try {
+    let userDaos = await fUserDao.find({ userAddress: req.body.master });
+    if (userDaos && userDaos.length) {
+      let badgeAddress = userDaos[0].badgeAddress; // ?????????????????????
+      fUpload.findOne({ ipfsuri: req.body.ipfsuri }).then(data => {
+        if (data) {
+          return res.status(200).send({ success: false, error: "Couldn't find uploaded file" });
+        } else {
+          /****************creating file object***************************/
+          const addfile = new fUpload({
+            filename: req.body.filename,
+            ipfsuri: req.body.ipfsuri,
+            status: req.body.status,
+            reputation: req.body.reputation,
+            parent: req.body.master
           });
-          /*************** Update 'sent' field in User *************/
-          fUser.findOne({wallet: req.body.master}).then(async user => {
+          // Save ONERep File info List
+          addfile.save().then(async retForNewFile => {
+            req.body.data.map((row, i) => {
+              // Save each action 
+              const addAction = new fAction({
+                name: row[1],
+                wallet: row[2],
+                received: parseInt(row[3]),
+                sent: parseInt(row[4]),
+                epoch_number: row[5],
+                date: row[6],
+                parent: req.body.master,
+                recipientContractAddress: row[7]
+              });
+              addAction.save().then(async retForNewAction => {
+                // Save each DAO user if not exist
+                let userInfo = await fUser.findOne({ wallet: row[2] });
+                if (!userInfo) {
+                  const addUser = new fUser({
+                    username: row[1],
+                    wallet: row[2],
+                    parent: req.body.master,
+                    userType: 3, // DAO member
+                  });
+                  let retForNewUser = await addUser.save();
+                }
+                if (ret && ret.id) {
+                  // Save User-DAO relation
+                  const addUserDaoRelation = new fUserDao({
+                    userAddress: row[2],
+                    badgeAddress: badgeAddress,
+                    received: parseInt(row[3]),
+                    isCreator: false,
+                  });
+                  addUserDaoRelation.save();
+                  console.log("Successfully addUser.save(): ", ret);
+                }
+              }).catch(error => {
+                return res.staus(200).send({ success: false, error: error.message })
+              })
+            });
+            /*************** Update 'sent' field in User *************/
+            let user = await fUser.findOne({ wallet: req.body.master });
             if (!user) {
               console.log("Not found the user with the specified wallet", req.body.master);
               return;
             }
             user.sent += req.body.reputation;
-            await user.save().then(ret => {
-            }).catch(error => {
-              console.log("Failed to update 'sent' value in the user", error);
-            });
+            let retForUpdatedSentAmount = await user.save();
+            return res.status(200).send({ success: true });
+          }).catch(error => {
+            return res.staus(200).send({ success: false, error: error.message })
           });
-          res.status(200).send({success: true});
-
-        }).catch((err) => {
-          res.status(200).send({success: false});
-        });
-      }
-    });
+        }
+      });
+    } else {
+      return res.status(200).send({success: false, data: "Failed to get USER-DAO relation"})
+    }
   } catch (err) {
     res.status(500).send({
       message: `Could not add the file`,
@@ -109,12 +108,13 @@ exports.addFile = async (req, res) => {
   }
 };
 
+
 exports.ipfsupload = async (req, res) => {
   console.log("fileController.ipfsupload(): req.body.filepath=", req.body.filepath);
   let testFile = fs.readFileSync(req.body.filepath);
   //Creating buffer for ipfs function to add file to the system
   let testBuffer = new Buffer(testFile);
-  const ipfs = ipfsAPI('ipfs.infura.io', '5001', {protocol: 'https'});
+  const ipfs = ipfsAPI('ipfs.infura.io', '5001', { protocol: 'https' });
   ipfs.files.add(testBuffer, function (err, file) {
     if (err) {
       console.log(err);
@@ -123,66 +123,83 @@ exports.ipfsupload = async (req, res) => {
   })
 }
 
-exports.getListFiles = async (req, res) => {
+exports.getOneRepFiles = async (req, res) => {
   try {
-    let dao = req.body.dao;
-    let findFilter = {parent: req.body.master};
-    if (dao !== null && dao !== "") {
+    let badgeAddress = req.body.badgeAddress;
+    let findFilter = { parent: req.body.master };
+    if (badgeAddress !== null && badgeAddress !== "") {
+      // Get files for specified DAO
       try {
-        fUser.find({dao: dao}).then(async users => {
-          if (users.length !== undefined && users.length > 0) {
-            let filesList = [];
-            for (let i = 0; i < users.length; i++) {
-              let parent = users[i].wallet;
-              try {
-                let files = await fUpload.aggregate([
-                  {
-                    $match: {parent: parent}
-                  },
-                  {
-                    $lookup: {
-                      from: 'users',
-                      localField: 'parent',
-                      foreignField: 'wallet',
-                      as: 'userInfo'
-                    }
-                  }]
-                );      
-                filesList.push(...files)
-              } catch (e) {
-                return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the list of users with the specified DAO: " + error.message});
-              }
-            }
-            res.status(200).send({error: 0, data: filesList});
+        fUserDao.findOne({ badgeAddress: badgeAddress, isCreator: true }).then(async creator => {
+          if (creator === null || creator.userAddress === undefined || 
+              creator.userAddress === null || creator.userAddress === "") 
+          {
+            return res.status(200).send({error: -1, data: "Couldn't get creator information of the DAO"});
           }
+          let fileList = [];
+          let files = await fUpload.find({parent: creator.userAddress});
+          if (files.length !== undefined && files.length > 0) {
+            let dao = await fDao.findOne({badgeAddress: badgeAddress});
+            for (let i = 0; i < files.length; i++) {
+              let fileInfo = files[i]._doc;
+              fileInfo['dao'] = dao.name;
+              fileInfo['badgeAddress'] = dao.badgeAddress;
+              fileList.push(fileInfo);
+            }
+            // for (let i = 0; i < files.length; i++) {
+            //   let parent = users[i].wallet;
+            //   try {
+            //     let files = await fUpload.aggregate([
+            //       {
+            //         $match: { parent: parent }
+            //       },
+            //       {
+            //         $lookup: {
+            //           from: 'users',
+            //           localField: 'parent',
+            //           foreignField: 'wallet',
+            //           as: 'userInfo'
+            //         }
+            //       }]
+            //     );
+            //     filesList.push(...files)
+            //   } catch (e) {
+            //     return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
+            //   }
+            // }
+
+          }
+          return res.status(200).send({ error: 0, data: fileList });
         });
       } catch (error) {
-        return resizeTo.status(200).send({error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message});
+        return resizeTo.status(200).send({ error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
       }
     } else {
-      fUser.findOne({wallet: req.body.master}).then(async user => {
-        if (user.isAdmin) {
+      // Get files for all DAO to which he belongs
+      fUser.findOne({ wallet: req.body.master }).then(async user => {
+        if (user.userType === 0) {
           fUpload.aggregate([{
             $lookup: {
               from: 'users',
               localField: 'parent',
               foreignField: 'wallet',
               as: 'userInfo'
-            }}]
+            }
+          }]
           )
-          .then((files) => {
-            res.status(200).send({error: 0, data: files});
-          })
-          .catch(error => {
-            return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the files: " + error.message});            
-          });
+            .then((files) => {
+              res.status(200).send({ error: 0, data: files });
+            })
+            .catch(error => {
+              return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+            });
         } else {
           // fUpload.find({parent: req.body.master}).then((files) => {
           //   res.status(200).send({error: 0, data: files});
           // });
           fUpload.aggregate([
             {
-              $match: {parent: req.body.master}
+              $match: { parent: req.body.master }
             },
             {
               $lookup: {
@@ -193,17 +210,17 @@ exports.getListFiles = async (req, res) => {
               }
             }
           ])
-          .then((files) => {
-            res.status(200).send({error: 0, data: files});
-          })
-          .catch(error => {
-            return resizeTo.status(200).send({error: -10, data: "Error occurred in getting the files: " + error.message});            
-          });
+            .then((files) => {
+              res.status(200).send({ error: 0, data: files });
+            })
+            .catch(error => {
+              return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+            });
         }
       });
     }
-  } catch(e) {
-    res.status(200).send({error: -12, data: "Error occurred in getting file list: " + e.message});
+  } catch (e) {
+    res.status(200).send({ error: -12, data: "Error occurred in getting file list: " + e.message });
   }
 };
 
@@ -229,7 +246,7 @@ exports.getOneRepFile = (req, res) => {
     }
     let fileInfos = [];
     files.forEach((file) => {
-      if(file.split('__')[0] == req.query.userId) {
+      if (file.split('__')[0] == req.query.userId) {
         fileInfos.push({
           name: file,
           url: directoryPath + file,

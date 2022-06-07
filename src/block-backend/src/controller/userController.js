@@ -2,6 +2,50 @@ const User = require('../models/user');
 const fAction = require('../models/action');
 const { SERVER_URL } = require('../config/conf')
 const jwt = require("jwt-simple");
+const Dao = require('../models/dao');
+const UserDao = require('../models/userdao');
+const dao = require('../models/dao');
+// const { ObjectId } = require('mongoose/lib/types');
+
+exports.registerDao = async (req, res) => {
+    try {
+        let dao = new Dao({
+            name: req.body.name,
+            badge: req.body.badge,
+            badgeAddress: req.body.badgeAddress,
+        })
+        let newDao = await dao.save();
+        return res.status(200).send({ success: true, data: newDao.id });
+    } catch (error) {
+        return res.status(200).send({ success: false, error: "Failed to create new DAO:" + error.message });
+    };
+}
+
+const lookupClause = {
+    $lookup: {
+        from: 'userdaos',
+        let: { userAddress: '$wallet' },
+        pipeline: [
+            {
+                $match: {
+                    $expr: {
+                        $eq: ['$$userAddress', '$userAddress']
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'daos',
+                    localField: 'badgeAddress',
+                    foreignField: 'badgeAddress',
+                    as: 'dao'
+                }
+            }
+        ],
+        as: 'daoRelation'
+    },
+}
+
 
 exports.register = async (req, res) => {
     let errors = [];
@@ -33,38 +77,53 @@ exports.register = async (req, res) => {
         res.status(200).send({ success: false, error: errors });
     } else {
         req.body.wallet = req.body.wallet.toLowerCase();
-        let user = await User.findOne({ wallet: req.body.wallet });
-        if (user) {
+        let existingUser = await User.findOne({ wallet: req.body.wallet });
+        if (existingUser) {
             res.redirect(req.headers.origin + '/admin');
         } else {
             let user = null;
+            let newDao = null;
             if (userCount < 1) {
-                // Is the most first user and super admin
+                // The most first user must be as super admin
                 user = new User({
                     username: req.body.userName,
                     wallet: req.body.wallet,
-                    badge: "",
-                    dao: "",
-                    isAdmin: true,
+                    userType: 0,    // Super Administrator
                     isRoot: true,
-                    badgeAddress: ""
                 });
             } else {
+                // System Account User Registration
                 user = new User({
                     username: req.body.userName,
                     wallet: req.body.wallet,
-                    badge: req.body.badge,
-                    dao: req.body.dao,
-                    badgeAddress: req.body.tokenAddress,
-                    isAdmin: false,
-                    isRoot: false
+                    userType: 1,    // System Account User
+                    isRoot: false,
                 });
+                try {
+                    let ret = await user.save();
+                    // Save user-dao relation to userDao collection
+                    if (req.body.tokenAddress) {
+                        let dao = await Dao.findOne({ badgeAddress: req.body.tokenAddress });
+                        if (dao) {
+                            let userDao = new UserDao({
+                                userAddress: ret.wallet,
+                                badgeAddress: dao.badgeAddress,
+                                received: 0,
+                                isCreator: true
+                            });
+                            userDao.save().then(result => {
+                                return res.redirect(req.headers.origin + '/admin');
+                            }).catch(error => {
+                                return res.status(200).send({ success: false, error: error.message });
+                            });
+                        }
+                    } else {
+                        return res.redirect(req.headers.origin + '/admin');
+                    }
+                } catch (err) {
+                    res.status(200).send({ success: false, error: err });
+                }
             }
-            user.save().then((result) => {
-                return res.redirect(req.headers.origin + '/admin');
-            }).catch((err) => {
-                res.status(200).send({ success: false, error: err });
-            });
         }
     }
 }
@@ -79,7 +138,7 @@ exports.login = async (req, res) => {
                     res.json({
                         success: true,
                         username: user.username,
-                        isAdmin: user.isAdmin,
+                        userType: user.usertype,
                         parent: user.parent,
                         badgeTokenAddress: user.badgeAddress,
                         url: '/onerepboard'
@@ -95,7 +154,7 @@ exports.login = async (req, res) => {
                 res.json({
                     success: true,
                     username: "",
-                    isAdmin: false,
+                    type: 1,
                     url: '/register'
                 });
             }
@@ -116,9 +175,42 @@ exports.getLoggedInUser = async (req, res) => {
 }
 
 exports.getLoggedInUserByWallet = async (req, res) => {
-    User.findOne({ wallet: req.body.wallet }).then((user) => {
-        res.status(200).send(user)
+    User.aggregate([
+        {
+            $match: { wallet: req.body.wallet }
+        },
+        lookupClause
+    ]).then(users => {
+        if (users && users.length) {
+            return res.status(200).send({ error: 0, data: users[0] });
+        } else {
+            return res.status(200).send({ error: 1, data: null });
+        }
+    }).catch(error => {
+        return res.status(200).send({ error: -3, data: "Failed to get logged in user" });
     })
+    // await User.findOne({ wallet: req.body.wallet }).then(async user => {
+    //     UserDao.findOne({ userId: user._id.toString(), isCreator: true }).then(userDaoRelation => {
+    //         if (userDaoRelation) {
+    //             Dao.findOne({ _id: ObjectId(userDaoRelation.daoId) }).then(dao => {
+    //                 user['dao'] = dao;
+    //                 return res.status(200).send({ error: 0, data: user });
+    //             }).catch(error => {
+    //                 return res.status(200).send({ error: -1, data: error.message });
+    //             });
+    //         } else {
+    //             return res.status(200).send({ error: 0, data: user });
+    //         }
+    //     }).catch(error => {
+    //         return res.status(200).send({
+    //             error: -2,
+    //             data: "Failed to get dao relation for the logged in user: " +
+    //                 error.message
+    //         });
+    //     });
+    // }).catch(error => {
+    //     return res.status(200).send({ error: -3, data: "Failed to get logged in user" });
+    // })
 }
 
 exports.getUserList = async (req, res) => {
@@ -128,65 +220,123 @@ exports.getUserList = async (req, res) => {
         if (user === undefined || user === null) {
             return res.status(200).send([]);
         }
-        if (user.isAdmin !== undefined && user.isAdmin) {
+        let lookupFilter = [
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { userAddress: '$userAddress' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$userAddress', '$wallet']
+                                },
+                            }
+                        }
+                    ],
+                    as: 'users'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'daos',
+                    localField: 'badgeAddress',
+                    foreignField: 'badgeAddress',
+                    as: 'daos'
+                }
+            }
+        ];
+
+        if (user.userType !== undefined && !user.userType) {
             User.aggregate([
                 {
                     $lookup: {
-                        from: 'actions',
-                        localField: 'wallet',
-                        foreignField: 'wallet',
-                        as: 'actions'
+                        from: 'userdaos',
+                        let: { userAddress: '$wallet' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userAddress', '$userAddress']
+                                    }
+                                }
+                            }
+                        ],
+                        as: 'badges'
                     }
-                }
-            ])
-                .then((users) => {
-                    res.status(200).send({ error: 0, data: users });
-                })
-                .catch(error => {
-                    return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-                });
-        } else {
-            let matchClause = { parent: req.body.master, status: true };
-            if (req.body.excludeInactive === undefined || !req.body.excludeInactive) {
-                matchClause = { parent: req.body.master };
-            }
-            let _parent = req.body.master;
-            let leadUser = null;
-            while (_parent) {
-                try {
-                    leadUser = await User.findOne({ wallet: _parent });
-                    _parent = leadUser.parent ? leadUser.parent : null;
-                } catch (error) {
-                    return res.status(200).send({ error: -2, data: "Failed to search parent recursively" })
-                }
-            }
-            User.aggregate([
-                {
-                    $match: matchClause
                 },
                 {
                     $lookup: {
-                        from: 'actions',
-                        localField: 'wallet',
-                        foreignField: 'wallet',
-                        as: 'actions'
+                        from: 'daos',
+                        localField: 'badgeAddress',
+                        foreignField: 'badgeAddress',
+                        as: 'daos'
                     }
                 }
-            ])
-                .then((users) => {
-                    for (let i = 0; i < users.length; i++) {
-                        users[i].dao = leadUser.dao;
-                        users[i].badge = leadUser.badge;
-                        users[i].badgeAddress = leadUser.badgeAddress;
-                    }
+            ]).then(users => {
+                try {
                     res.status(200).send({ error: 0, data: users });
-                })
-                .catch(error => {
-                    return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+                } catch (error) {
+                    return res.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+                }
+            }).catch(error => {
+                return res.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+            });
+        } else {
+            // let topParent = await _getTopParentUser(req.body.master);
+            let matchClause = { userAddress: req.body.master };
+            if (req.body.excludeInactive !== undefined && req.body.excludeInactive) {
+            }
+            let ret = await UserDao.find({ userAddress: req.body.master });
+            let badgeAddress = null;
+            if (ret && ret.length) {
+                // In case of system account user
+                badgeAddress = ret[0].badgeAddress; // ???????????????????????????
+                UserDao.aggregate([
+                    {
+                        $match: { badgeAddress: badgeAddress }
+                    },
+                    ...lookupFilter,
+                ]).then(async userDaos => {
+                    let users = [];
+                    try {
+                        for (let i = 0; i < userDaos.length; i++) {
+                            if (userDaos[i].users.length) {
+                                let user = userDaos[i].users[0];
+                                user['received'] = userDaos[i].received;
+                                user['daos'] = [];
+                                if (userDaos[i].daos.length) {
+                                    user['daos'].push(...userDaos[i].daos);
+                                    users.push(user);
+                                } else {
+                                    return res.status(200).send({
+                                        error: -1,
+                                        data: "DB error in getting the DAO from USER-DAO relation"
+                                    });
+                                }
+                            } else {
+                                return res.status(200).send({
+                                    error: -1,
+                                    data: "DB error in getting the USER from USER-DAO relation"
+                                });
+                            }
+                        }
+                        res.status(200).send({ error: 0, data: users });
+                    } catch (error) {
+                        return res.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+                    }
+                }).catch(error => {
+                    return res.status(200).send({ error: -11, data: "Error occurred in getting the files: " + error.message });
                 });
+            } else {
+                return res.status(200).send({
+                    success: false,
+                    message: "Somethings wrong in getting USER-DAO relation"
+                });
+            }
         }
     } catch (error) {
-        res.status(200).send({ error: -1, data: error.message });
+        res.status(200).send({ error: -12, data: error.message });
     }
 }
 
@@ -215,7 +365,7 @@ exports.getOneRepBoard = async (req, res) => {
     let parentAddress = req.body.master;
     let sortOption = req.body.sort ? req.body.sort : {};
     let user = await User.findOne({ wallet: parentAddress });
-    if (user.isAdmin) {
+    if (user.userType === 0) {
         let daoFilter = { dao: req.body.dao };
         if (!req.body.dao) {
             daoFilter = {};
@@ -318,63 +468,167 @@ const _getTopParentUser = async wallet => {
 exports.getDaoData = async (req, res) => {
     try {
         let user = await User.findOne({ wallet: req.body.master });
-        if (user.isAdmin) {
+        if (user.userType === 0) { // in case of super administrator
+            // Super Admin
             let daos = [];
             try {
                 if (req.body.dao) {
-                    daos = await User.find({ dao: req.body.dao })
-                        .then(daos => {
-                            return res.status(200).send({ error: 0, data: daos });
+                    // Get specified DAO info
+                    await Dao.findOne({ name: req.body.dao }).then(ret => {
+                        var dao = ret;
+                        UserDao.aggregate([
+                            {
+                                $match: { badgeAddress: dao.badgeAddress }
+                            },
+                            {
+                                $group: {
+                                    _id: '$userAddress',
+                                    sent: { $sum: "$received" }
+                                }
+                            },
+                        ]).then(daoRelations => {
+                            let sent = 0;
+                            if (daoRelations && daoRelations.length) {
+                                sent = daoRelations[0].sent;
+                            }
+                            dao['sent'] = sent;
+                            return res.status(200).send({ success: true, data: [dao] });
+                        }).catch(error => {
+                            return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
                         })
-                        .catch(error => {
-                            return res.status(200).send({ error: -1, data: error.message });
-                        });
+                    }).catch(error => {
+                        return res.status(200).send({ success: false, data: error.message });
+                    });
                 } else {
-                    await User.aggregate(
+                    UserDao.aggregate([
                         {
                             $group: {
-                                _id: "$dao",
-                                dao: { $first: "$dao" }
+                                _id: '$userAddress',
+                                badgeAddress: { $first: '$badgeAddress' },
+                                sent: { $sum: "$received" }
                             }
                         },
                         {
-                            $sort: { dao: 1 }
+                            $lookup: {
+                                from: 'daos',
+                                localField: 'badgeAddress',
+                                foreignField: 'badgeAddress',
+                                as: 'dao'
+                            }
+                        },
+                    ]).then(daos => {
+                        for (let i = 0; i < daos.length; i++) {
+                            let daoDetail = daos[i].dao ?
+                                daos[i].dao.length ?
+                                    daos[i].dao[0] :
+                                    null :
+                                null;
+                            daos[i]['name'] = daoDetail ? daoDetail.name : null;
+                            daos[i]['badge'] = daoDetail ? daoDetail.badge : null;
                         }
-                    )
-                        .then(daos => {
-                            return res.status(200).send({ error: 0, data: daos });
-                        })
-                        .catch(error => {
-                            return res.status(200).send({ error: -1, data: error.message });
-                        });
+                        return res.status(200).send({ success: true, data: daos });
+                    }).catch(error => {
+                        return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
+                    })
                 }
             } catch (error) {
-                return res.status(200).send({ error: -1, data: error.message });
+                return res.status(200).send({ success: false, data: error.message });
             }
-        } else {
-            let daos = [];
+        } else {    // System Account User
             try {
-                let topParent = await _getTopParentUser(req.body.master);
+                // let topParent = await _getTopParentUser(req.body.master);
                 if (req.body.dao) {
-                    daos = await User.find({ wallet: topParent.wallet, dao: req.body.dao });
+                    let daos = await Dao.find({ name: req.body.dao });
+                    if (daos && daos.length) {
+                        UserDao.aggregate([
+                            {
+                                $match: {
+                                    badgeAddress: daos[0].badgeAddress
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: '$userAddress',
+                                    badgeAddress: { $first: '$badgeAddress' },
+                                    sent: { $sum: "$received" }
+                                }
+                            },
+                        ]).then(userDaos => {
+                            if (userDaos && userDaos.length) {
+                                let dao = {
+                                    badge: daos[0].badge,
+                                    badgeAddress: daos[0].badgeAddress,
+                                    name: daos[0].name,
+                                    sent: userDaos[0].sent
+                                };
+                                return res.status(200).send({success: true, data: [dao]});
+                            } else {
+                                return res.status(200).send({success: false, data: "Failed to get USER-DAO relation"});
+                            }
+                        });
+                    } else {
+                        return res.status(200).send({success: true, data: []});
+                    }
                 } else {
-                    daos = await User.find({ wallet: topParent.wallet });
+                    UserDao.aggregate([
+                        {
+                            $match: {
+                                userAddress: req.body.master
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$userAddress',
+                                badgeAddress: { $first: '$badgeAddress' },
+                                sent: { $sum: "$received" }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'daos',
+                                let: { badgeAddress: '$badgeAddress' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$badgeAddress', '$badgeAddress']
+                                            },
+                                        }
+                                    }
+                                ],
+                                as: 'dao'
+                            }
+                        },
+                    ]).then(daos => {
+                        for (let i = 0; i < daos.length; i++) {
+                            let daoDetail = daos[i].dao ?
+                                daos[i].dao.length ?
+                                    daos[i].dao[0] :
+                                    null :
+                                null;
+                            daos[i]['name'] = daoDetail ? daoDetail.name : null;
+                            daos[i]['badge'] = daoDetail ? daoDetail.badge : null;
+                            delete daos[i].dao;
+                        }
+                        return res.status(200).send({ success: true, data: daos });
+                    }).catch(error => {
+                        return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
+                    })
                 }
-                return res.status(200).send({ error: 0, data: daos });
             } catch (error) {
-                return res.status(200).send({ error: -1, data: error });
+                return res.status(200).send({ success: false, data: error });
             }
         }
     } catch (error) {
         console.error("UserController.getDaoData():", error);
-        return res.status(200).send({ error: -1, data: null });
+        return res.status(200).send({ success: false, data: null });
     }
 }
 
 exports.getAllDaoData = async (req, res) => {
     try {
         let user = await User.findOne({ wallet: req.body.master });
-        if (user.isAdmin) {
+        if (user.userType === 0) {
             let daos = await User.find({});
             return res.status(200).send({ error: 0, data: daos });
         }
@@ -387,7 +641,14 @@ exports.getAllDaoData = async (req, res) => {
 
 exports.getSelOpList = (req, res) => {
     const result = {};
-    fAction.aggregate([{ $match: { parent: req.body.master } }, { $group: { _id: "$name" } }]).then((users) => {
+    fAction.aggregate([
+        {
+            $match: { parent: req.body.master }
+        },
+        {
+            $group: { _id: "$name" }
+        }
+    ]).then((users) => {
         res.status(200).send(result);
     });
 }
@@ -397,74 +658,112 @@ exports.update = async (req, res) => {
     User.findOne({ wallet: req.body.wallet }).then(async user => {
         var puser = user;
         if (req.body._id == '') {
+            // First registration
             if (user) {
                 return res.status(200).send({ error: "ETH address duplicated!", success: false });
-            } else {
-                let isAdmin = false;
-                try {
-                    let user = await User.findOne({ wallet: req.body.master });
-                    isAdmin = user.isAdmin;
-                } catch (error) {
-                    console.log(error);
-                }
-                puser = new User({
-                    username: req.body.username,
-                    parent: req.body.master,
-                    wallet: req.body.wallet,
-                    badge: req.body.badge,
-                    dao: req.body.dao,
-                    isAdmin: isAdmin,
-                    status: req.body.status,
-                    badgeAddress: req.body.badgeAddress
-                });
             }
+            let userType = 1;
+            try {
+                let ret = await User.findOne({ wallet: req.body.master });
+                userType = ret.userType;
+            } catch (error) {
+                console.log(error);
+            }
+            // let topParentUser = _getTopParentUser(req.body.wallet);
+            puser = new User({
+                username: req.body.username,
+                parent: req.body.master,
+                wallet: req.body.wallet,
+                userType: userType,
+                status: req.body.status,
+            });
         } else {
+            // In case of adding new contributor
             if (!puser) {
                 return res.status(200).send({ error: "This accout does not exist!", success: false });
-            } else {
-                let isAdmin = false;
-                try {
-                    let user = await User.findOne({ wallet: req.body.master });
-                    isAdmin = user.isAdmin;
-                } catch (error) {
-                    console.log(error);
-                }
-                puser.username = req.body.username;
-                puser.parent = req.body.parent;
-                puser.wallet = req.body.wallet;
-                puser.badge = req.body.badge;
-                puser.dao = req.body.dao;
-                puser.status = req.body.status;
-                badgeAddress = req.body.badgeAddress
             }
+            let userType = 2; // Contributor
+            try {
+                let user = await User.findOne({ wallet: req.body.master });
+                userType = user.userType;
+            } catch (error) {
+                console.log(error);
+            }
+            puser.username = req.body.username;
+            puser.parent = req.body.parent;
+            puser.wallet = req.body.wallet;
+            puser.status = req.body.status;
+            puser.userType = userType;
         }
 
-        puser.save().then((result) => {
+        puser.save().then(async result => {
+            // In case of admin contributor, no need to add USER-DAO relation
+            if (req.body.badgeAddress) {
+                let userDao = new UserDao({
+                    userAddress: result.wallet,
+                    badgeAddress: req.body.badgeAddress,
+                    received: 0,
+                    isCreator: false
+                });
+                let ret = await userDao.save();
+                if (ret) {
+                    console.log(ret.id);
+                }
+            }
             User.find({ parent: req.body.master }).then((users) => {
                 res.status(200).send({ users: users, success: true });
             });
         }).catch((err) => {
-            res.status(200).send({ success: false, error: "Error Occured!" });
+            res.status(200).send({ success: false, error: "Error Occured!" + err.message });
         });
     });
 }
 
 exports.delete = async (req, res) => {
-    User.findOne({ _id: req.body._id }).then(user => {
+    User.findOne({ wallet: req.body.wallet }).then(user => {
         if (user === undefined || user === null) {
-            return res.status(200).send({ error: -1, data: "Failed to find specified user" });
+            return res.status(200).send({ success: false, data: "Failed to find specified user" });
         }
         if (user.isRoot) {
-            return res.status(200).send({ error: 1, data: "Couldn't delete super administrator" });
+            return res.status(200).send({ success: false, data: "Couldn't delete super administrator" });
         }
-        User.deleteOne({ _id: req.body._id }).then((user) => {
-            User.find({ parent: req.body.master }).then((users) => {
-                res.status(200).send({ error: 0, data: users });
+        if (user.userType === 0) {
+            // Admin
+            User.deleteOne({ _id: req.body._id }).then((user) => {
+                User.find({ parent: req.body.master, wallet: req.body.master }).then(async users => {
+                    try {
+                        let master = await User.findOne({ wallet: req.body.master });
+                        users.push(master);
+                    } catch (error) {
+                        console.log("Failed to get info for master: ", error.message)
+                        return res.status(200).send({ success: false, data: "Failed to get information for the master:" + error.message });
+                    }
+                    res.status(200).send({ success: true, data: users });
+                });
             });
-        });
-    })
-        .catch(error => {
-            res.status(200).send({ error: -10, data: error.message });
-        });
+        } else {
+            // System Account user
+            User.deleteOne({ _id: req.body._id }).then(async user => {
+                // Also delete User-Dao relation
+                await UserDao.deleteOne({userAddress: req.body.wallet});
+                // Refresh the user list
+                User.find({ parent: req.body.master, wallet: req.body.master }).then(async users => {
+                    try {
+                        let master = await User.findOne({ wallet: req.body.master });
+                        if (master) {
+                            users.push(master);
+                        }
+                    } catch (error) {
+                        console.log("Failed to get info for master: ", error.message)
+                        return res.status(200).send({ success: false, data: "Failed to get information for the master:" + error.message });
+                    }
+                    res.status(200).send({ success: true, data: users });
+                });
+            });
+            // Also delete User-Dao relation
+        }
+    }).catch(error => {
+        res.status(200).send({ success: false, data: error.message });
+    });
 }
 

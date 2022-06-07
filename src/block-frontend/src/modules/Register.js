@@ -104,11 +104,7 @@ const RegisterModule = (props) => {
                     warning("Failed to deploy badge token for you. Please try again");
                     return;
                 }
-                localStorage.setItem("badgeTokenAddress", badgeTokenAddress);
-                localStorage.setItem("badge", badgeSymbol);
-            }
-            if (daoName) {
-                localStorage.setItem("dao", daoName);
+                registerDao(daoName, badgeSymbol, badgeTokenAddress);
             }
             localStorage.setItem("user", userName);
             localStorage.setItem("wallet", wallet);
@@ -118,6 +114,21 @@ const RegisterModule = (props) => {
             orAlert(error.message);
         }
     }
+    const registerDao = async (name, badgeSymbol, badgeAddress) => {
+        axios.post(SERVER_URL + "/daos/register", { name: name, badge: badgeSymbol, badgeAddress: badgeAddress })
+        .then((response) => {
+            if (response.data.success == true) {
+                localStorage.setItem("dao", name);
+                localStorage.setItem("daoId", response.data.data);
+                localStorage.setItem("badge", badgeSymbol);
+                localStorage.setItem("badgeTokenAddress", badgeAddress);
+            } else {
+                orAlert(response.data.error);
+            }
+        });
+    };
+
+
     const handleUserInput = (ev) => {
         const name = ev.target.name;
         const value = ev.target.value;

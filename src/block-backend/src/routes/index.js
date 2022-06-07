@@ -10,8 +10,10 @@ let routes = (app) => {
   router.post("/upload", fileController.upload);
   router.post("/files/upload", fileController.ipfsupload);
   router.post("/files/add", fileController.addFile);
-  router.post("/files", fileController.getListFiles);
+  router.post("/files", fileController.getOneRepFiles);
   router.get("/files/:name", fileController.download);
+
+  router.post('/daos/register', userController.registerDao);
 
   //user manage
   router.get("/users", userController.getUserCount);

@@ -1,5 +1,6 @@
-const mongoose=require('mongoose');
-const uploadSchema=new mongoose.Schema({
+const mongoose = require('mongoose');
+
+const uploadSchema = new mongoose.Schema({
     filename:{
         type:String,
         required:true
@@ -28,4 +29,5 @@ const uploadSchema=new mongoose.Schema({
         default:Date.now()
     },
 });
-module.exports=mongoose.model('upload',uploadSchema);
+
+module.exports = mongoose.model('upload', uploadSchema);

@@ -46,15 +46,19 @@ const OneRepBoardModule = (props) => {
         }
       ).then(ret => {
 
-        let userInfo = ret.data ? ret.data : null;
+        let userInfo = ret.data ? ret.data.data ? ret.data.data : null : null;
         if (!userInfo) {
           orAlert("Failed to get information for current logined user");
           return;
         }
         setInited(true);
-        setIsAdmin(userInfo.isAdmin);
-        localStorage.setItem("isAdmin", userInfo.isAdmin);
-        let badgeTokenAddress = userInfo.badgeAddress;
+        setIsAdmin(userInfo.userType === 0);
+        localStorage.setItem("isAdmin", userInfo.userType === 0);
+        let badgeTokenAddress = userInfo.daoRelation ? 
+                                userInfo.daoRelation.length ?
+                                userInfo.daoRelation[0].badgeAddress:
+                                null:
+                                null;
         setBadgeTokenAddress(badgeTokenAddress);
         setUserName(userInfo.username);
         // setChainId(localStorage.getItem('chainId'));
@@ -63,7 +67,7 @@ const OneRepBoardModule = (props) => {
           payload: {
             wallet: userInfo.wallet,
             user: userInfo.username,
-            isAdmin: userInfo.isAdmin,
+            isAdmin: userInfo.userType === 0,
             badgeTokenAddress: badgeTokenAddress,
           }
         });
@@ -73,9 +77,9 @@ const OneRepBoardModule = (props) => {
         axios.post(SERVER_URL + "/getDaoData", {
           master: thisAddress
         }).then((resp) => {
-          if (resp.data.error !== undefined && resp.data.error === 0) {
+          if (resp.data.success) {
             let daos = resp.data.data;
-            if (userInfo.isAdmin) {
+            if (userInfo.userType === 0) { // is admin?
               daos = [
                 {
                   _id: '',
@@ -85,7 +89,7 @@ const OneRepBoardModule = (props) => {
               ];
             }
             setDaoList(daos);
-            if (userInfo.isAdmin) {
+            if (userInfo.userType === 0) { // is admin?
               handleDropDown(null);
             } else {
               handleDropDown(daos[0].dao);
@@ -112,7 +116,7 @@ const OneRepBoardModule = (props) => {
   }, [show, sortOption]);
 
   useEffect(() => {
-    loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
+    loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);
   }, [sortOption]);
 
   const loadBoardData = async (wallet, dao) => {
@@ -156,20 +160,16 @@ const OneRepBoardModule = (props) => {
       //   };
       // }
       let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
-      let daos = resp.data.data;
-      let selectedDao = null;
-      daos.map(dao => {
-        if (dao.dao === selectedDaoName) {
-          selectedDao = dao;
-          return true;
+      if (resp.data.success) {
+        let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+        if (selectedDao) {
+          setSelectedDao(selectedDao);
+          setSelectedDaoTokenTotalSupply(selectedDao.sent);
+          loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);        
         }
-        return false;
-      })
-      setSelectedDao(selectedDao);
-      if (selectedDao) {
-        setSelectedDaoTokenTotalSupply(selectedDao.sent);
+      } else {
+        orAlert("Failed to get DAO list");
       }
-      loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
     }
@@ -193,19 +193,19 @@ const OneRepBoardModule = (props) => {
               isAdmin ?
                 <Dropdown onSelect={handleDropDown}>
                   <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                    {selectedDao ? selectedDao.dao ? selectedDao.dao : "All" : "All"}
+                    {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     {
                       (daoList.length > 0) ?
                         daoList.map(m => {
-                          return <Dropdown.Item key={m.dao} eventKey={m.dao}>{m.dao}</Dropdown.Item>
+                          return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
                         }) :
-                        <Dropdown.Item eventKey={daoList.dao}>{daoList.dao}</Dropdown.Item>
+                        <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
                     }
                   </Dropdown.Menu>
                 </Dropdown> :
-                <label className="bordered-label">{selectedDao ? selectedDao.dao ? selectedDao.dao : "Unknown" : "Unknown"}</label>
+                <label className="bordered-label">{selectedDao ? selectedDao.name ? selectedDao.name : "Unknown" : "Unknown"}</label>
             }
           </div>
         </div>
@@ -263,7 +263,7 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortSum(-sort_sum);
                   setSortOption({ sum: -sort_sum });
-                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.dao? selectedDao.dao: null: null);
+                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);
                 }}
               >
                 ONERep Tokens

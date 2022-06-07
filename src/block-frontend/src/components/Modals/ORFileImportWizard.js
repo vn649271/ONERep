@@ -23,8 +23,6 @@ const ORFileImportWizard = props => {
   const [currentStep, setCurrentStep] = useState(1);
   const [failedPass, setFailedPass] = useState(false);
   const [fileToUpload, setFileToUpload] = useState("");
-  // const [username, setUserName] = useState("");
-  // const [password, setPassword] = useState("");
   const [passedStep, setPassedStep] = useState(0);
   const [_stepData, setStepData] = useState([]);
 
@@ -37,8 +35,6 @@ const ORFileImportWizard = props => {
     const { name, value } = event.target;
     if (name === 'currentStep') setCurrentStep(value);
     else if (name === 'fileToUpload') setFileToUpload(value);
-    // else if (name === 'username') setUserName(value);
-    // else if (name === 'password') setPassword(value);
     else if (name === 'passedStep') setPassedStep(value);
   }
   // Trigger an alert on form submission

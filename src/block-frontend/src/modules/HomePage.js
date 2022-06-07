@@ -68,7 +68,7 @@ const HomePageModule = (props) => {
         if (response.data.success == true) {
           localStorage.setItem("user", response.data.username);
           localStorage.setItem("wallet", account);
-          localStorage.setItem("isAdmin", response.data.isAdmin || false);
+          localStorage.setItem("isAdmin", (response.data.userType === 0));
           localStorage.setItem("parent",response.data.parent);
           console.log("parent", response.data.parent);
 
@@ -77,7 +77,7 @@ const HomePageModule = (props) => {
             payload: { 
               wallet: account, 
               user: response.data.username,
-              isAdmin: response.data.isAdmin,
+              isAdmin: (response.data.userType === 0),
               badgeTokenAddress: response.data.badgeTokenAddress,
               // chainId: chainId
             }

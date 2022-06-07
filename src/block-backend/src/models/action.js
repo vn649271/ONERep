@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const actionSchema=new mongoose.Schema({
 
+const actionSchema = new mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -41,4 +41,4 @@ const actionSchema=new mongoose.Schema({
         required:false
     }
 });
-module.exports=mongoose.model('action',actionSchema);
+module.exports = mongoose.model('action', actionSchema);
