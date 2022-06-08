@@ -101,30 +101,30 @@ exports.register = async (req, res) => {
                     userType: 1,    // System Account User
                     isRoot: false,
                 });
-                try {
-                    let ret = await user.save();
-                    // Save user-dao relation to userDao collection
-                    if (req.body.tokenAddress) {
-                        let dao = await Dao.findOne({ badgeAddress: req.body.tokenAddress });
-                        if (dao) {
-                            let userDao = new UserDao({
-                                userAddress: ret.wallet,
-                                badgeAddress: dao.badgeAddress,
-                                received: 0,
-                                isCreator: true
-                            });
-                            userDao.save().then(result => {
-                                return res.redirect(req.headers.origin + '/admin');
-                            }).catch(error => {
-                                return res.status(200).send({ success: false, error: error.message });
-                            });
-                        }
-                    } else {
-                        return res.redirect(req.headers.origin + '/admin');
+            }
+            try {
+                let ret = await user.save();
+                // Save user-dao relation to userDao collection
+                if (req.body.tokenAddress) {
+                    let dao = await Dao.findOne({ badgeAddress: req.body.tokenAddress });
+                    if (dao) {
+                        let userDao = new UserDao({
+                            userAddress: ret.wallet,
+                            badgeAddress: dao.badgeAddress,
+                            received: 0,
+                            isCreator: true
+                        });
+                        userDao.save().then(result => {
+                            return res.redirect(req.headers.origin + '/admin');
+                        }).catch(error => {
+                            return res.status(200).send({ success: false, error: error.message });
+                        });
                     }
-                } catch (err) {
-                    res.status(200).send({ success: false, error: err });
+                } else {
+                    return res.redirect(req.headers.origin + '/admin');
                 }
+            } catch (err) {
+                res.status(200).send({ success: false, error: err });
             }
         }
     }
@@ -300,8 +300,8 @@ exports.getUserList = async (req, res) => {
                             let daos = [];
                             try {
                                 for (let j in groupedDaoRels) {
-                                    let dao = await Dao.findOne({ 
-                                        badgeAddress: groupedDaoRels[j].badgeAddress 
+                                    let dao = await Dao.findOne({
+                                        badgeAddress: groupedDaoRels[j].badgeAddress
                                     }).lean();
                                     dao['received'] = groupedDaoRels[j].received;
                                     daos.push(dao);
