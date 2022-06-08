@@ -277,7 +277,7 @@ const AdminModule = (props) => {
                         users.length ?
                             users.map((user, i) => (
                                 user.daos && user.daos.length ? user.daos.map((dao, j) => (
-                                    <tr key={i}>
+                                    <tr key={i + "-" + j}>
                                         <td><FaUserAlt /><span className="pl-2">{user.username}</span></td>
                                         <td>{dao ? dao? dao.name: null: null}</td>
                                         <td>{user.wallet}</td>
