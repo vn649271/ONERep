@@ -7,6 +7,7 @@ const fAction = require('../models/action');
 const fUser = require('../models/user');
 const fDao = require('../models/dao');
 const ipfsAPI = require('ipfs-api');
+const userdao = require('../models/userdao');
 
 exports.upload = async (req, res) => {
   try {
@@ -108,6 +109,39 @@ exports.addFile = async (req, res) => {
   }
 };
 
+const _getMyDAOs = async myAddress => {
+  try {
+    let retList = await fUserDao.aggregate([
+      {
+        $match: { userAddress: myAddress }
+      },
+      {
+        $group: {
+          _id: "$badgeAddress",
+          received: { '$sum': '$received' }
+        }
+      }
+    ]);
+    if (retList === undefined || retList === null ||
+      retList.length === undefined || !retList.length) 
+    {
+      return null;
+    }
+    for (let i in retList) {
+      let fullDaoRelationInfo = await fUserDao.findOne({
+        badgeAddress: retList[i]._id, 
+        isCreator: true
+      }).lean();
+      let daoInfo = await fDao.findOne({badgeAddress: retList[i]._id}).lean();
+      retList[i]['userAddress'] = fullDaoRelationInfo.userAddress;
+      retList[i]['dao'] = daoInfo.name;
+      retList[i]['badge'] = daoInfo.badge;
+    }
+    return retList;
+  } catch (error) {
+    return null;
+  }
+}
 
 exports.ipfsupload = async (req, res) => {
   console.log("fileController.ipfsupload(): req.body.filepath=", req.body.filepath);
@@ -191,7 +225,7 @@ exports.getOneRepFiles = async (req, res) => {
               }
               let daoInfo = null;
               if (badgeAddress) {
-                daoInfo = await fDao.findOne({badgeAddress: badgeAddress}).lean();
+                daoInfo = await fDao.findOne({ badgeAddress: badgeAddress }).lean();
               }
               if (daoInfo) {
                 files[i]['badgeAddress'] = daoInfo.badgeAddress;
@@ -207,23 +241,35 @@ exports.getOneRepFiles = async (req, res) => {
           // fUpload.find({parent: req.body.master}).then((files) => {
           //   res.status(200).send({error: 0, data: files});
           // });
-          fUpload.aggregate([
-            {
-              $match: { parent: req.body.master }
-            },
-            {
-              $lookup: {
-                from: 'users',
-                localField: 'parent',
-                foreignField: 'wallet',
-                as: 'userInfo'
-              }
+          let myDaoList = await _getMyDAOs(req.body.master);
+          if (myDaoList && myDaoList.length) {
+            let fileInfoList = [];
+            for (let i in myDaoList) {
+              await fUpload.aggregate([
+                {
+                  $match: { parent: myDaoList[i].userAddress }
+                },
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'parent',
+                    foreignField: 'wallet',
+                    as: 'userInfo'
+                  }
+                }
+              ]).then(async files => {
+                if (files && files.length) {
+                  for (let j in files) {
+                    files[j]['dao'] = myDaoList[i].dao;
+                  }
+                  fileInfoList.push(...files);
+                }
+              }).catch(error => {
+                return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+              });
             }
-          ]).then((files) => {
-            res.status(200).send({ error: 0, data: files });
-          }).catch(error => {
-            return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-          });
+            res.status(200).send({ error: 0, data: fileInfoList });
+          }
         }
       });
     }

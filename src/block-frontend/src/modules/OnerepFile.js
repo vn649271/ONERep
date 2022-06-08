@@ -55,6 +55,7 @@ const OneRepFileModule = (props) => {
   const [userName, setUserName] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFileImportable, setIsFileImportable] = useState(false);
   const [initedIsAdmin, setInitedIsAdmin] = useState(false);
   const [mintFailureReason, setMintFailureReason] = useState("");
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,7 @@ const OneRepFileModule = (props) => {
         setInited(true);
         // console.log("Logged in user:", ret.data);
         setIsAdmin(userInfo.userType === 0);
+        setIsFileImportable(userInfo.userType === 1);
         setInitedIsAdmin(true);
         let badgeTokenAddress = userInfo.daoRelation ? 
                                   userInfo.daoRelation.length ? 
@@ -116,18 +118,16 @@ const OneRepFileModule = (props) => {
         }).then((resp) => {
           if (resp.data.success) {
             let daos = resp.data.data;
-            if (userInfo.userType === 0) { // is admin?
-              daos = [
-                {
-                  _id: '',
-                  badgeAddress: null,
-                  name: 'All'
-                },
-                ...daos
-              ];
-            }
+            daos = [
+              {
+                _id: '',
+                badgeAddress: null,
+                name: 'All'
+              },
+              ...daos
+            ];
             setDaoList(daos);
-            if (userInfo.userType === 0) { // is admin?
+            if (daos.length && daos.length > 1) { // is admin?
               handleDropDown(null);
             } else {
               handleDropDown(daos[0].name);
@@ -307,38 +307,20 @@ const OneRepFileModule = (props) => {
   };
   const loadOneRepFiles = (badgeAddressForSelectedDao = null) => {
     setLoading(true);
-    let parent = localStorage.getItem("parent");
-    if (parent === "" || parent === "undefined") {
-      axios.post(
-        SERVER_URL + "/files", 
-        { 
-          master: localStorage.getItem("wallet"), 
-          badgeAddress: badgeAddressForSelectedDao 
-        }
-      ).then((response) => {
-        setLoading(false);
-        if (response.data.error) {
-          orAlert("Failed to load ONERep files: " + response.data.data);
-          return;
-        }
-        setRepFiles(response.data.data);
-      });
-    } else {
-      axios.post(
-        SERVER_URL + "/files", 
-        { 
-          master: localStorage.getItem("parent"), 
-          badgeAddress: badgeAddressForSelectedDao 
-        }
-      ).then((response) => {
-        setLoading(false);
-        if (response.data.error) {
-          orAlert("Failed to load ONERep files: " + response.data.data);
-          return;
-        }
-        setRepFiles(response.data.data);
-      });
-    }
+    axios.post(
+      SERVER_URL + "/files", 
+      { 
+        master: localStorage.getItem("wallet"), 
+        badgeAddress: badgeAddressForSelectedDao 
+      }
+    ).then((response) => {
+      setLoading(false);
+      if (response.data.error) {
+        orAlert("Failed to load ONERep files: " + response.data.data);
+        return;
+      }
+      setRepFiles(response.data.data);
+    });
   };
   const onSubmitHandler = (e) => {
     e.preventDefault();
@@ -450,7 +432,7 @@ const OneRepFileModule = (props) => {
           <h2>ONERep Files (Cordinape)</h2>
         </div>
         {
-          !isAdmin ?
+          isFileImportable ?
             <div className="zl_all_page_notify_logout_btn">
               <ul className="v-link">
                 <li>

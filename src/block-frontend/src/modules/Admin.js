@@ -282,7 +282,7 @@ const AdminModule = (props) => {
                                         <td>{dao ? dao? dao.name: null: null}</td>
                                         <td>{user.wallet}</td>
                                         <td className="text-center">{user.userType === 0 ? 'Admin' : '-'}</td>
-                                        <td className="text-right">{user.received}</td>
+                                        <td className="text-right">{dao.received}</td>
                                         <td className="text-center">{!user.status ? 'Inactive' : 'Active'}</td>
                                         <td className="text-center">
                                             <div className="cursor-pointer flow-layout">

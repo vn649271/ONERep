@@ -262,7 +262,7 @@ exports.getUserList = async (req, res) => {
             }
         ];
 
-        if (user.userType !== undefined && !user.userType) {
+        if (user.userType !== undefined && !user.userType) {    // Super Admin
             User.aggregate([
                 {
                     $lookup: {
@@ -280,41 +280,38 @@ exports.getUserList = async (req, res) => {
                         as: 'daoRels'
                     }
                 },
-                // {
-                //     $lookup: {
-                //         from: 'userdaos',
-                //         localField: 'wallet',
-                //         foreignField: 'userAddress',
-                //         as: 'daoRels'
-                //     }
-                // }
             ]).then(async users => {
-                for (let i = 0; i < users.length; i++) {
-                    if (users[i].daoRels && users[i].daoRels.length) {
-                        let daoRels = users[i].daoRels;
-                        const groupedByBadgeAddress = _groupBy(daoRels, daoRel => daoRel.badgeAddress);
-                        let userDaoRels = [];
-                        groupedByBadgeAddress.forEach(daoRelInfo => {
-                            userDaoRels.push(daoRelInfo[0]);
-                        });
-                        let daos = [];
-                        try {
-                            for (let j in userDaoRels) {
-                                let dao = await Dao.findOne({ badgeAddress: userDaoRels[j].badgeAddress });
-                                daos.push(dao);
-                            }
-                        } catch (error) {
-                            console.log(error);
-                        }
-                        // for (let j in daoRels) {
-                        //     // let items = groupedByBadgeAddress[k];
-                        // }
-                        // await groupedByBadgeAddress.forEach(async (items, k) => {
-                        // });
-                        users[i]['daos'] = daos;
-                    }
-                }
                 try {
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i].daoRels && users[i].daoRels.length) {
+                            let daoRels = users[i].daoRels;
+                            const groupedByBadgeAddress = _groupBy(daoRels, daoRel => daoRel.badgeAddress);
+                            let groupedDaoRels = [];
+                            groupedByBadgeAddress.forEach(daoRelInfo => {
+                                let totalReceived = 0;
+                                for (let k = 0; k < daoRelInfo.length; k++) {
+                                    totalReceived += daoRelInfo[k].received;
+                                }
+                                let groupedDaoRelInfo = daoRelInfo[0];
+                                groupedDaoRelInfo['received'] = totalReceived;
+                                groupedDaoRels.push(groupedDaoRelInfo);
+                            });
+                            let daos = [];
+                            try {
+                                for (let j in groupedDaoRels) {
+                                    let dao = await Dao.findOne({ 
+                                        badgeAddress: groupedDaoRels[j].badgeAddress 
+                                    }).lean();
+                                    dao['received'] = groupedDaoRels[j].received;
+                                    daos.push(dao);
+                                }
+                            } catch (error) {
+                                console.log(error);
+                            }
+                            users[i]['daos'] = daos;
+                        }
+                    }
+                    _sort(users, 'username', 1);
                     res.status(200).send({ success: true, data: users });
                 } catch (error) {
                     return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });
@@ -322,7 +319,7 @@ exports.getUserList = async (req, res) => {
             }).catch(error => {
                 return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });
             });
-        } else {
+        } else { // System User
             // let topParent = await _getTopParentUser(req.body.master);
             let matchClause = { userAddress: req.body.master };
             if (req.body.excludeInactive !== undefined && req.body.excludeInactive) {
@@ -351,8 +348,10 @@ exports.getUserList = async (req, res) => {
                         for (let i = 0; i < userDaos.length; i++) {
                             if (userDaos[i].users.length) {
                                 let user = userDaos[i].users[0];
-                                user['received'] = userDaos[i].received;
                                 user['daos'] = userDaos[i].daos;
+                                if (user.daos && user.daos.length) {
+                                    user.daos[0]['received'] = userDaos[i].received;
+                                }
                                 users.push(user);
                             } else {
                                 return res.status(200).send({
@@ -361,6 +360,7 @@ exports.getUserList = async (req, res) => {
                                 });
                             }
                         }
+                        _sort(users, 'username', 1);
                         res.status(200).send({ success: true, data: users });
                     } catch (error) {
                         return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });

@@ -72,17 +72,15 @@ const OneRepBoardModule = (props) => {
         }).then((resp) => {
           if (resp.data.success) {
             let daos = resp.data.data;
-            if (userInfo.userType === 0) { // is admin?
-              daos = [
-                {
-                  _id: '',
-                  name: 'All'
-                },
-                ...daos
-              ];
-            }
+            daos = [
+              {
+                _id: '',
+                name: 'All'
+              },
+              ...daos
+            ];
             setDaoList(daos);
-            if (userInfo.userType === 0) { // is admin?
+            if (daos.length && daos.length > 1) { // 
               handleDropDown(null, daos);
             } else {
               handleDropDown(daos[0].name, daos);
