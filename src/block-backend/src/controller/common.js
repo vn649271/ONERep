@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fUserDao = require('../models/userdao');
 const fDao = require('../models/dao');
+const fUser = require('../models/user');
 
 exports.getMyDAOs = async myAddress => {
     try {
@@ -12,7 +13,6 @@ exports.getMyDAOs = async myAddress => {
                 $group: {
                     _id: "$badgeAddress",
                     badgeAddress: { $first: "$badgeAddress" },
-                    received: { '$sum': '$received' }
                 }
             }
         ]);
@@ -25,10 +25,12 @@ exports.getMyDAOs = async myAddress => {
                 badgeAddress: retList[i]._id,
                 isCreator: true
             }).lean();
+            let creatorInfo = await fUser.findOne({wallet: fullDaoRelationInfo.userAddress});
+            retList[i]['sent'] = creatorInfo ? creatorInfo.sent ? creatorInfo.sent : 0: 0;
             let daoInfo = await fDao.findOne({ badgeAddress: retList[i]._id }).lean();
             retList[i]['userAddress'] = fullDaoRelationInfo.userAddress;
-            retList[i]['dao'] = daoInfo.name;
-            retList[i]['badge'] = daoInfo.badge;
+            retList[i]['dao'] = daoInfo ? daoInfo.name ? daoInfo.name : null : null;
+            retList[i]['badge'] = daoInfo ? daoInfo.badge ? daoInfo.badge : null : null;
         }
         return retList;
     } catch (error) {

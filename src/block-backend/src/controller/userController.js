@@ -688,52 +688,17 @@ exports.getDaoData = async (req, res) => {
                         return res.status(200).send({ success: true, data: [] });
                     }
                 } else {
-                    UserDao.aggregate([
-                        {
-                            $match: {
-                                userAddress: req.body.master
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: '$badgeAddress',
-                                userAddress: { $first: '$userAddress' },
-                                sent: { $sum: "$received" }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'daos',
-                                let: { badgeAddress: '$_id' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: ['$$badgeAddress', '$badgeAddress']
-                                            },
-                                        }
-                                    }
-                                ],
-                                as: 'dao'
-                            }
-                        },
-                    ]).then(daos => {
-                        for (let i = 0; i < daos.length; i++) {
-                            let daoDetail = daos[i].dao ?
-                                daos[i].dao.length ?
-                                    daos[i].dao[0] :
-                                    null :
-                                null;
-                            daos[i]['badgeAddress'] = daos[i]._id;
-                            daos[i]['name'] = daoDetail ? daoDetail.name : null;
-                            daos[i]['badge'] = daoDetail ? daoDetail.badge : null;
-                            delete daos[i].dao;
+                    // Get all DAO for the user belongss to
+                    try {
+                        let myDaoList = await controllerCommon.getMyDAOs(req.body.master);
+                        for (let i = 0; i < myDaoList.length; i++) {
+                            myDaoList[i]['name'] = myDaoList[i].dao;
                         }
-                        _sort(daos, 'name', 1)
-                        return res.status(200).send({ success: true, data: daos });
-                    }).catch(error => {
+                        _sort(myDaoList, 'name', 1)
+                        return res.status(200).send({ success: true, data: myDaoList });
+                    } catch (error) {
                         return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
-                    })
+                    }
                 }
             } catch (error) {
                 return res.status(200).send({ success: false, data: error });
