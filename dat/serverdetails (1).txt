@@ -1,0 +1,39 @@
+52.221.179.43
+
+IPv6: 2406:da18:680:dd00:7124:9eb0:aad3:d784
+
+USER NAME
+ubuntu
+
+
+=======
+
+Let me share a video what he last show me 2 days before
+
+See here what he completed and show on live url all test.. ...
+bandicam 2022-05-14 17-06-32-338.mp4 18.98 MB 
+
+========
+
+52.221.179.43
+
+User : ubuntu
+ ONERep (1).pem 1.63 kB 
+ image_2022_04_27T06_32_59_032Z.png 34.76 kB 
+
+These ports are opened now
+
+=======
+Check on AWS ..Aws instance
+
+Login you will find it
+
+Block-frontend and Block-backend folder
+
+Source code is in the server both front end and backend
+
+======
+
+Token Name ICO, Contract Address
+
+=======
