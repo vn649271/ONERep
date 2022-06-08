@@ -398,7 +398,7 @@ const _sort = (arr, field, direction) => {
         }
         else {
             return (a[field] < b[field]) ? -1 * direction : direction;
-        }
+       }
     });
 }
 
@@ -442,10 +442,11 @@ exports.getOneRepBoard = async (req, res) => {
             }
         } else {
             try {
-                let _filters = filters;
+                let _filters = [];
+                // _filters = [];
                 _filters.push({
                     $match: {'badgeAddress': req.body.badgeAddress}
-                });
+                }, ...filters);
                 let actions = await fAction.aggregate(_filters);
                 if (actions.length === undefined) {
                     return res.status(200).send({ error: -1, data: "Failed to get board data" });
