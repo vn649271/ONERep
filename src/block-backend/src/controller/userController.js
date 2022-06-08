@@ -598,7 +598,7 @@ exports.getDaoData = async (req, res) => {
                             },
                             {
                                 $group: {
-                                    _id: '$userAddress',
+                                    _id: '$badgeAddress',
                                     sent: { $sum: "$received" }
                                 }
                             },
