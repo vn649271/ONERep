@@ -11,6 +11,7 @@ exports.getMyDAOs = async myAddress => {
             {
                 $group: {
                     _id: "$badgeAddress",
+                    badgeAddress: { $first: "$badgeAddress" },
                     received: { '$sum': '$received' }
                 }
             }

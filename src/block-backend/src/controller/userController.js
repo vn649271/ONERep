@@ -493,18 +493,19 @@ exports.getOneRepBoard = async (req, res) => {
     } else {    // System Account User
         if (!req.body.badgeAddress) {
             // Get board data for all the DAOs the user belongs to
-            let userDaos = await UserDao.find({ userAddress: req.body.master }).lean();
-            let leadDaoRels = [];
-            if (userDaos && userDaos.length) {
-                for (let i = 0; i < userDaos.length; i++) {
-                    if (userDaos[i].isCreator) {
-                        leadDaoRels.push(userDaos[i]);
-                    }
-                }
-            }
-            if (!leadDaoRels.length) {
-                return res.status(200).send({ success: true, data: [] });
-            }
+            // let userDaos = await UserDao.find({ userAddress: req.body.master }).lean();
+            // let leadDaoRels = [];
+            // if (userDaos && userDaos.length) {
+            //     for (let i = 0; i < userDaos.length; i++) {
+            //         if (userDaos[i].isCreator) {
+            //             leadDaoRels.push(userDaos[i]);
+            //         }
+            //     }
+            // }
+            // if (!leadDaoRels.length) {
+            //     return res.status(200).send({ success: true, data: [] });
+            // }
+            leadDaoRels = await controllerCommon.getMyDAOs(req.body.master);
             let resultArray = [];
             try {
                 for (let i = 0; i < leadDaoRels.length; i++) {
