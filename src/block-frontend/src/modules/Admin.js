@@ -213,7 +213,10 @@ const AdminModule = (props) => {
             }
         ).then(response => {
             let users = response.data ? response.data.data ? response.data.data : [] : [];
-            setUsers(users);
+            let success = response.data ? response.data.success ? response.data.success : false : false;
+            if (success) {
+                setUsers(users);
+            }
         });
     }
     const onClickSettings = ev => {
@@ -272,25 +275,48 @@ const AdminModule = (props) => {
                     </thead>
                     <tbody>{
                         users.length ?
-                            users.map((item, i) => (
+                            users.map((user, i) => (
+                                user.daos && user.daos.length ? user.daos.map((dao, j) => (
+                                    <tr key={i}>
+                                        <td><FaUserAlt /><span className="pl-2">{user.username}</span></td>
+                                        <td>{dao ? dao? dao.name: null: null}</td>
+                                        <td>{user.wallet}</td>
+                                        <td className="text-center">{user.userType === 0 ? 'Admin' : '-'}</td>
+                                        <td className="text-right">{user.received}</td>
+                                        <td className="text-center">{!user.status ? 'Inactive' : 'Active'}</td>
+                                        <td className="text-center">
+                                            <div className="cursor-pointer flow-layout">
+                                                <FaPencilAlt onClick={() => {
+                                                    // setSAdmin(user.userType === 0);
+                                                    setEnable(user.status);
+                                                    handleShow(user)
+                                                }
+                                                } />
+                                            </div>
+                                            <div className="cursor-pointer flow-layout ml-20">
+                                                <FaTrashAlt onClick={() => { handleDelete(user) }} className="text-danger" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )):
                                 <tr key={i}>
-                                    <td><FaUserAlt /><span className="pl-2">{item.username}</span></td>
-                                    <td>{item.daos ? item.daos.length? item.daos[0].name: null: null}</td>
-                                    <td>{item.wallet}</td>
-                                    <td className="text-center">{item.userType === 0 ? 'Admin' : '-'}</td>
-                                    <td className="text-right">{item.received}</td>
-                                    <td className="text-center">{!item.status ? 'Inactive' : 'Active'}</td>
+                                    <td><FaUserAlt /><span className="pl-2">{user.username}</span></td>
+                                    <td></td>
+                                    <td>{user.wallet}</td>
+                                    <td className="text-center">{user.userType === 0 ? 'Admin' : '-'}</td>
+                                    <td className="text-right">{user.received}</td>
+                                    <td className="text-center">{!user.status ? 'Inactive' : 'Active'}</td>
                                     <td className="text-center">
                                         <div className="cursor-pointer flow-layout">
                                             <FaPencilAlt onClick={() => {
-                                                // setSAdmin(item.userType === 0);
-                                                setEnable(item.status);
-                                                handleShow(item)
+                                                // setSAdmin(user.userType === 0);
+                                                setEnable(user.status);
+                                                handleShow(user)
                                             }
                                             } />
                                         </div>
                                         <div className="cursor-pointer flow-layout ml-20">
-                                            <FaTrashAlt onClick={() => { handleDelete(item) }} className="text-danger" />
+                                            <FaTrashAlt onClick={() => { handleDelete(user) }} className="text-danger" />
                                         </div>
                                     </td>
                                 </tr>

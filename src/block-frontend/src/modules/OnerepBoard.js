@@ -45,7 +45,6 @@ const OneRepBoardModule = (props) => {
           wallet: localStorage.getItem("wallet")
         }
       ).then(ret => {
-
         let userInfo = ret.data ? ret.data.data ? ret.data.data : null : null;
         if (!userInfo) {
           orAlert("Failed to get information for current logined user");
@@ -83,25 +82,24 @@ const OneRepBoardModule = (props) => {
               daos = [
                 {
                   _id: '',
-                  dao: 'All'
+                  name: 'All'
                 },
                 ...daos
               ];
             }
             setDaoList(daos);
             if (userInfo.userType === 0) { // is admin?
-              handleDropDown(null);
+              handleDropDown(null, daos);
             } else {
-              handleDropDown(daos[0].dao);
+              handleDropDown(daos[0].name, daos);
             }
           } else {
             alert("Failed to get DAO data");
           }
         });
-      })
-        .catch(error => {
-          orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);
-        });
+      }).catch(error => {
+        orAlert("OneRepBoard: Failed to get information for logged in user: " + error.message);
+      });
     }
   });
 
@@ -116,16 +114,22 @@ const OneRepBoardModule = (props) => {
   }, [show, sortOption]);
 
   useEffect(() => {
-    loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);
+    loadBoardData(
+      selectedDao? 
+        selectedDao.badgeAddress? 
+          selectedDao.badgeAddress: 
+        null: 
+      null
+    );
   }, [sortOption]);
 
-  const loadBoardData = async (wallet, dao) => {
+  const loadBoardData = async (badgeAddress) => {
     try {
       setLoading(true);
       let ret = await axios.post(SERVER_URL + "/getOneRepBoard", {
-        master: wallet,
+        master: localStorage.getItem('wallet'),
         sort: sortOption,
-        dao: dao
+        badgeAddress: badgeAddress
       });
       setLoading(false);
       if (ret === null || ret.data === undefined ||
@@ -147,28 +151,35 @@ const OneRepBoardModule = (props) => {
   //     setSelectData(response.data);
   //   });
   // };
-  const handleDropDown = async (selectedDaoName) => {
+  const handleDropDown = async (selectedDaoName, daos = null) => {
     try {
       let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
         dao: selectedDaoName === "All" ? null : selectedDaoName
       };
-      // let isAdmin = localStorage.getItem("isAdmin");
-      // if (isAdmin) {
-      //   getDaoDataReqParam = {
-      //     master: localStorage.getItem("wallet"),
-      //   };
-      // }
-      let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
-      if (resp.data.success) {
-        let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
-        if (selectedDao) {
-          setSelectedDao(selectedDao);
-          setSelectedDaoTokenTotalSupply(selectedDao.sent);
-          loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);        
+      if (selectedDaoName !== 'All') {
+        let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
+        if (resp.data.success) {
+          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+          if (selectedDao) {
+            setSelectedDao(selectedDao);
+            setSelectedDaoTokenTotalSupply(selectedDao.sent);
+            loadBoardData(
+              selectedDao? 
+                selectedDao.badgeAddress? 
+                  selectedDao.badgeAddress: 
+                null: 
+              null
+            );
+          }
+        } else {
+          orAlert("Failed to get DAO list: " + resp.data.data);
+          return;
         }
       } else {
-        orAlert("Failed to get DAO list");
+        setSelectedDao(null);
+        setSelectedDaoTokenTotalSupply(0);
+        loadBoardData(null);
       }
     } catch (error) {
       console.log("Error occurred in handleDropDown()", error);
@@ -218,7 +229,7 @@ const OneRepBoardModule = (props) => {
               </label>
             </div>,
             <div key="token-token-total-count-label" className='flow-layout mr-10'>
-              Number of Tokens
+              Number Of Tokens
               <label className="bordered-label">
                 {selectedDaoTokenTotalSupply}
               </label>
@@ -263,7 +274,13 @@ const OneRepBoardModule = (props) => {
                 onClick={() => {
                   setSortSum(-sort_sum);
                   setSortOption({ sum: -sort_sum });
-                  loadBoardData(localStorage.getItem('wallet'), selectedDao? selectedDao.name? selectedDao.name: null: null);
+                  loadBoardData(
+                    selectedDao? 
+                      selectedDao.badgeAddress? 
+                        selectedDao.badgeAddress: 
+                      null: 
+                    null
+                  );
                 }}
               >
                 ONERep Tokens

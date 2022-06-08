@@ -28,7 +28,7 @@ exports.upload = async (req, res) => {
 
 exports.addFile = async (req, res) => {
   try {
-    let userDaos = await fUserDao.find({ userAddress: req.body.master });
+    let userDaos = await fUserDao.find({ userAddress: req.body.master, isCreator: true });
     if (userDaos && userDaos.length) {
       let badgeAddress = userDaos[0].badgeAddress; // ?????????????????????
       fUpload.findOne({ ipfsuri: req.body.ipfsuri }).then(data => {
@@ -51,10 +51,10 @@ exports.addFile = async (req, res) => {
                 name: row[1],
                 wallet: row[2],
                 received: parseInt(row[3]),
+                badgeAddress: badgeAddress,
                 sent: parseInt(row[4]),
                 epoch_number: row[5],
                 date: row[6],
-                parent: req.body.master,
                 recipientContractAddress: row[7]
               });
               addAction.save().then(async retForNewAction => {
@@ -90,7 +90,7 @@ exports.addFile = async (req, res) => {
               console.log("Not found the user with the specified wallet", req.body.master);
               return;
             }
-            user.set({'sent': user.sent + req.body.reputation });
+            user.set('sent', parseInt(user.sent) + parseInt(req.body.reputation));
             let retForUpdatedSentAmount = await user.save();
             return res.status(200).send({ success: true });
           }).catch(error => {
@@ -99,7 +99,7 @@ exports.addFile = async (req, res) => {
         }
       });
     } else {
-      return res.status(200).send({success: false, data: "Failed to get USER-DAO relation"})
+      return res.status(200).send({ success: false, data: "Failed to get USER-DAO relation" })
     }
   } catch (err) {
     res.status(500).send({
@@ -131,23 +131,19 @@ exports.getOneRepFiles = async (req, res) => {
       // Get files for specified DAO
       try {
         fUserDao.findOne({ badgeAddress: badgeAddress, isCreator: true }).then(async creator => {
-          if (creator === null || creator.userAddress === undefined || 
-              creator.userAddress === null || creator.userAddress === "") 
-          {
-            return res.status(200).send({error: -1, data: "Couldn't get creator information of the DAO"});
+          if (creator === null || creator.userAddress === undefined ||
+            creator.userAddress === null || creator.userAddress === "") {
+            return res.status(200).send({ error: -1, data: "Couldn't get creator information of the DAO" });
           }
-          let fileList = [];
-          let files = await fUpload.find({parent: creator.userAddress});
+          let files = await fUpload.find({ parent: creator.userAddress }).lean();
           if (files.length !== undefined && files.length > 0) {
-            let dao = await fDao.findOne({badgeAddress: badgeAddress});
+            let dao = await fDao.findOne({ badgeAddress: badgeAddress });
             for (let i = 0; i < files.length; i++) {
-              let fileInfo = files[i]._doc;
-              fileInfo['dao'] = dao.name;
-              fileInfo['badgeAddress'] = dao.badgeAddress;
-              fileList.push(fileInfo);
+              files[i]['dao'] = dao.name;
+              files[i]['badgeAddress'] = dao.badgeAddress;
             }
           }
-          return res.status(200).send({ error: 0, data: fileList });
+          return res.status(200).send({ error: 0, data: files });
         });
       } catch (error) {
         return resizeTo.status(200).send({ error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
@@ -156,21 +152,57 @@ exports.getOneRepFiles = async (req, res) => {
       // Get files for all DAO to which user belongs
       fUser.findOne({ wallet: req.body.master }).then(async user => {
         if (user.userType === 0) {
-          fUpload.aggregate([{
-            $lookup: {
-              from: 'users',
-              localField: 'parent',
-              foreignField: 'wallet',
-              as: 'userInfo'
+          fUpload.aggregate([
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'parent',
+                foreignField: 'wallet',
+                as: 'userInfo'
+              }
+            },
+            {
+              $lookup: {
+                from: 'userdaos',
+                let: { userAddress: '$parent' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $eq: ['$$userAddress', '$userAddress']
+                      }
+                    }
+                  },
+                ],
+                as: 'daoRels'
+              }
             }
-          }]
-          )
-            .then((files) => {
-              res.status(200).send({ error: 0, data: files });
-            })
-            .catch(error => {
-              return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-            });
+          ]).then(async files => {
+            for (let i = 0; i < files.length; i++) {
+              // Find badge address
+              let badgeAddress = null;
+              if (files[i].daoRels && files[i].daoRels.length) {
+                for (let j = 0; j < files[i].daoRels.length; j++) {
+                  if (files[i].daoRels[j].isCreator) {
+                    badgeAddress = files[i].daoRels[j].badgeAddress;
+                    break;
+                  }
+                }
+              }
+              let daoInfo = null;
+              if (badgeAddress) {
+                daoInfo = await fDao.findOne({badgeAddress: badgeAddress}).lean();
+              }
+              if (daoInfo) {
+                files[i]['badgeAddress'] = daoInfo.badgeAddress;
+                files[i]['badge'] = daoInfo.badge;
+                files[i]['dao'] = daoInfo.name;
+              }
+            }
+            res.status(200).send({ error: 0, data: files });
+          }).catch(error => {
+            return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+          });
         } else {
           // fUpload.find({parent: req.body.master}).then((files) => {
           //   res.status(200).send({error: 0, data: files});
@@ -187,13 +219,11 @@ exports.getOneRepFiles = async (req, res) => {
                 as: 'userInfo'
               }
             }
-          ])
-            .then((files) => {
-              res.status(200).send({ error: 0, data: files });
-            })
-            .catch(error => {
-              return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
-            });
+          ]).then((files) => {
+            res.status(200).send({ error: 0, data: files });
+          }).catch(error => {
+            return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
+          });
         }
       });
     }

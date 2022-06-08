@@ -292,7 +292,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      loadOneRepFiles();
+      loadOneRepFiles(selectedDao.badgeAddress);
       inform("Success", "Successfully Minted", "success");
     } catch (error) {
       setShowWatingModalForMint(false);
@@ -309,25 +309,35 @@ const OneRepFileModule = (props) => {
     setLoading(true);
     let parent = localStorage.getItem("parent");
     if (parent === "" || parent === "undefined") {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("wallet"), badgeAddress: badgeAddressForSelectedDao })
-        .then((response) => {
-          setLoading(false);
-          if (response.data.error) {
-            orAlert("Failed to load ONERep files: " + response.data.data);
-            return;
-          }
-          setRepFiles(response.data.data);
-        });
+      axios.post(
+        SERVER_URL + "/files", 
+        { 
+          master: localStorage.getItem("wallet"), 
+          badgeAddress: badgeAddressForSelectedDao 
+        }
+      ).then((response) => {
+        setLoading(false);
+        if (response.data.error) {
+          orAlert("Failed to load ONERep files: " + response.data.data);
+          return;
+        }
+        setRepFiles(response.data.data);
+      });
     } else {
-      axios.post(SERVER_URL + "/files", { master: localStorage.getItem("parent"), badgeAddress: badgeAddressForSelectedDao })
-        .then((response) => {
-          setLoading(false);
-          if (response.data.error) {
-            orAlert("Failed to load ONERep files: " + response.data.data);
-            return;
-          }
-          setRepFiles(response.data.data);
-        });
+      axios.post(
+        SERVER_URL + "/files", 
+        { 
+          master: localStorage.getItem("parent"), 
+          badgeAddress: badgeAddressForSelectedDao 
+        }
+      ).then((response) => {
+        setLoading(false);
+        if (response.data.error) {
+          orAlert("Failed to load ONERep files: " + response.data.data);
+          return;
+        }
+        setRepFiles(response.data.data);
+      });
     }
   };
   const onSubmitHandler = (e) => {
@@ -409,15 +419,22 @@ const OneRepFileModule = (props) => {
       //     master: localStorage.getItem("wallet"),
       //   };
       // }
-      let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
-      if (resp.data.success) {
-        let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
-        if (selectedDao) {
-          setSelectedDao(selectedDao);
-          setSelectedDaoTokenTotalSupply(selectedDao.sent);
-          loadOneRepFiles(selectedDao.badgeAddress);          
+      if (selectedDaoName !== 'All') {
+        let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
+        if (resp.data.success) {
+          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+          if (selectedDao) {
+            setSelectedDao(selectedDao);
+            setSelectedDaoTokenTotalSupply(selectedDao.sent);
+            loadOneRepFiles(selectedDao.badgeAddress);          
+          }
+        } else {
+          orAlert("Failed to get DAO list: " + resp.data.data);
+          return;
         }
       } else {
+        setSelectedDao(null);
+        setSelectedDaoTokenTotalSupply(0);
         loadOneRepFiles();
       }
     } catch (error) {
@@ -500,7 +517,7 @@ const OneRepFileModule = (props) => {
               </label>
             </div>,
             <div key="badge-token-total-supply-label" className='flow-layout mr-10'>
-              Number of Tokens
+              Number Of Tokens
               <label className="bordered-label">
                 {selectedDaoTokenTotalSupply}
               </label>

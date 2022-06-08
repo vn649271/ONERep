@@ -14,6 +14,10 @@ const actionSchema = new mongoose.Schema({
         require: false,
         default: 0
     },
+    badgeAddress:{
+        type:String,
+        required:true
+    },
     sent: {
         type:Number,
         require: false,
@@ -26,11 +30,6 @@ const actionSchema = new mongoose.Schema({
     date: {
         type:String,
         require: false,
-    },
-    parent: {
-        type:String,
-        require: false,
-        default:''
     },
     created_at:{
         type:Date,
