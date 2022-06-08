@@ -27,4 +27,4 @@ const userDaoSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('userdao', userDaoSchema);
+module.exports = mongoose.model('userDao', userDaoSchema);

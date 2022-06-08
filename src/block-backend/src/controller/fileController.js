@@ -1,7 +1,7 @@
 // 
 const fs = require('fs');
 const uploadFile = require("../middleware/upload");
-const fUserDao = require('../models/userdao');
+const fUserDao = require('../models/userDao');
 const fUpload = require('../models/upload');
 const fAction = require('../models/action');
 const fUser = require('../models/user');
