@@ -63,29 +63,30 @@ const AdminModule = (props) => {
             ).then(ret => {
                 setInited(true);
                 console.log("Logged in user:", ret.data);
+                let badgeAddress = null;
                 if (
                     ret.data &&
                     ret.data.data &&
                     ret.data.data.daoRelation &&
                     ret.data.data.daoRelation.length
                 ) {
-                    setBadgeAddress(ret.data.data.daoRelation[0].badgeAddress);
-                } else {
-                    setBadgeAddress(null);
+                    badgeAddress = ret.data.data.daoRelation[0].badgeAddress;
                 }
+                setBadgeAddress(badgeAddress);
+                let userInfo = ret.data.data;
                 dispatch({
                     type: USERS.CONNECT_WALLET,
                     payload: {
-                        wallet: ret.data.wallet,
-                        user: ret.data.username,
-                        isAdmin: (ret.data.userType === 0),
-                        badgeTokenAddress: ret.data.badgeAddress,
+                        wallet: userInfo.wallet,
+                        user: userInfo.username,
+                        isAdmin: (userInfo.userType === 0),
+                        badgeTokenAddress: badgeAddress,
                     }
                 });
                 // setChainId(localStorage.getItem('chainId'));
             });
         }
-        if (!users || !users.length) {
+        if (!users || users.length === undefined || !users.length) {
             getContributors();
         }
     })
