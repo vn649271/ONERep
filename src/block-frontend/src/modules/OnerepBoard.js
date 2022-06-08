@@ -31,12 +31,6 @@ const OneRepBoardModule = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-  }, [daoList])
-
-  useEffect(() => {
-  }, [boardData])
-
-  useEffect(() => {
     // Init connection info
     if (!inited) {
       axios.post(
@@ -132,8 +126,8 @@ const OneRepBoardModule = (props) => {
         badgeAddress: badgeAddress
       });
       setLoading(false);
-      if (ret === null || ret.data === undefined ||
-        ret.data.data === undefined || ret.data.data.length === undefined) {
+      if (ret === null || ret.data === undefined || ret.data.success === undefined || !ret.data.success) 
+      {
         orAlert("Failed to get all board data for super admin");
         return;
       }
@@ -200,24 +194,20 @@ const OneRepBoardModule = (props) => {
         <div className='flow-layout mr-20'>
           <div className='flow-layout mr-10'>DAO</div>
           <div className='flow-layout mr-10'>
-            {
-              isAdmin ?
-                <Dropdown onSelect={handleDropDown}>
-                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                    {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {
-                      (daoList.length > 0) ?
-                        daoList.map(m => {
-                          return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
-                        }) :
-                        <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
-                    }
-                  </Dropdown.Menu>
-                </Dropdown> :
-                <label className="bordered-label">{selectedDao ? selectedDao.name ? selectedDao.name : "Unknown" : "Unknown"}</label>
-            }
+            <Dropdown onSelect={handleDropDown}>
+              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {
+                  (daoList.length > 0) ?
+                    daoList.map(m => {
+                      return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
+                    }) :
+                    <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
+                }
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </div>
         {
@@ -295,7 +285,7 @@ const OneRepBoardModule = (props) => {
                 </tr> :
                 <>
                   {
-                    boardData.length > 0 ? boardData.map((row, i) => {
+                    boardData && boardData.length > 0 ? boardData.map((row, i) => {
                       return (
                         <tr key={i}>
                           <td>{row.dao}</td>

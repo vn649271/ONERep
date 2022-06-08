@@ -488,24 +488,20 @@ const OneRepFileModule = (props) => {
         <div className='flow-layout mr-20'>
           <div className='flow-layout mr-10'>DAO</div>
           <div className='flow-layout mr-10'>
-            {
-              isAdmin ?
-                <Dropdown onSelect={handleDropDown}>
-                  <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
-                    {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {
-                      (daoList.length > 0) ?
-                        daoList.map(m => {
-                          return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
-                        }) :
-                        <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
-                    }
-                  </Dropdown.Menu>
-                </Dropdown> :
-                <label className="bordered-label">{selectedDao ? selectedDao.name ? selectedDao.name : "Unknown" : "Unknown"}</label>
-            }
+            <Dropdown onSelect={handleDropDown}>
+              <Dropdown.Toggle variant="dropdown" id="dropdown-basic">
+                {selectedDao ? selectedDao.name ? selectedDao.name : "All" : "All"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {
+                  (daoList.length > 0) ?
+                    daoList.map(m => {
+                      return <Dropdown.Item key={m.name} eventKey={m.name}>{m.name}</Dropdown.Item>
+                    }) :
+                    <Dropdown.Item eventKey={daoList.name}>{daoList.name}</Dropdown.Item>
+                }
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </div>
         {

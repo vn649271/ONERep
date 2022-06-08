@@ -217,13 +217,13 @@ exports.getLoggedInUserByWallet = async (req, res) => {
 function _groupBy(list, keyGetter) {
     const map = new Map();
     list.forEach((item) => {
-         const key = keyGetter(item);
-         const collection = map.get(key);
-         if (!collection) {
-             map.set(key, [item]);
-         } else {
-             collection.push(item);
-         }
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
     });
     return map;
 }
@@ -300,7 +300,7 @@ exports.getUserList = async (req, res) => {
                         let daos = [];
                         try {
                             for (let j in userDaoRels) {
-                                let dao = await Dao.findOne({badgeAddress: userDaoRels[j].badgeAddress});
+                                let dao = await Dao.findOne({ badgeAddress: userDaoRels[j].badgeAddress });
                                 daos.push(dao);
                             }
                         } catch (error) {
@@ -341,7 +341,7 @@ exports.getUserList = async (req, res) => {
                             _id: "$userAddress",
                             userAddress: { $first: "$userAddress" },
                             badgeAddress: { $first: "$badgeAddress" },
-                            received: {'$sum': '$received'}
+                            received: { '$sum': '$received' }
                         }
                     },
                     ...lookupFilter,
@@ -398,7 +398,7 @@ const _sort = (arr, field, direction) => {
         }
         else {
             return (a[field] < b[field]) ? -1 * direction : direction;
-       }
+        }
     });
 }
 
@@ -411,7 +411,7 @@ exports.getOneRepBoard = async (req, res) => {
             '$group': {
                 _id: '$wallet',
                 name: { '$first': '$name' },
-                badgeAddress: { '$first': '$badgeAddress'},
+                badgeAddress: { '$first': '$badgeAddress' },
                 sum: { '$sum': '$received' }
             }
         },
@@ -427,43 +427,72 @@ exports.getOneRepBoard = async (req, res) => {
     if (user && user.userType === 0) {
         // Super admin
         if (!req.body.badgeAddress) {
+            // All data
             try {
-                let actions = await fAction.aggregate(filters);
-                if (actions.length === undefined) {
-                    return res.status(200).send({ error: -1, data: "Failed to get board data" });
+                let availableDaoList = await fAction.aggregate({
+                    '$group': {
+                        _id: '$badgeAddress',
+                    }
+                });
+                if (availableDaoList === undefined ||
+                    availableDaoList === null ||
+                    availableDaoList.length === undefined ||
+                    availableDaoList.length < 1) {
+                    return res.status(200).send({ success: true, data: [] });
                 }
-                for (let j = 0; j < actions.length; j++) {
-                    actions[j]['badge'] = actions[j].dao[0].badge;
-                    actions[j]['dao'] = actions[j].dao[0].name;
+                let result = [];
+                for (let i = 0; i < availableDaoList.length; i++) {
+                    let actions = await fAction.aggregate(
+                        {
+                            $match: { 'badgeAddress': availableDaoList[i]._id }
+                        },
+                        ...filters
+                    );
+                    if (actions.length === undefined) {
+                        return res.status(200).send({ success: false, data: "Failed to get board data" });
+                    }
+                    for (let j = 0; j < actions.length; j++) {
+                        actions[j]['badge'] = actions[j].dao[0].badge;
+                        actions[j]['dao'] = actions[j].dao[0].name;
+                    }
+                    result.push(...actions);
                 }
-                return res.status(200).send({error: 0, data: actions});
+                // Sort
+                for (let k in sortOption) {
+                    _sort(result, k, sortOption[k]);
+                }
+                return res.status(200).send({ success: true, data: result });
             } catch (error) {
-                return res.status(200).send({ error: -10, data: error.message });
+                return res.status(200).send({ success: false, data: error.message });
             }
         } else {
             try {
                 let _filters = [];
                 // _filters = [];
                 _filters.push({
-                    $match: {'badgeAddress': req.body.badgeAddress}
+                    $match: { 'badgeAddress': req.body.badgeAddress }
                 }, ...filters);
                 let actions = await fAction.aggregate(_filters);
                 if (actions.length === undefined) {
-                    return res.status(200).send({ error: -1, data: "Failed to get board data" });
+                    return res.status(200).send({ success: false, data: "Failed to get board data" });
                 }
                 for (let j = 0; j < actions.length; j++) {
                     actions[j]['badge'] = actions[j].dao[0].badge;
                     actions[j]['dao'] = actions[j].dao[0].name;
                 }
-                return res.status(200).send({error: 0, data: actions});
+                // Sort
+                for (let k in sortOption) {
+                    _sort(actions, k, sortOption[k]);
+                }
+                return res.status(200).send({ success: true, data: actions });
             } catch (error) {
-                return res.status(200).send({ error: -10, data: error.message });
+                return res.status(200).send({ success: false, data: error.message });
             }
         }
     } else {    // System Account User
         if (!req.body.badgeAddress) {
             // Get board data for all the DAOs the user belongs to
-            let userDaos = await UserDao.find({userAddress: req.body.master}).lean();
+            let userDaos = await UserDao.find({ userAddress: req.body.master }).lean();
             let leadDaoRels = [];
             if (userDaos && userDaos.length) {
                 for (let i = 0; i < userDaos.length; i++) {
@@ -473,21 +502,22 @@ exports.getOneRepBoard = async (req, res) => {
                 }
             }
             if (!leadDaoRels.length) {
-                return res.status(200).send({error: 1, data: "No any DAO"});
+                return res.status(200).send({ success: true, data: [] });
             }
             let resultArray = [];
             try {
                 for (let i = 0; i < leadDaoRels.length; i++) {
-                    let _filters = filters;
-                    _filters.push({
-                        $match: { badgeAddress: leadDaoRels[i].badgeAddress }
-                    });
-                    _filters.push({
-                        $sort: req.body.sort
-                    });
-                    let actions = await fAction.aggregate(_filters);
+                    let actions = await fAction.aggregate([
+                        {
+                            $match: { badgeAddress: leadDaoRels[i].badgeAddress }
+                        },
+                        ...filters,
+                        {
+                            $sort: req.body.sort
+                        }
+                    ]);
                     if (actions.length === undefined) {
-                        res.status(200).send({ error: -1, data: "Failed to get board data" });
+                        res.status(200).send({ success: false, data: "Failed to get board data" });
                     }
                     for (let j = 0; j < actions.length; j++) {
                         if (actions[j].dao.length) {
@@ -495,29 +525,30 @@ exports.getOneRepBoard = async (req, res) => {
                             actions[j]['dao'] = actions[j].dao[0].name;
                         }
                     }
-                    // Sort
-                    for (let k in sortOption) {
-                        _sort(actions, k, sortOption[k]);
-                    }
                     resultArray.push(...actions);
                 }
-                res.status(200).send({ error: 0, data: resultArray });
+                // Sort
+                for (let k in sortOption) {
+                    _sort(resultArray, k, sortOption[k]);
+                }
+                res.status(200).send({ success: true, data: resultArray });
             } catch (error) {
-                res.status(200).send({ error: -10, data: error.message })
+                res.status(200).send({ success: false, data: error.message })
             };
         } else {
             // Get actions for specified DAO
             try {
-                let _filters = filters;
-                _filters.push({
-                    $match: { badgeAddress: req.body.badgeAddress }
-                });
-                _filters.push({
-                    $sort: req.body.sort
-                });
-                let actions = await fAction.aggregate(_filters);
+                let actions = await fAction.aggregate([
+                    {
+                        $match: { badgeAddress: req.body.badgeAddress }
+                    },
+                    ...filters,
+                    {
+                        $sort: req.body.sort
+                    }
+                ]);
                 if (actions.length === undefined) {
-                    res.status(200).send({ error: -1, data: "Failed to get board data" });
+                    res.status(200).send({ success: false, data: "Failed to get board data" });
                 }
                 for (let j = 0; j < actions.length; j++) {
                     if (actions[j].dao.length) {
@@ -529,9 +560,9 @@ exports.getOneRepBoard = async (req, res) => {
                 for (let k in sortOption) {
                     _sort(actions, k, sortOption[k]);
                 }
-                res.status(200).send({ error: 0, data: actions });
+                res.status(200).send({ success: true, data: actions });
             } catch (error) {
-                res.status(200).send({ error: -10, data: error.message })
+                res.status(200).send({ success: false, data: error.message })
             };
         }
     }
@@ -611,6 +642,7 @@ exports.getDaoData = async (req, res) => {
                             daos[i]['badge'] = (daoDetail ? daoDetail.badge : null);
                             daos[i]['badgeAddress'] = (daoDetail ? daoDetail.badgeAddress : null);
                         }
+                        _sort(daos, 'name', 1)
                         return res.status(200).send({ success: true, data: daos });
                     }).catch(error => {
                         return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
@@ -645,13 +677,13 @@ exports.getDaoData = async (req, res) => {
                                     name: daos[0].name,
                                     sent: userDaos[0].sent
                                 };
-                                return res.status(200).send({success: true, data: [dao]});
+                                return res.status(200).send({ success: true, data: [dao] });
                             } else {
-                                return res.status(200).send({success: false, data: "Failed to get USER-DAO relation"});
+                                return res.status(200).send({ success: false, data: "Failed to get USER-DAO relation" });
                             }
                         });
                     } else {
-                        return res.status(200).send({success: true, data: []});
+                        return res.status(200).send({ success: true, data: [] });
                     }
                 } else {
                     UserDao.aggregate([
@@ -662,15 +694,15 @@ exports.getDaoData = async (req, res) => {
                         },
                         {
                             $group: {
-                                _id: '$userAddress',
-                                badgeAddress: { $first: '$badgeAddress' },
+                                _id: '$badgeAddress',
+                                userAddress: { $first: '$userAddress' },
                                 sent: { $sum: "$received" }
                             }
                         },
                         {
                             $lookup: {
                                 from: 'daos',
-                                let: { badgeAddress: '$badgeAddress' },
+                                let: { badgeAddress: '$_id' },
                                 pipeline: [
                                     {
                                         $match: {
@@ -690,10 +722,12 @@ exports.getDaoData = async (req, res) => {
                                     daos[i].dao[0] :
                                     null :
                                 null;
+                            daos[i]['badgeAddress'] = daos[i]._id;
                             daos[i]['name'] = daoDetail ? daoDetail.name : null;
                             daos[i]['badge'] = daoDetail ? daoDetail.badge : null;
                             delete daos[i].dao;
                         }
+                        _sort(daos, 'name', 1)
                         return res.status(200).send({ success: true, data: daos });
                     }).catch(error => {
                         return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
@@ -833,7 +867,7 @@ exports.delete = async (req, res) => {
             // System Account user
             User.deleteOne({ _id: req.body._id }).then(async user => {
                 // Also delete User-Dao relation
-                await UserDao.deleteOne({userAddress: req.body.wallet});
+                await UserDao.deleteOne({ userAddress: req.body.wallet });
                 // Refresh the user list
                 User.find({ parent: req.body.master, wallet: req.body.master }).then(async users => {
                     try {
