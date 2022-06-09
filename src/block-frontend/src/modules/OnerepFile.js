@@ -505,7 +505,7 @@ const OneRepFileModule = (props) => {
         }
       </div>
       <br />
-      <div>
+      <div className="or-table-wrapper">
         <Table striped className="or-table table">
           <thead>
             <tr>

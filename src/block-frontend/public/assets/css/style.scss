@@ -2867,7 +2867,7 @@ margin-left: 0.8em;
 }
 
 .or-table-wrapper {
-	
+	overflow-x: auto;
 }
 
 .or-table {
@@ -3470,8 +3470,7 @@ margin-left: 0.8em;
 
 	.zl_all_pages_content {
 		.zl_all_pages_inner_content {
-			padding: 38px 15px;
-			padding: 38px 15px;
+			padding: 57px 15px;
 		}
 
 		.zl_page_sidebar.zl_hide_sidebar {
@@ -3659,6 +3658,10 @@ margin-left: 0.8em;
 }
 
 @media (max-width: 450px) {
+	.or-header {
+		display: flex;
+		flex-direction: column;
+	}
 	.zl_send_currency_btn_text {
 		flex-direction: column;
 

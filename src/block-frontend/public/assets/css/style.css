@@ -2879,6 +2879,10 @@ margin-left: 0.8em;
   text-align: right !important;
 }
 
+.or-table-wrapper {
+  overflow-x: auto;
+}
+
 .or-table {
   width: 100%;
 }
@@ -3375,8 +3379,7 @@ margin-left: 0.8em;
     margin-bottom: 0px;
   }
   .zl_all_pages_content .zl_all_pages_inner_content {
-    padding: 38px 15px;
-    padding: 38px 15px;
+    padding: 57px 15px;
   }
   .zl_all_pages_content .zl_page_sidebar.zl_hide_sidebar ~ .zl_all_pages_inner_content {
     padding: 38px 15px;
@@ -3494,6 +3497,15 @@ margin-left: 0.8em;
 }
 
 @media (max-width: 450px) {
+  .or-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
   .zl_send_currency_btn_text {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;

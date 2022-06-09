@@ -1,4 +1,4 @@
 const is_test = false;
 module.exports = {
-  SERVER_URL: is_test ? "http://localhost:3001" : "https://52.221.179.43:80",
+  SERVER_URL: is_test ? "http://localhost:3001" : "https://0230-116-202-24-219.ngrok.io ",
 };
