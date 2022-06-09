@@ -261,7 +261,7 @@ const AdminModule = (props) => {
             >
                 {confirmText}
             </OrConfirm>
-            <div>
+            <div className="or-table-wrapper">
                 <Table striped className="or-table table">
                     <thead>
                         <tr>

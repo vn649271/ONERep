@@ -946,6 +946,11 @@ table {
 		box-shadow: none !important;
 		outline: 0 !important;
 	}
+	&:not(:disabled):not(.disabled):active {
+		color: #fff;
+		background-color: #999;
+		border-color: #999;
+	}
 }
 
 .zl_currency_icon {
@@ -2816,6 +2821,10 @@ margin-left: 0.8em;
 				&:hover {
 					opacity: 0.6;
 				}
+				&:active {
+					background-color: #999;
+					border-color: #999;
+				}
 			}
 		}
 	}
@@ -2855,6 +2864,10 @@ margin-left: 0.8em;
 
 .text-right {
 	text-align: right !important;
+}
+
+.or-table-wrapper {
+	overflow: scroll;
 }
 
 .or-table {

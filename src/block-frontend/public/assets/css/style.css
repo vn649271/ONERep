@@ -947,6 +947,12 @@ table td {
   outline: 0 !important;
 }
 
+.btn-primary:not(:disabled):not(.disabled):active {
+  color: #fff;
+  background-color: #999;
+  border-color: #999;
+}
+
 .zl_currency_icon {
   width: 30px;
   height: 30px;
@@ -2834,6 +2840,11 @@ margin-left: 0.8em;
   opacity: 0.6;
 }
 
+.or-modal .modal-content .modal-footer button:active {
+  background-color: #999;
+  border-color: #999;
+}
+
 /**************************************************/
 .zl_securebackup_btn button:disabled {
   opacity: 0.3;
@@ -2866,6 +2877,10 @@ margin-left: 0.8em;
 
 .text-right {
   text-align: right !important;
+}
+
+.or-table-wrapper {
+  overflow: scroll;
 }
 
 .or-table tr th {

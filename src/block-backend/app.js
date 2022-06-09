@@ -36,16 +36,4 @@ initRoutes(app);
 let port = process.env.PORT;
 app.listen(port, () => {
   console.log(`Running at :${SERVER_URL}:${port}`);
-  // var options = {
-  //   port: port,
-  //   host: '0.0.0.0',
-  // };   
-  // var request = http.request(options);
-  // request.setHeader ('Access-Control-Allow-Origin', 'de66-116-202-24-219.ngrok.io');
-  // request.setHeader ('Access-Control-Allow-Origin', '8983-188-43-136-43.ngrok.io');
-  // request.setHeader ("Access-Control-Allow-Origin", "*");
-  // request.setHeader ("Access-Control-Expose-Headers", "Content-Length, X-JSON");
-  // request.setHeader ("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-  // request.setHeader ("Access-Control-Allow-Headers", "*");
-  // request.end ();
 });
