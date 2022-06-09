@@ -3,7 +3,6 @@ import Settings from "../../modules/Settings";
 
 import SideBar from "../SideBar";
 import BasicModal from '../Modals/BasicModal';
-// import Footer from "../Footer";
 
 // const GET_STARTED_DISALLOWED_ROUTES = [
 //     "/account",
@@ -40,20 +39,22 @@ const Layout = (props) => {
     }    
 
     return (
-        <div className={`zl_all_pages_content ${color === null ? 'zl_page_dark_mode' : color}`}>
+        <div>
             <BasicModal
                 show={showMessageBox}
                 modalType={messageType}
                 title={messageTitle}
                 closeModal={handleCloseMessageBox}
             >
-                <p className="text-white">{messageContent}</p>
+                {messageContent}
             </BasicModal>
-            <SideBar title={title} />
-            <div className="zl_all_pages_inner_content">
-                {props.location.pathname === "/settings" ? <Settings themHandler={themHandler} /> : props.children}
+            <div className={`zl_all_pages_content ${color === null ? 'zl_page_dark_mode' : color}`}>
+                <SideBar title={title} />
+                <div className="zl_all_pages_inner_content">
+                    {props.location.pathname === "/settings" ? <Settings themHandler={themHandler} /> : props.children}
+                </div>
+                {/* <Footer /> */}
             </div>
-            {/* <Footer /> */}
         </div>
     );
 

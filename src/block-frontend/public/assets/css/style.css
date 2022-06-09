@@ -43,6 +43,10 @@ ul {
   transition: all 0.3s ease-in-out;
 }
 
+.zl_all_pages_content .zl_page_sidebar {
+  z-index: auto;
+}
+
 .zl_all_pages_content .zl_page_sidebar.zl_hide_sidebar ~ .zl_all_pages_inner_content {
   padding: 26px 20px 20px 110px;
 }

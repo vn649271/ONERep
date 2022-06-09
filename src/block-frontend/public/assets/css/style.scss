@@ -47,44 +47,47 @@ ul {
 		transition: all 0.3s ease-in-out;
 	}
 
-	.zl_page_sidebar.zl_hide_sidebar {
-		& ~ .zl_all_pages_inner_content {
-			padding: 26px 20px 20px 110px;
+	.zl_page_sidebar {
+		z-index: auto;
+		&.zl_hide_sidebar {
+			& ~ .zl_all_pages_inner_content {
+				padding: 26px 20px 20px 110px;
+			}
 		}
-	}
 
-	.zl_page_sidebar[title="register"] {
-		display: none;
+		&[title="register"] {
+			display: none;
 
-		& ~ .zl_all_pages_inner_content {
-			padding: 10px;
-			overflow-x: hidden;
+			& ~ .zl_all_pages_inner_content {
+				padding: 10px;
+				overflow-x: hidden;
+			}
 		}
-	}
 
-	.zl_page_sidebar[title="login"] {
-		display: none;
+		&[title="login"] {
+			display: none;
 
-		& ~ .zl_all_pages_inner_content {
-			padding: 0;
+			& ~ .zl_all_pages_inner_content {
+				padding: 0;
+			}
 		}
-	}
 
-	.zl_page_sidebar[title="home"] {
-		display: none;
+		&[title="home"] {
+			display: none;
 
-		& ~ .zl_all_pages_inner_content {
-			padding: 10px;
-			overflow-x: hidden;
+			& ~ .zl_all_pages_inner_content {
+				padding: 10px;
+				overflow-x: hidden;
+			}
 		}
-	}
 
-	.zl_page_sidebar[title=""] {
-		display: none;
+		&[title=""] {
+			display: none;
 
-		& ~ .zl_all_pages_inner_content {
-			padding: 38px;
-			overflow-x: hidden;
+			& ~ .zl_all_pages_inner_content {
+				padding: 38px;
+				overflow-x: hidden;
+			}
 		}
 	}
 
