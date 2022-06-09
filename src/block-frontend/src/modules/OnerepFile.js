@@ -127,11 +127,7 @@ const OneRepFileModule = (props) => {
               ...daos
             ];
             setDaoList(daos);
-            if (daos.length && daos.length > 1) { // is admin?
-              handleDropDown(null);
-            } else {
-              handleDropDown(daos[0].name);
-            }
+            handleDropDown(null);
           } else {
             alert("Failed to get DAO data");
           }
@@ -389,7 +385,7 @@ const OneRepFileModule = (props) => {
   const onChangedFileUploadInput = (ev) => {
     onSubmitHandler(ev);
   }
-  const handleDropDown = async (selectedDaoName) => {
+  const handleDropDown = async (selectedDaoName = null) => {
     try {
       let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
@@ -401,7 +397,7 @@ const OneRepFileModule = (props) => {
       //     master: localStorage.getItem("wallet"),
       //   };
       // }
-      if (selectedDaoName !== 'All') {
+      if (selectedDaoName) {
         let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
         if (resp.data.success) {
           let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;

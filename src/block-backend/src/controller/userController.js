@@ -283,7 +283,12 @@ exports.getUserList = async (req, res) => {
                 },
             ]).then(async users => {
                 try {
+                    let ret = [];
                     for (let i = 0; i < users.length; i++) {
+                        if (users[i].userType > 2) {
+                            delete users[i];
+                            continue;
+                        }
                         if (users[i].daoRels && users[i].daoRels.length) {
                             let daoRels = users[i].daoRels;
                             const groupedByBadgeAddress = _groupBy(daoRels, daoRel => daoRel.badgeAddress);
@@ -311,9 +316,10 @@ exports.getUserList = async (req, res) => {
                             }
                             users[i]['daos'] = daos;
                         }
+                        ret.push(users[i]);
                     }
-                    _sort(users, 'username', 1);
-                    res.status(200).send({ success: true, data: users });
+                    _sort(ret, 'username', 1);
+                    return res.status(200).send({ success: true, data: ret });
                 } catch (error) {
                     return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });
                 }
@@ -349,6 +355,9 @@ exports.getUserList = async (req, res) => {
                         for (let i = 0; i < userDaos.length; i++) {
                             if (userDaos[i].users.length) {
                                 let user = userDaos[i].users[0];
+                                if (user.userType > 2) {
+                                    continue;
+                                }
                                 user['daos'] = userDaos[i].daos;
                                 if (user.daos && user.daos.length) {
                                     user.daos[0]['received'] = userDaos[i].received;
@@ -493,18 +502,6 @@ exports.getOneRepBoard = async (req, res) => {
     } else {    // System Account User
         if (!req.body.badgeAddress) {
             // Get board data for all the DAOs the user belongs to
-            // let userDaos = await UserDao.find({ userAddress: req.body.master }).lean();
-            // let leadDaoRels = [];
-            // if (userDaos && userDaos.length) {
-            //     for (let i = 0; i < userDaos.length; i++) {
-            //         if (userDaos[i].isCreator) {
-            //             leadDaoRels.push(userDaos[i]);
-            //         }
-            //     }
-            // }
-            // if (!leadDaoRels.length) {
-            //     return res.status(200).send({ success: true, data: [] });
-            // }
             leadDaoRels = await controllerCommon.getMyDAOs(req.body.master);
             let resultArray = [];
             try {

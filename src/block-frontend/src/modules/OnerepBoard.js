@@ -17,7 +17,7 @@ const OneRepBoardModule = (props) => {
   const [sort_badge, setSortBadge] = useState(1);
   const [sort_id, setSortId] = useState(1);
   const [sort_sum, setSortSum] = useState(1);
-  const [sortOption, setSortOption] = useState({ badge: 1 });
+  const [sortOption, setSortOption] = useState({ sum: -1 });
   const [daoList, setDaoList] = useState([]);
   const [selectedDao, setSelectedDao] = useState(null);
   const [selectedDaoTokenTotalSupply, setSelectedDaoTokenTotalSupply] = useState(0);
@@ -72,19 +72,23 @@ const OneRepBoardModule = (props) => {
         }).then((resp) => {
           if (resp.data.success) {
             let daos = resp.data.data;
-            daos = [
-              {
-                _id: '',
-                name: 'All'
-              },
-              ...daos
-            ];
+            if (userInfo.userType !== 1) {
+              daos = [
+                {
+                  _id: '',
+                  name: 'All'
+                },
+                ...daos
+              ];              
+            }
             setDaoList(daos);
-            if (daos.length && daos.length > 1) { // 
-              handleDropDown(null, daos);
-            } else {
+            // if (daos.length && daos.length > 1) { // 
+            if (userInfo.userType === 1) { // System User
               handleDropDown(daos[0].name, daos);
             }
+            // } else {
+            //   handleDropDown(daos[0].name, daos);
+            // }
           } else {
             alert("Failed to get DAO data");
           }
@@ -149,7 +153,7 @@ const OneRepBoardModule = (props) => {
         master: localStorage.getItem("wallet"),
         dao: selectedDaoName === "All" ? null : selectedDaoName
       };
-      if (selectedDaoName !== 'All') {
+      if (selectedDaoName) {
         let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
         if (resp.data.success) {
           let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
