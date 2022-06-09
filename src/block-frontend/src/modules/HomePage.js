@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { connect } from "react-redux";
 import { ethers, utils } from "ethers";
@@ -25,7 +25,20 @@ const HomePageModule = (props) => {
   const [messageContent, setMessageContent] = useState("");
 
   let history = useHistory();
+  const dispatch = useDispatch();
+
+  let mounted = false;
+  
+  useEffect(() => {
+    mounted = true;
+
+    return () => {
+      mounted = false;
+    }
+  });
+
   const handleClose = () => setShow(false);
+
   const handleShow = () => {
     if (window.ethereum) {
       setShow(true);
@@ -33,7 +46,6 @@ const HomePageModule = (props) => {
       showMessageBox("Warning", "No wallet installed. You should have wallet installed to access the page");
     }
   }
-  const dispatch = useDispatch();
   // const error = useSelector(({ userAction }) => userAction.error);
 
   const showMessageBox = (title, content, _type = "error") => {
@@ -42,9 +54,11 @@ const HomePageModule = (props) => {
     setMessageContent(content);
     setShowMessage(true);
   }
+
   const handleCloseMessageBox = () => {
     setShowMessage(false);
   }
+
   const connectWallet = async (params) => {
     if (window.ethereum) {
       // res[0] for fetching a first wallet
@@ -62,32 +76,35 @@ const HomePageModule = (props) => {
   // Function for login
   //commit
   const accountLogin = (account) => {
-    axios
-      .post(SERVER_URL + "/users/login", { wallet: account })
-      .then((response) => {
-        if (response.data.success == true) {
-          localStorage.setItem("user", response.data.username);
-          localStorage.setItem("wallet", account);
-          localStorage.setItem("isAdmin", (response.data.userType === 0));
-          localStorage.setItem("parent",response.data.parent);
-          console.log("parent", response.data.parent);
+    axios.post(
+      SERVER_URL + "/users/login",
+      {
+        wallet: account
+      }
+    ).then((response) => {
+      if (response.data.success == true) {
+        localStorage.setItem("user", response.data.username);
+        localStorage.setItem("wallet", account);
+        localStorage.setItem("isAdmin", (response.data.userType === 0));
+        localStorage.setItem("parent", response.data.parent);
+        console.log("parent", response.data.parent);
 
-          dispatch({
-            type: USERS.CONNECT_WALLET, 
-            payload: { 
-              wallet: account, 
-              user: response.data.username,
-              isAdmin: (response.data.userType === 0),
-              badgeTokenAddress: response.data.badgeTokenAddress,
-              // chainId: chainId
-            }
-          });
-          history.push(response.data.url);
-        } else {
-          orAlert(response.data.data);
-          history.push(response.data.url);
-        }
-      });
+        dispatch({
+          type: USERS.CONNECT_WALLET,
+          payload: {
+            wallet: account,
+            user: response.data.username,
+            isAdmin: (response.data.userType === 0),
+            badgeTokenAddress: response.data.badgeTokenAddress,
+            // chainId: chainId
+          }
+        });
+        history.push(response.data.url);
+      } else {
+        orAlert(response.data.data);
+        history.push(response.data.url);
+      }
+    });
   };
 
   // Function for getting handling all events
@@ -143,7 +160,7 @@ const HomePageModule = (props) => {
             }
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // getbalance function for getting a balance in
@@ -157,22 +174,24 @@ const HomePageModule = (props) => {
       })
       .then((balance) => {
         // Setting balance
-        setdata({
-          address: address,
-          Balance: ethers.utils.formatEther(balance),
-        });
+        if (mounted) {
+          setdata({
+            address: address,
+            Balance: ethers.utils.formatEther(balance),
+          });
+        }
       });
   };
 
   return (
     <section className="">
-      <BasicModal 
-          show={showMessage} 
-          modalType={messageType} 
-          title={messageTitle} 
-          closeModal={handleCloseMessageBox}
+      <BasicModal
+        show={showMessage}
+        modalType={messageType}
+        title={messageTitle}
+        closeModal={handleCloseMessageBox}
       >
-          <p className="text-white">{messageContent}</p>
+        <p className="text-white">{messageContent}</p>
       </BasicModal>
       <div className="text-right">
         <div className="zl_securebackup_btn">
