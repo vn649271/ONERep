@@ -44,7 +44,7 @@ ul {
 }
 
 .zl_all_pages_content .zl_page_sidebar {
-  z-index: auto;
+  z-index: 1;
 }
 
 .zl_all_pages_content .zl_page_sidebar.zl_hide_sidebar ~ .zl_all_pages_inner_content {
@@ -2879,8 +2879,8 @@ margin-left: 0.8em;
   text-align: right !important;
 }
 
-.or-table-wrapper {
-  overflow: scroll;
+.or-table {
+  width: 100%;
 }
 
 .or-table tr th {

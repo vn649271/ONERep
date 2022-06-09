@@ -48,7 +48,7 @@ ul {
 	}
 
 	.zl_page_sidebar {
-		z-index: auto;
+		z-index: 1;
 		&.zl_hide_sidebar {
 			& ~ .zl_all_pages_inner_content {
 				padding: 26px 20px 20px 110px;
@@ -2867,10 +2867,11 @@ margin-left: 0.8em;
 }
 
 .or-table-wrapper {
-	overflow: scroll;
+	
 }
 
 .or-table {
+	width: 100%;
 	tr {
 		th {
 			vertical-align: bottom;
