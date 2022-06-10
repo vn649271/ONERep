@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/onerep-frontend/precache-manifest.cd1ab870ee44ad016cb04ab50e032643.js"
+  "/onerep-frontend/precache-manifest.63e0b43b6d8b8f38e9ab2cc5d8867230.js"
 );
 
 self.addEventListener('message', (event) => {
