@@ -2890,6 +2890,8 @@ margin-left: 0.8em;
 			display: flex;
 			color: #cad3f2;
 			.form-control {
+				margin-top: 5px;
+				height: 30px;
 				width: 3em;
 				text-align: center;
 			}
@@ -2901,14 +2903,16 @@ margin-left: 0.8em;
 			.paginator-control {
 				margin-left: 5px;
 				img {
-					width: 28px;
-					height: 28px;
+					width: 15px;
+					height: 15px;
 				}
 			}
 			.paginator-input {
 				margin-left: 5px;
 				.form-control {
-					width: 5em;
+					margin-top: 2px;
+					height: 30px;
+					width: 3em;
 					text-align: center;
 				}
 			}

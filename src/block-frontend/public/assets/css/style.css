@@ -2918,6 +2918,8 @@ margin-left: 0.8em;
 }
 
 .or-table-wrapper .or-table-footer .page-sizer .form-control {
+  margin-top: 5px;
+  height: 30px;
   width: 3em;
   text-align: center;
 }
@@ -2938,8 +2940,8 @@ margin-left: 0.8em;
 }
 
 .or-table-wrapper .or-table-footer .paginator .paginator-control img {
-  width: 28px;
-  height: 28px;
+  width: 15px;
+  height: 15px;
 }
 
 .or-table-wrapper .or-table-footer .paginator .paginator-input {
@@ -2947,7 +2949,9 @@ margin-left: 0.8em;
 }
 
 .or-table-wrapper .or-table-footer .paginator .paginator-input .form-control {
-  width: 5em;
+  margin-top: 2px;
+  height: 30px;
+  width: 3em;
   text-align: center;
 }
 
