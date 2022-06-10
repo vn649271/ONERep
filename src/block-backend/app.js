@@ -34,6 +34,6 @@ app.use(cors());
 const initRoutes = require("./src/routes");
 initRoutes(app);
 let port = process.env.PORT;
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Running at :${SERVER_URL}:${port}`);
 });
