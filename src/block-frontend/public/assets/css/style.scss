@@ -2711,6 +2711,19 @@ margin-left: 0.8em;
 	color: rgb(245, 249, 252);
 }
 
+.main-button {
+	border: 1px solid #828cae !important;
+	color: #f5f3f3 !important;
+	background: transparent !important;
+	padding: 4px 8px !important;
+	border-radius: 5px !important;
+	justify-content: space-between !important;
+	&:active {
+		background: #cad3f2 !important;
+		color: #222 !important;
+	}
+}
+
 .bordered-label {
 	border: 1px solid #828cae;
 	margin: 5px;
@@ -2731,8 +2744,9 @@ margin-left: 0.8em;
 	border-radius: 5px;
 	cursor: pointer;
 
-	&:hover {
-		opacity: 0.6;
+	&:active {
+		background: #ddd;
+		color: #333;
 	}
 }
 
@@ -2868,6 +2882,38 @@ margin-left: 0.8em;
 
 .or-table-wrapper {
 	overflow-x: auto;
+	.or-table-footer {
+		margin-top: 1.5em;
+		display: flex;
+		justify-content: space-between;
+		.page-sizer {
+			display: flex;
+			color: #cad3f2;
+			.form-control {
+				width: 3em;
+				text-align: center;
+			}
+		}
+		.paginator {
+			color: #cad3f2;
+			display: flex;
+			flex-direction: row-reverse;
+			.paginator-control {
+				margin-left: 5px;
+				img {
+					width: 28px;
+					height: 28px;
+				}
+			}
+			.paginator-input {
+				margin-left: 5px;
+				.form-control {
+					width: 5em;
+					text-align: center;
+				}
+			}
+		}
+	}
 }
 
 .or-table {

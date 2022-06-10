@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useDispatch } from "react-redux";
 import { USERS } from "../store/actionTypes";
-import Table from 'react-bootstrap/Table';
 import { FaPencilAlt, FaUserAlt, FaTrashAlt, FaRegSave } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -13,6 +12,7 @@ import { SERVER_URL } from '../conf';
 import SettingModule from './Settings';
 import OrConfirm from '../components/Modals/OrConfirm';
 import { orAlert } from "../service/utils";
+import OrTable from "../components/OrTable";
 
 const AdminModule = (props) => {
 
@@ -158,8 +158,8 @@ const AdminModule = (props) => {
                 }
             );
             if (
-                ret.status !== 200 || 
-                ret.data === undefined || 
+                ret.status !== 200 ||
+                ret.data === undefined ||
                 ret.data === null ||
                 ret.data.data === undefined ||
                 ret.data.data === null
@@ -170,10 +170,10 @@ const AdminModule = (props) => {
             curUser.userType = ret.data.data.userType;
             setBadgeAddress(
                 ret.data.data.daoRelation ?
-                ret.data.data.daoRelation.length ?
-                ret.data.data.daoRelation[0].badgeAddress:
-                null:
-                null
+                    ret.data.data.daoRelation.length ?
+                        ret.data.data.daoRelation[0].badgeAddress :
+                        null :
+                    null
             );
             // curUser.dao = ret.data.data.dao;
             // curUser.badge = ret.data.data.badge;
@@ -208,9 +208,9 @@ const AdminModule = (props) => {
 
     const getContributors = async () => {
         await axios.post(
-            SERVER_URL + '/users', 
-            { 
-                master: localStorage.getItem("wallet") 
+            SERVER_URL + '/users',
+            {
+                master: localStorage.getItem("wallet")
             }
         ).then(response => {
             let users = response.data ? response.data.data ? response.data.data : [] : [];
@@ -228,6 +228,14 @@ const AdminModule = (props) => {
         if (typeof window !== 'undefined') {
             localStorage.setItem("themColor", val ? 'zl_light_theme_active' : 'zl_page_dark_mode');
         }
+    }
+    const handleEditRow = row => {
+        // setSAdmin(row.userType === 0);
+        setEnable(row.status);
+        handleShow(row)
+    }
+    const handleDeleteRow = row => { 
+        handleDelete(row) 
     }
 
     return (
@@ -261,71 +269,13 @@ const AdminModule = (props) => {
             >
                 {confirmText}
             </OrConfirm>
-            <div className="or-table-wrapper">
-                <Table striped className="or-table table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>DAO</th>
-                            <th>ETH Wallet</th>
-                            <th>Are you admin?</th>
-                            <th className="text-right">Reputation Awarded</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>{
-                        users.length ?
-                            users.map((user, i) => (
-                                user.daos && user.daos.length ? user.daos.map((dao, j) => (
-                                    <tr key={i + "-" + j}>
-                                        <td><FaUserAlt /><span className="pl-2">{user.username}</span></td>
-                                        <td>{dao ? dao? dao.name: null: null}</td>
-                                        <td>{user.wallet}</td>
-                                        <td className="text-center">{user.userType === 0 ? 'Admin' : '-'}</td>
-                                        <td className="text-right">{dao.received}</td>
-                                        <td className="text-center">{!user.status ? 'Inactive' : 'Active'}</td>
-                                        <td className="text-center">
-                                            <div className="cursor-pointer flow-layout">
-                                                <FaPencilAlt onClick={() => {
-                                                    // setSAdmin(user.userType === 0);
-                                                    setEnable(user.status);
-                                                    handleShow(user)
-                                                }
-                                                } />
-                                            </div>
-                                            <div className="cursor-pointer flow-layout ml-20">
-                                                <FaTrashAlt onClick={() => { handleDelete(user) }} className="text-danger" />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )):
-                                <tr key={i}>
-                                    <td><FaUserAlt /><span className="pl-2">{user.username}</span></td>
-                                    <td></td>
-                                    <td>{user.wallet}</td>
-                                    <td className="text-center">{user.userType === 0 ? 'Admin' : '-'}</td>
-                                    <td className="text-right">{user.received}</td>
-                                    <td className="text-center">{!user.status ? 'Inactive' : 'Active'}</td>
-                                    <td className="text-center">
-                                        <div className="cursor-pointer flow-layout">
-                                            <FaPencilAlt onClick={() => {
-                                                // setSAdmin(user.userType === 0);
-                                                setEnable(user.status);
-                                                handleShow(user)
-                                            }
-                                            } />
-                                        </div>
-                                        <div className="cursor-pointer flow-layout ml-20">
-                                            <FaTrashAlt onClick={() => { handleDelete(user) }} className="text-danger" />
-                                        </div>
-                                    </td>
-                                </tr>
-                            )):
-                            <tr><td colSpan="7" className="text-center main-text-color-second"><i>No Data</i></td></tr>
-                    }</tbody>
-                </Table>
-            </div>
+            <OrTable
+                methods={{
+                    onEditRow: handleEditRow,
+                    onDeleteRow: handleDeleteRow
+                }}
+                rows={users}
+            />
             <Modal centered show={showSettings} onHide={handleCloseSettings}>
                 <Modal.Body>
                     <SettingModule themHandler={themHandler} />
@@ -390,7 +340,7 @@ const AdminModule = (props) => {
                     </div>
                 </Modal.Body>
             </Modal>
-        </section>
+        </section >
     );
 }
 
