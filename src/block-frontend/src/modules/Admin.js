@@ -270,6 +270,17 @@ const AdminModule = (props) => {
                 {confirmText}
             </OrConfirm>
             <OrTable
+                config={{
+                    innerField: 'daos',
+                }}
+                columns={[
+                    {label: "Name", name: "name"},
+                    {label: "DAO", name: "dao"},
+                    {label: "ETH Wallet", name: "wallet"},
+                    {label: "Are you admin?", name: "isAdmin"},
+                    {label: "Reputation Awarded", name: "awarded", className: "text-right"},
+                    {label: "Status", name: "status"},
+                ]}
                 methods={{
                     onEditRow: handleEditRow,
                     onDeleteRow: handleDeleteRow

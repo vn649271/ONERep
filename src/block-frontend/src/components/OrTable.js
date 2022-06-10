@@ -3,9 +3,10 @@ import Table from 'react-bootstrap/Table';
 import { FaPencilAlt, FaUserAlt, FaTrashAlt, FaRegSave } from "react-icons/fa";
 
 const OrTable = props => {
-    
-    const {columns, rows, methods} = props;
 
+    const { config, columns, rows, methods } = props;
+
+    const [headers, setHeaders] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [startRowIndex, setStartRowIndex] = useState(0);
@@ -14,6 +15,20 @@ const OrTable = props => {
     useEffect(() => {
         setTotalRows(getTotalRows(rows));
     }, [rows]);
+
+    useEffect(() => {
+        let _headers = [];
+        if (columns && columns.length) {
+            for (let c in columns) {
+                _headers.push(
+                    <th key={columns[c].name} className={`${columns[c].className ? columns[c].className : ""}`}>
+                        {columns[c].label}
+                    </th>
+                );
+            }
+        }
+        setHeaders(_headers);
+    }, [columns]);
 
     useEffect(() => {
         buildTable();
@@ -59,8 +74,8 @@ const OrTable = props => {
         if (_rows.length) {
             for (let i in _rows) {
                 let row = _rows[i];
-                if (row.daos && row.daos.length) {
-                    for (let j in row.daos) {
+                if (config.innerField && row[config.innerField] && row[config.innerField].length) {
+                    for (let j in row[config.innerField]) {
                         trCount++;
                     }
                 } else {
@@ -76,8 +91,8 @@ const OrTable = props => {
         if (rows.length) {
             for (let i in rows) {
                 let row = rows[i];
-                if (row.daos && row.daos.length) {
-                    for (let j in row.daos) {
+                if (config.innerField && row[config.innerField] && row[config.innerField].length) {
+                    for (let j in row[config.innerField]) {
                         if (trCount < startRowIndex) {
                             trCount++;
                             continue;
@@ -85,7 +100,7 @@ const OrTable = props => {
                         if (trCount - startRowIndex >= pageSize) {
                             break;
                         }
-                        let dao = row.daos[j];
+                        let dao = row[config.innerField][j];
                         trArray.push(
                             <tr key={i + "-" + j}>
                                 <td><FaUserAlt /><span className="pl-2">{row.username}</span></td>
@@ -146,15 +161,7 @@ const OrTable = props => {
             <div className="or-table-content">
                 <Table striped className="or-table table">
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>DAO</th>
-                            <th>ETH Wallet</th>
-                            <th>Are you admin?</th>
-                            <th className="text-right">Reputation Awarded</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
+                        <tr>{headers}</tr>
                     </thead>
                     <tbody>{
                         buildTable()
