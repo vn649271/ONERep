@@ -20,7 +20,7 @@ const boardDataTableHeaderInfo = [
   { label: "DAO", name: "dao" },
   { label: "BADGE", name: "badge" },
   { label: "Name", name: "name" },
-  { label: "Wallet", name: "wallet" },
+  { label: "Wallet", name: "wallet", className: "text-center" },
   { label: "ONEREP TOKENS", name: "sum", className: "text-right" },
 ];
 const refineTableData = rawTableData => {

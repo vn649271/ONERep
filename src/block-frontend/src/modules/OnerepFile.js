@@ -28,10 +28,10 @@ const { SERVER_URL } = require("../conf");
 const fileTableHeaderInfo = [
   { label: "DAO", name: "dao" },
   { label: "File Name", name: "fileName" },
-  { label: "IPFS URI", name: "ipfsUrl" },
+  { label: "IPFS URI", name: "ipfsUrl", className: "text-center" },
   { label: "Reputation", name: "reputation", className: "text-right" },
-  { label: "Status", name: "status" },
-  { label: "Date", name: "created_at" },
+  { label: "Status", name: "status", className: "text-center" },
+  { label: "Date", name: "created_at", className: "text-center" },
 ];
 const refineTableData = rawTableData => {
   let _boardDataList = [];
