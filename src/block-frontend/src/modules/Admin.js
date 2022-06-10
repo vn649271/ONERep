@@ -14,7 +14,68 @@ import OrConfirm from '../components/Modals/OrConfirm';
 import { orAlert } from "../service/utils";
 import OrTable from "../components/OrTable";
 
-const AdminModule = (props) => {
+/*
+ *************************************** 
+ * Data definition for user table 
+ *************************************** 
+ */
+const userTableHeaderInfo = [
+    { label: "Name", name: "username" },
+    { label: "DAO", name: "daoName" },
+    { label: "ETH Wallet", name: "wallet" },
+    { label: "Is Admin?", name: "userType" },
+    {
+        label: <div className="text-right">
+                    <div>Reputation</div>
+                    <div>Awarded</div>
+                </div>,
+        name: "received", className: "text-right"
+    },
+    { label: "Status", name: "status" },
+];
+const refineTableData = rawTableData => {
+    let userList = expandUserList(rawTableData);
+    let _userList = [];
+    for (let i in userList) {
+        let _user = userList[i];
+        _userList.push({
+            "username": { content: <><FaUserAlt /><span className="pl-2">{_user.username}</span></> },
+            "daoName": { content: _user.daoName },
+            "wallet": { content: _user.wallet },
+            "userType": { className: "text-center", content: _user.userType === 0 ? 'Admin' : '-' },
+            "received": { className: "text-right", content: _user.received },
+            "status": { className: "text-center", content: !_user.status ? 'Inactive' : 'Active' }
+        });
+    }
+    return _userList;
+}
+const expandUserList = userListNested => {
+    let userList = [];
+    if (userListNested && userListNested.length) {
+        for (let i in userListNested) {
+            let userInfo = userListNested[i];
+            if (userInfo && userInfo.daos && userInfo.daos.length) {
+                for (let j in userInfo.daos) {
+                    userInfo['daoName'] = userInfo.daos[j].name;
+                    userInfo['received'] = userInfo.daos[j].received;
+                    userList.push(userInfo);
+                }
+            } else {
+                userInfo['daoName'] = "";
+                userInfo['received'] = "";
+                userList.push(userInfo);
+            }
+        }
+    }
+    return userList;
+}
+
+/*
+ *************************************** 
+ ********** Admin page  ****************
+ *************************************** 
+ */
+ const AdminModule = (props) => {
 
     const defaultUser = {
         _id: '',
@@ -129,7 +190,7 @@ const AdminModule = (props) => {
                     window.location.href = "/";
                     return;
                 }
-                setUsers(retData);
+                setUsers(refineTableData(retData));
                 orAlert("Successfully deleted the user");
                 return;
             }
@@ -193,7 +254,7 @@ const AdminModule = (props) => {
             );
             console.log("response", ret);
             if (ret.data.success) {
-                setUsers(ret.data.users);
+                setUsers(refineTableData(ret.data.users));
             } else {
                 alert(ret.data.error);
             }
@@ -216,7 +277,7 @@ const AdminModule = (props) => {
             let users = response.data ? response.data.data ? response.data.data : [] : [];
             let success = response.data ? response.data.success ? response.data.success : false : false;
             if (success) {
-                setUsers(users);
+                setUsers(refineTableData(users));
             }
         });
     }
@@ -234,8 +295,8 @@ const AdminModule = (props) => {
         setEnable(row.status);
         handleShow(row)
     }
-    const handleDeleteRow = row => { 
-        handleDelete(row) 
+    const handleDeleteRow = row => {
+        handleDelete(row)
     }
 
     return (
@@ -270,17 +331,10 @@ const AdminModule = (props) => {
                 {confirmText}
             </OrConfirm>
             <OrTable
-                config={{
-                    innerField: 'daos',
-                }}
-                columns={[
-                    {label: "Name", name: "name"},
-                    {label: "DAO", name: "dao"},
-                    {label: "ETH Wallet", name: "wallet"},
-                    {label: "Are you admin?", name: "isAdmin"},
-                    {label: "Reputation Awarded", name: "awarded", className: "text-right"},
-                    {label: "Status", name: "status"},
-                ]}
+                name="user-table"
+                columns={userTableHeaderInfo}
+                editable={true}
+                removable={true}
                 methods={{
                     onEditRow: handleEditRow,
                     onDeleteRow: handleDeleteRow

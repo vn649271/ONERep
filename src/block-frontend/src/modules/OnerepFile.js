@@ -17,9 +17,49 @@ import { ethers } from "ethers";
 import { getMintBatchApprovalSignature, orAlert } from "../service/utils";
 import BasicModal from "../components/Modals/BasicModal";
 import OrSpinner from "../components/OrSpinner";
+import OrTable from "../components/OrTable";
 const { SERVER_URL } = require("../conf");
 
+/*
+ ******************************************
+ * Data definition for ONERep Board Table 
+ ****************************************** 
+ */
+const fileTableHeaderInfo = [
+  { label: "DAO", name: "dao" },
+  { label: "File Name", name: "fileName" },
+  { label: "IPFS URI", name: "ipfsUrl" },
+  { label: "Reputation", name: "reputation", className: "text-right" },
+  { label: "Status", name: "status" },
+  { label: "Date", name: "created_at" },
+];
+const refineTableData = rawTableData => {
+  let _boardDataList = [];
+  for (let i in rawTableData) {
+    let r = rawTableData[i];
+    _boardDataList.push({
+      "dao": { content: r.dao },
+      "fileName": { content: r.filename },
+      "ipfsUrl": { content: <a href={`${SERVER_URL}/uploads/${r.ipfsuri}`}>{r.ipfsuri}</a> },
+      "reputation": { className: "text-right", content: r.reputation },
+      "status": { className: "text-center", content: r.status ? "Completed" : "Failed" },
+      "created_at": {
+        className: "text-center",
+        content: new Date(r.created_at).toLocaleDateString() +
+          " " +
+          new Date(r.created_at).toLocaleTimeString()
+      },
+    });
+  }
+  return _boardDataList;
+}
 
+
+/*
+ ***************************************
+ ********* ONERep File page  **********
+ *************************************** 
+ */
 const OneRepFileModule = (props) => {
   // const { _wallet, _userName, _isAdmin, _badgeTokenAddress } = props;
 
@@ -94,11 +134,11 @@ const OneRepFileModule = (props) => {
         setIsAdmin(userInfo.userType === 0);
         setIsFileImportable(userInfo.userType === 1);
         setInitedIsAdmin(true);
-        let badgeTokenAddress = userInfo.daoRelation ? 
-                                  userInfo.daoRelation.length ? 
-                                    userInfo.daoRelation[0].badgeAddress :
-                                  null :
-                                null;
+        let badgeTokenAddress = userInfo.daoRelation ?
+          userInfo.daoRelation.length ?
+            userInfo.daoRelation[0].badgeAddress :
+            null :
+          null;
         setBadgeTokenAddress(badgeTokenAddress);
         setChainId(localStorage.getItem('chainId'));
         dispatch({
@@ -133,9 +173,9 @@ const OneRepFileModule = (props) => {
           }
         });
       })
-      .catch(error => {
-        orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
-      });
+        .catch(error => {
+          orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
+        });
     }
   });
   // useEffect(() => {
@@ -304,10 +344,10 @@ const OneRepFileModule = (props) => {
   const loadOneRepFiles = (badgeAddressForSelectedDao = null) => {
     setLoading(true);
     axios.post(
-      SERVER_URL + "/files", 
-      { 
-        master: localStorage.getItem("wallet"), 
-        badgeAddress: badgeAddressForSelectedDao 
+      SERVER_URL + "/files",
+      {
+        master: localStorage.getItem("wallet"),
+        badgeAddress: badgeAddressForSelectedDao
       }
     ).then((response) => {
       setLoading(false);
@@ -315,7 +355,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to load ONERep files: " + response.data.data);
         return;
       }
-      setRepFiles(response.data.data);
+      setRepFiles(refineTableData(response.data.data));
     });
   };
   const onSubmitHandler = (e) => {
@@ -400,11 +440,11 @@ const OneRepFileModule = (props) => {
       if (selectedDaoName) {
         let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
         if (resp.data.success) {
-          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0] : null : null;
           if (selectedDao) {
             setSelectedDao(selectedDao);
             setSelectedDaoTokenTotalSupply(selectedDao.sent);
-            loadOneRepFiles(selectedDao.badgeAddress);          
+            loadOneRepFiles(selectedDao.badgeAddress);
           }
         } else {
           orAlert("Failed to get DAO list: " + resp.data.data);
@@ -501,46 +541,13 @@ const OneRepFileModule = (props) => {
         }
       </div>
       <br />
-      <div className="or-table-wrapper">
-        <Table striped className="or-table table">
-          <thead>
-            <tr>
-              <th>DAO</th>
-              <th>File Name</th>
-              <th>IPFS URI</th>
-              <th className="text-right">Reputation</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-          {
-            loading?
-            <tr>
-              <td colSpan="6" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
-            </tr>:
-            <>
-            {
-              repfiles.length > 0 ? repfiles.map((row, i) => (
-                <tr key={i}>
-                  <td>{row.dao}</td>
-                  <td>{row.filename}</td>
-                  <td><a href={`${SERVER_URL}/uploads/${row.ipfsuri}`}>{row.ipfsuri}</a></td>
-                  <td className="text-right">{row.reputation}</td>
-                  <td>{row.status ? "Completed" : "Failed"}</td>
-                  <td>{
-                    new Date(row.created_at).toLocaleDateString() +
-                    " " +
-                    new Date(row.created_at).toLocaleTimeString()
-                  }</td>
-                </tr>
-              )) : <tr><td colSpan="6" className="text-center main-text-color-second"><i>No Data</i></td></tr>
-            }
-            </>
-          }
-          </tbody>
-        </Table>
-      </div>
+      <OrTable
+        name="file-table"
+        columns={fileTableHeaderInfo}
+        editable={false}
+        removable={false}
+        rows={repfiles}
+      />
       {/******************* "Minted Successfully" Dialog *********************/}
       <BasicModal show={showMessageBox} title={messageBoxTitle} modalType={messageBoxType} closeModal={handleCloseMessageBox}>
         <p className="main-text-color text-center">

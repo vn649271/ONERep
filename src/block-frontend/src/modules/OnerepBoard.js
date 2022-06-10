@@ -8,9 +8,42 @@ import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
 import OrSpinner from "../components/OrSpinner";
+import OrTable from "../components/OrTable";
 const { SERVER_URL } = require("../conf");
 
-const OneRepBoardModule = (props) => {
+/*
+ ******************************************
+ * Data definition for ONERep Board Table 
+ ****************************************** 
+ */
+const boardDataTableHeaderInfo = [
+  { label: "DAO", name: "dao" },
+  { label: "BADGE", name: "badge" },
+  { label: "Name", name: "name" },
+  { label: "Wallet", name: "wallet" },
+  { label: "ONEREP TOKENS", name: "sum", className: "text-right" },
+];
+const refineTableData = rawTableData => {
+  let _boardDataList = [];
+  for (let i in rawTableData) {
+      let r = rawTableData[i];
+      _boardDataList.push({
+          "dao": { content: r.dao },
+          "badge": { content: r.badge },
+          "name": { content: r.name },
+          "wallet": { className: "text-center", content: r._id },
+          "sum": { className: "text-right", content: r.sum },
+      });
+  }
+  return _boardDataList;
+}
+
+/*
+ ***************************************
+ ********* ONERep Board page  **********
+ *************************************** 
+ */
+ const OneRepBoardModule = (props) => {
   const [show, setShow] = useState(false);
   const [boardData, setBoardData] = useState([]);
   const [sort_name, setSortName] = useState(1);
@@ -47,11 +80,11 @@ const OneRepBoardModule = (props) => {
         setInited(true);
         setIsAdmin(userInfo.userType === 0);
         localStorage.setItem("isAdmin", userInfo.userType === 0);
-        let badgeTokenAddress = userInfo.daoRelation ? 
-                                userInfo.daoRelation.length ?
-                                userInfo.daoRelation[0].badgeAddress:
-                                null:
-                                null;
+        let badgeTokenAddress = userInfo.daoRelation ?
+          userInfo.daoRelation.length ?
+            userInfo.daoRelation[0].badgeAddress :
+            null :
+          null;
         setBadgeTokenAddress(badgeTokenAddress);
         setUserName(userInfo.username);
         // setChainId(localStorage.getItem('chainId'));
@@ -79,7 +112,7 @@ const OneRepBoardModule = (props) => {
                   name: 'All'
                 },
                 ...daos
-              ];              
+              ];
             }
             setDaoList(daos);
             // if (daos.length && daos.length > 1) { // 
@@ -111,11 +144,11 @@ const OneRepBoardModule = (props) => {
 
   useEffect(() => {
     loadBoardData(
-      selectedDao? 
-        selectedDao.badgeAddress? 
-          selectedDao.badgeAddress: 
-        null: 
-      null
+      selectedDao ?
+        selectedDao.badgeAddress ?
+          selectedDao.badgeAddress :
+          null :
+        null
     );
   }, [sortOption]);
 
@@ -128,14 +161,13 @@ const OneRepBoardModule = (props) => {
         badgeAddress: badgeAddress
       });
       setLoading(false);
-      if (ret === null || ret.data === undefined || ret.data.success === undefined || !ret.data.success) 
-      {
+      if (ret === null || ret.data === undefined || ret.data.success === undefined || !ret.data.success) {
         orAlert("Failed to get all board data for super admin");
         return;
       }
-      setBoardData(ret.data.data);
+      setBoardData(refineTableData(ret.data.data));
     } catch (error) {
-      orAlert("Failed to loadBoardData(): ", error.message);
+      orAlert("Failed to loadBoardData(): " + error.message);
     }
   };
   // const getSelOpList = () => {
@@ -156,16 +188,16 @@ const OneRepBoardModule = (props) => {
       if (selectedDaoName) {
         let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
         if (resp.data.success) {
-          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0]: null : null;
+          let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0] : null : null;
           if (selectedDao) {
             setSelectedDao(selectedDao);
             setSelectedDaoTokenTotalSupply(selectedDao.sent);
             loadBoardData(
-              selectedDao? 
-                selectedDao.badgeAddress? 
-                  selectedDao.badgeAddress: 
-                null: 
-              null
+              selectedDao ?
+                selectedDao.badgeAddress ?
+                  selectedDao.badgeAddress :
+                  null :
+                null
             );
           }
         } else {
@@ -231,81 +263,13 @@ const OneRepBoardModule = (props) => {
         }
       </div>
       <br />
-      <div className="or-table-wrapper">
-        <Table striped className="or-table">
-          <thead>
-            <tr>
-              <th>DAO</th>
-              <th 
-                className="or-table-sortable-column"
-                onClick={() => {
-                  setSortBadge(-sort_badge);
-                  setSortOption({ badge: -sort_badge });
-                }}
-              >Badge</th>
-              <th
-                className="or-table-sortable-column"
-                onClick={() => {
-                  setSortName(-sort_name);
-                  setSortOption({ name: -sort_name });
-                }}
-              >
-                Name
-              </th>
-              <th
-                className="or-table-sortable-column"
-                onClick={() => {
-                  setSortId(-sort_id);
-                  setSortOption({ _id: -sort_id });
-                }}
-              >
-                Wallet
-              </th>
-              <th
-                className="or-table-sortable-column text-right"
-                onClick={() => {
-                  setSortSum(-sort_sum);
-                  setSortOption({ sum: -sort_sum });
-                  loadBoardData(
-                    selectedDao? 
-                      selectedDao.badgeAddress? 
-                        selectedDao.badgeAddress: 
-                      null: 
-                    null
-                  );
-                }}
-              >
-                ONERep Tokens
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              loading ?
-                <tr>
-                  <td colSpan="5" className="text-center main-text-color-second p-2"><OrSpinner size="medium" /></td>
-                </tr> :
-                <>
-                  {
-                    boardData && boardData.length > 0 ? boardData.map((row, i) => {
-                      return (
-                        <tr key={i}>
-                          <td>{row.dao}</td>
-                          <td>{row.badge}</td>
-                          <td>{row.name}</td>
-                          <td>{row._id}</td>
-                          <td className="text-right">
-                            {row.sum}
-                          </td>
-                        </tr>
-                      );
-                    }) : <tr><td colSpan="5" className="text-center main-text-color-second"><i>No Data</i></td></tr>
-                  }
-                </>
-            }
-          </tbody>
-        </Table>
-      </div>
+      <OrTable
+        name="board-data-table"
+        columns={boardDataTableHeaderInfo}
+        editable={false}
+        removable={false}
+        rows={boardData}
+      />
     </section>
   );
 };

@@ -4,16 +4,26 @@ import { FaPencilAlt, FaUserAlt, FaTrashAlt, FaRegSave } from "react-icons/fa";
 
 const OrTable = props => {
 
-    const { config, columns, rows, methods } = props;
+    const {
+        name,
+        config,
+        editable = false,
+        removable = false,
+        columns,
+        rows,
+        methods
+    } = props;
 
     const [headers, setHeaders] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [startRowIndex, setStartRowIndex] = useState(0);
     const [totalRows, setTotalRows] = useState(0);
+    const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
-        setTotalRows(getTotalRows(rows));
+        buildTable();
+        setTotalRows(rows.length ? rows.length : 0);
     }, [rows]);
 
     useEffect(() => {
@@ -25,6 +35,9 @@ const OrTable = props => {
                         {columns[c].label}
                     </th>
                 );
+            }
+            if (editable || removable) {
+                _headers.push(<th key="actions">Actions</th>);
             }
         }
         setHeaders(_headers);
@@ -69,86 +82,56 @@ const OrTable = props => {
         }
         setPageSize(_pageSize);
     }
-    const getTotalRows = _rows => {
-        let trCount = 0;
-        if (_rows.length) {
-            for (let i in _rows) {
-                let row = _rows[i];
-                if (config.innerField && row[config.innerField] && row[config.innerField].length) {
-                    for (let j in row[config.innerField]) {
-                        trCount++;
-                    }
-                } else {
-                    trCount++;
-                }
-            }
-        }
-        return trCount;
-    }
     const buildTable = () => {
         let trArray = [];
         let trCount = 0;
         if (rows.length) {
             for (let i in rows) {
                 let row = rows[i];
-                if (config.innerField && row[config.innerField] && row[config.innerField].length) {
-                    for (let j in row[config.innerField]) {
-                        if (trCount < startRowIndex) {
-                            trCount++;
-                            continue;
-                        }
-                        if (trCount - startRowIndex >= pageSize) {
-                            break;
-                        }
-                        let dao = row[config.innerField][j];
-                        trArray.push(
-                            <tr key={i + "-" + j}>
-                                <td><FaUserAlt /><span className="pl-2">{row.username}</span></td>
-                                <td>{dao ? dao ? dao.name : null : null}</td>
-                                <td>{row.wallet}</td>
-                                <td className="text-center">{row.userType === 0 ? 'Admin' : '-'}</td>
-                                <td className="text-right">{dao.received}</td>
-                                <td className="text-center">{!row.status ? 'Inactive' : 'Active'}</td>
-                                <td className="text-center">
-                                    <div className="cursor-pointer flow-layout">
-                                        <FaPencilAlt onClick={() => methods.onEditRow(row)} />
-                                    </div>
-                                    <div className="cursor-pointer flow-layout ml-20">
-                                        <FaTrashAlt onClick={() => methods.onDeleteRow(row)} className="text-danger" />
-                                    </div>
-                                </td>
-                            </tr>
-                        );
-                        trCount++;
-                    }
-                } else {
-                    if (trCount < startRowIndex) {
-                        trCount++;
-                        continue;
-                    }
-                    if (trCount - startRowIndex >= pageSize) {
-                        break;
-                    }
-                    trArray.push(
-                        <tr key={i}>
-                            <td><FaUserAlt /><span className="pl-2">{row.username}</span></td>
-                            <td></td>
-                            <td>{row.wallet}</td>
-                            <td className="text-center">{row.userType === 0 ? 'Admin' : '-'}</td>
-                            <td className="text-right">{row.received}</td>
-                            <td className="text-center">{!row.status ? 'Inactive' : 'Active'}</td>
-                            <td className="text-center">
-                                <div className="cursor-pointer flow-layout">
-                                    <FaPencilAlt onClick={() => methods.onEditRow(row)} />
-                                </div>
-                                <div className="cursor-pointer flow-layout ml-20">
-                                    <FaTrashAlt onClick={() => methods.onDeleteRow(row)} className="text-danger" />
-                                </div>
-                            </td>
-                        </tr>
-                    );
+                if (trCount < startRowIndex) {
                     trCount++;
+                    continue;
                 }
+                if (trCount - startRowIndex >= pageSize) {
+                    break;
+                }
+                let fields = [];
+                for (let j in columns) {
+                    fields.push(
+                        <td
+                            key={name + "-" + i + "-" + j}
+                            className={
+                                `${row[columns[j].name].className ?
+                                    row[columns[j].name].className :
+                                    ""
+                                }`
+                            }
+                        >{row[columns[j].name].content}
+                        </td>
+                    );
+                }
+                if (editable || removable) {
+                    fields.push(
+                        <td
+                            key="row-actions-col"
+                            className="text-center"
+                        >
+                            {
+                                editable ? <div className="cursor-pointer flow-layout">
+                                    <FaPencilAlt onClick={() => methods.onEditRow(row)} />
+                                </div> : <></>}
+                            {
+                                removable ? <div className="cursor-pointer flow-layout ml-20">
+                                    <FaTrashAlt onClick={() => methods.onDeleteRow(row)} className="text-danger" />
+                                </div> : <></>
+                            }
+                        </td>
+                    );
+                }
+                trArray.push(
+                    <tr key={name + "-row-" + i}>{fields}</tr>
+                );
+                trCount++;
             }
         } else {
             trArray.push(<tr key="no-data"><td colSpan="7" className="text-center main-text-color-second"><i>No Data</i></td></tr>);
