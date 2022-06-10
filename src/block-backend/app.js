@@ -1,3 +1,5 @@
+const https = require('https');
+const fs = require("fs");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -34,6 +36,11 @@ app.use(cors());
 const initRoutes = require("./src/routes");
 initRoutes(app);
 let port = process.env.PORT;
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Running at :${SERVER_URL}:${port}`);
-});
+
+var privateKey = fs.readFileSync( 'key.pem' );
+var certificate = fs.readFileSync( 'cert.pem' );
+
+https.createServer({
+  key: privateKey,
+  cert: certificate
+}, app).listen(port);
