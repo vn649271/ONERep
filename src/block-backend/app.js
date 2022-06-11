@@ -3,13 +3,13 @@ const fs = require("fs");
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const auth=require('./src/config/passport')();
+const auth = require('./src/config/passport')();
 const passport = require("passport");
 const bodyParser = require('body-parser');
 const User = require("./src/models/user");
 const localStrategy = require("passport-local");
 const mongoose = require('./src/db/connection');
-const {SERVER_URL} = require('./src/config/conf');
+const { SERVER_URL } = require('./src/config/conf');
 const http = require('http');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -37,10 +37,16 @@ const initRoutes = require("./src/routes");
 initRoutes(app);
 let port = process.env.PORT;
 
-var privateKey = fs.readFileSync( 'key.pem' );
-var certificate = fs.readFileSync( 'cert.pem' );
+var privateKey = fs.readFileSync('key.pem');
+var certificate = fs.readFileSync('cert.pem');
 
 https.createServer({
   key: privateKey,
   cert: certificate
-}, app).listen(port, '0.0.0.0');
+}, app).listen(port, '0.0.0.0', err => {
+  if (err) {
+    console.log("Failed to start server", err);
+  } else {
+    console.log("Server started at port", port, "successfully")
+  }
+});
