@@ -44,7 +44,7 @@ var corsOptions = {
   }
 }
 
-server.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 const initRoutes = require("./src/routes");
 initRoutes(app);
