@@ -1,4 +1,4 @@
 const is_test  = false;
 module.exports = {
-	SERVER_URL: is_test ? "http://localhost:3001" : "https://172.26.9.21:30303",
+	SERVER_URL: is_test ? "http://localhost:3001" : "https://116.202.24.219:30303",
 };
