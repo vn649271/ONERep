@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 const https = require('https');
 const fs = require("fs");
 const cors = require("cors");
@@ -8,6 +9,10 @@ const passport = require("passport");
 const bodyParser = require('body-parser');
 const User = require("./src/models/user");
 const localStrategy = require("passport-local");
+import { FRONEND_URL } from "./src/config/conf";
+
+dotenv.config();
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -23,6 +28,10 @@ app.use(express.static('public'));
 passport.use(new localStrategy(User.authenticate()));
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(cors({ 
+  credentials: true, origin: [FRONEND_URL] 
+}));
 
 global.__basedir = __dirname;
 var corsOptions = {
