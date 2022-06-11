@@ -117,7 +117,7 @@ const refineTableData = rawTableData => {
             setDaoList(daos);
             // if (daos.length && daos.length > 1) { // 
             if (userInfo.userType === 1) { // System User
-              handleDropDown(daos[0].name);
+              handleDropDown(daos[1].name);
             } else {
               handleDropDown('All');
             }
