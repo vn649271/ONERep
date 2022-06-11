@@ -50,13 +50,14 @@ const initRoutes = require("./src/routes");
 initRoutes(app);
 let port = process.env.PORT || 3001;
 console.log("ENV.PORT=", port);
-var privateKey = fs.readFileSync('key.pem');
-var certificate = fs.readFileSync('cert.pem');
+// var privateKey = fs.readFileSync('key.pem');
+// var certificate = fs.readFileSync('cert.pem');
 
-https.createServer({
-  key: privateKey,
-  cert: certificate
-}, app).listen(port, '0.0.0.0', err => {
+// https.createServer({
+//   key: privateKey,
+//   cert: certificate
+// }, app).listen(port, '0.0.0.0', err => {
+app.listen(port, err => {
   if (err) {
     console.log("Failed to start server", err);
   } else {
