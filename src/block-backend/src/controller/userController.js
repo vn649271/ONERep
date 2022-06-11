@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const fAction = require('../models/action');
-const { SERVER_URL } = require('../config/conf')
 const jwt = require("jwt-simple");
 const Dao = require('../models/dao');
 const UserDao = require('../models/userDao');

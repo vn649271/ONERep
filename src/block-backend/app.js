@@ -8,9 +8,6 @@ const passport = require("passport");
 const bodyParser = require('body-parser');
 const User = require("./src/models/user");
 const localStrategy = require("passport-local");
-const mongoose = require('./src/db/connection');
-const { SERVER_URL } = require('./src/config/conf');
-const http = require('http');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
