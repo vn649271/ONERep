@@ -158,17 +158,19 @@ const OneRepFileModule = (props) => {
         }).then((resp) => {
           if (resp.data.success) {
             let daos = resp.data.data;
-            daos = [
-              {
-                _id: '',
-                badgeAddress: null,
-                name: 'All'
-              },
-              ...daos
-            ];
+            if (userInfo.userType !== 1) {
+              daos = [
+                {
+                  _id: '',
+                  badgeAddress: null,
+                  name: 'All'
+                },
+                ...daos
+              ];              
+            }
             setDaoList(daos);
             if (userInfo.userType === 1) {
-              handleDropDown(daos[1].name, daos);
+              handleDropDown(daos[0].name, daos);
             } else {
               handleDropDown('All');
             }
