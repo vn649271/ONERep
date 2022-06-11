@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 const https = require('https');
 const fs = require("fs");
 const cors = require("cors");
@@ -9,7 +9,7 @@ const passport = require("passport");
 const bodyParser = require('body-parser');
 const User = require("./src/models/user");
 const localStrategy = require("passport-local");
-import { FRONEND_URL } from "./src/config/conf";
+const { FRONEND_URL } = require("./src/config/conf");
 
 dotenv.config();
 
