@@ -29,16 +29,23 @@ passport.use(new localStrategy(User.authenticate()));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors({ 
-  credentials: true, origin: [FRONEND_URL] 
-}));
 
 global.__basedir = __dirname;
+
+var whitelist = ['http://localhost:3000', "https://c5f7-116-202-24-219.ngrok.io", "https://onerep.uniblocks.net" ]
 var corsOptions = {
-  origin: "*"
-};
-// app.use(cors(corsOptions));
-app.use(cors());
+  credentials: true,
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+server.use(cors(corsOptions));
+
 const initRoutes = require("./src/routes");
 initRoutes(app);
 let port = process.env.PORT || 3001;
