@@ -117,11 +117,10 @@ const refineTableData = rawTableData => {
             setDaoList(daos);
             // if (daos.length && daos.length > 1) { // 
             if (userInfo.userType === 1) { // System User
-              handleDropDown(daos[0].name, daos);
+              handleDropDown(daos[0].name);
+            } else {
+              handleDropDown('All');
             }
-            // } else {
-            //   handleDropDown(daos[0].name, daos);
-            // }
           } else {
             alert("Failed to get DAO data");
           }
@@ -179,13 +178,13 @@ const refineTableData = rawTableData => {
   //     setSelectData(response.data);
   //   });
   // };
-  const handleDropDown = async (selectedDaoName, daos = null) => {
+  const handleDropDown = async (selectedDaoName = 'All') => {
     try {
       let getDaoDataReqParam = {
         master: localStorage.getItem("wallet"),
         dao: selectedDaoName === "All" ? null : selectedDaoName
       };
-      if (selectedDaoName) {
+      if (selectedDaoName !== 'All') {
         let resp = await axios.post(SERVER_URL + "/getDaoData", getDaoDataReqParam);
         if (resp.data.success) {
           let selectedDao = resp.data.data ? resp.data.data.length ? resp.data.data[0] : null : null;
