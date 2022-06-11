@@ -4,5 +4,5 @@ module.exports = {
 					"http://localhost:3001" :
 					( deploy_mode === 1 ? 
 						"https://2b16-116-202-24-219.ngrok.io":
-						"https://onerep.uniblocks.net:3001" )
+						"https://172.26.9.21:3001" )
 };
