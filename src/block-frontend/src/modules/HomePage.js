@@ -12,6 +12,9 @@ import axios from "axios";
 import { SERVER_URL } from "../conf";
 import Web3 from "web3";
 
+console.log("Server URL: ", SERVER_URL);
+
+
 const HomePageModule = (props) => {
 
   const [data, setdata] = useState({
