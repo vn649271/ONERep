@@ -8,8 +8,9 @@ const auth = require('./src/config/passport')();
 const passport = require("passport");
 const bodyParser = require('body-parser');
 const User = require("./src/models/user");
+const mongoose = require('./src/db/connection');
+const http = require('http');
 const localStrategy = require("passport-local");
-const { FRONEND_URL } = require("./src/config/conf");
 
 dotenv.config();
 

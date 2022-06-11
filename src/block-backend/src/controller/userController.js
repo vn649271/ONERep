@@ -160,6 +160,12 @@ exports.login = async (req, res) => {
                 });
             }
         }
+    }).catch(err => {
+        res.json({
+            success: false,
+            data: 'Failed to login: ' + err.message,
+            url: '/'
+        });
     });
 }
 
