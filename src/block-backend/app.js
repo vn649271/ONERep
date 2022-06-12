@@ -36,7 +36,7 @@ global.__basedir = __dirname;
 var whitelist = [
   'http://localhost', 
   'http://localhost:3000', 
-  "https://c5f7-116-202-24-219.ngrok.io", 
+  "https://b3ee-116-202-24-219.ngrok.io", 
   "https://onerep.uniblocks.net" 
 ]
 var corsOptions = {
