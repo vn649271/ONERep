@@ -39,7 +39,7 @@ const refineTableData = rawTableData => {
     for (let i in userList) {
         let _user = userList[i];
         _userList.push({
-            "username": { content: <><FaUserAlt /><span className="pl-2">{_user.username}</span></> },
+            "username": { content: <div text={_user.username}><FaUserAlt /><span className="pl-2">{_user.username}</span></div> },
             "daoName": { content: _user.daoName },
             "wallet": { content: _user.wallet },
             "userType": { className: "text-center", content: _user.userType === 0 ? 'Admin' : '-' },
@@ -174,8 +174,8 @@ const expandUserList = userListNested => {
     const handleCloseSettings = () => setShowSettings(false);
     const handleShow = (user) => {
         setCurUser(user);
-        setUserName(user.username);
-        setWallet(user.wallet);
+        setUserName(user.username.content.props.text);
+        setWallet(user.wallet.content);
         setShow(true);
     }
     const handleCloseMessageBox = () => {
