@@ -683,7 +683,7 @@ exports.getDaoData = async (req, res) => {
                                 };
                                 return res.status(200).send({ success: true, data: [dao] });
                             } else {
-                                return res.status(200).send({ success: false, data: "Failed to get USER-DAO relation" });
+                                return res.status(200).send({ success: true, data: [] });
                             }
                         });
                     } else {
