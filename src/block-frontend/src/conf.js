@@ -1,4 +1,4 @@
-const deploy_mode = 0; // 0: localhost, 1: publish on host, 2: publish on dedicated server
+const deploy_mode = 2; // 0: localhost, 1: publish on host, 2: publish on dedicated server
 module.exports = {
 	SERVER_URL: deploy_mode === 0 ? 
 					// "http://localhost:3001" :
