@@ -7,8 +7,8 @@ const app = express();
 const auth = require('./src/config/passport')();
 const passport = require("passport");
 const bodyParser = require('body-parser');
-const User = require("./src/models/user");
 const mongoose = require('./src/db/connection');
+const User = require("./src/models/user");
 const http = require('http');
 const localStrategy = require("passport-local");
 
@@ -37,15 +37,15 @@ var corsOptions = {
   origin: "*"
 }
 const whitelist = [
-  'http://localhost', 
-  'http://localhost:3000', 
-  "https://b3ee-116-202-24-219.ngrok.io", 
-  "https://onerep.uniblocks.net" 
+  'http://localhost',
+  'http://localhost:3000',
+  "https://b3ee-116-202-24-219.ngrok.io",
+  "https://onerep.uniblocks.net"
 ]
 if (!process.env.TEST_MODE) {
   corsOptions = {
     credentials: true,
-    origin: function(origin, callback) {
+    origin: function (origin, callback) {
       if (whitelist.indexOf(origin) !== -1) {
         callback(null, true)
       } else {
@@ -59,15 +59,17 @@ app.use(cors(corsOptions));
 
 const initRoutes = require("./src/routes");
 initRoutes(app);
+
 let port = process.env.PORT || 3001;
 console.log("ENV.PORT=", port);
+
 // var privateKey = fs.readFileSync('key.pem');
 // var certificate = fs.readFileSync('cert.pem');
 
 // https.createServer({
 //   key: privateKey,
 //   cert: certificate
-// }, app).listen(port, '0.0.0.0', err => {
+// }, app).listen(port, err => {
 app.listen(port, err => {
   if (err) {
     console.log("Failed to start server", err);

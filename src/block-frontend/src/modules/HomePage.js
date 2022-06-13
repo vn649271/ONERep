@@ -107,6 +107,8 @@ const HomePageModule = (props) => {
         orAlert(response.data.data);
         history.push(response.data.url);
       }
+    }).catch(error => {
+      console.log("Failed to login:", error);
     });
   };
 
