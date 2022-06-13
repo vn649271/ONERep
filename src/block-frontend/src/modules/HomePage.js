@@ -79,6 +79,9 @@ const HomePageModule = (props) => {
   // Function for login
   //commit
   const accountLogin = (account) => {
+    
+    console.log("accountLogin():", SERVER_URL);
+
     axios.post(
       SERVER_URL + "/users/login",
       {
