@@ -1,5 +1,5 @@
 const dotenv = require("dotenv");
-// const https = require('https');
+const https = require('https');
 const fs = require("fs");
 const cors = require("cors");
 const express = require("express");
@@ -37,10 +37,10 @@ var corsOptions = {
   origin: "*"
 }
 const whitelist = [
-  'http://localhost',
   'http://localhost:3000',
-  "https://b3ee-116-202-24-219.ngrok.io",
-  "http://onerep.uniblocks.net"
+  'https://localhost:3000',
+  "http://onerep.uniblocks.net",
+  "https://onerep.uniblocks.net"
 ]
 if (!process.env.TEST_MODE) {
   corsOptions = {
@@ -66,11 +66,11 @@ console.log("ENV.PORT=", port);
 var privateKey = fs.readFileSync('key.pem');
 var certificate = fs.readFileSync('cert.pem');
 
-// https.createServer({
-//   key: privateKey,
-//   cert: certificate
-// }, app).listen(port, err => {
-app.listen(port, err => {
+https.createServer({
+  key: privateKey,
+  cert: certificate
+}, app).listen(port, err => {
+// app.listen(port, err => {
   if (err) {
     console.log("Failed to start server", err);
   } else {

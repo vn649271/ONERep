@@ -31,6 +31,7 @@ export const deployBadgeContract = async (web3, tokenSymbol) => {
     orAlert("deployBadgeContract(): Failed to get the current value of gas price");
     return null;
   }
+  console.log("ONERepDeployedInfo: ", ONERepDeployedInfo);
   const result = await new web3.eth.Contract(ONERepDeployedInfo.abi)
     .deploy({ data: ONERepDeployedInfo.bytecode, arguments:[localStorage.getItem('wallet') , tokenSymbol, ''] })
     .send({ from: accounts[0], gasPrice: gasPrice });
