@@ -40,7 +40,7 @@ const whitelist = [
   'http://localhost',
   'http://localhost:3000',
   "https://b3ee-116-202-24-219.ngrok.io",
-  "https://onerep.uniblocks.net"
+  "http://onerep.uniblocks.net"
 ]
 if (!process.env.TEST_MODE) {
   corsOptions = {

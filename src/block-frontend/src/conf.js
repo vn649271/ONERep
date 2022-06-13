@@ -4,7 +4,7 @@ module.exports = {
 					"https://localhost:3001" :
 					( deploy_mode === 1 ? 
 						"https://4557-116-202-24-219.ngrok.io":
-						"https://52.221.179.43:3001" 
+						"http://52.221.179.43:3001" 
 						// "https://188b-2406-da18-680-dd00-7124-9eb0-aad3-d784.ngrok.io"
 					)
 };
