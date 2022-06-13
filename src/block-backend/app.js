@@ -33,19 +33,24 @@ app.use(passport.session());
 
 global.__basedir = __dirname;
 
-var whitelist = [
+var corsOptions = {
+  origin: "*"
+}
+const whitelist = [
   'http://localhost', 
   'http://localhost:3000', 
   "https://b3ee-116-202-24-219.ngrok.io", 
   "https://onerep.uniblocks.net" 
 ]
-var corsOptions = {
-  credentials: true,
-  origin: function(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
+if (!process.env.TEST_MODE) {
+  corsOptions = {
+    credentials: true,
+    origin: function(origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
     }
   }
 }
