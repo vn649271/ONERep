@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
     testnet: {
-      url: `https://api.s0.b.hmny.io`,
+      url: `https://api.s0.ps.hmny.io/`,
       accounts: [`${process.env.HARMONY_PRIVATE_KEY}`]
     },
     ropsten: {
