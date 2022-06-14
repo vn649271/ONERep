@@ -22,6 +22,7 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 const fs = require('fs');
 const mnemonic = fs.readFileSync(".secret").toString().trim();
+const privateKeyTest = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
@@ -42,8 +43,29 @@ module.exports = {
     // options below to some value.
     //
     testnet: {
-      provider: () => new HDWalletProvider(mnemonic, `https://api.s0.b.hmny.io`),
-      network_id: 1666700000,       // Any network (default: none)
+      provider: () => {
+        return new HDWalletProvider({
+          privateKeys: [privateKeyTest],
+          // mnemonic,
+          providerOrUrl: 'https://api.s0.b.hmny.io', // https://api.s0.t.hmny.io for mainnet
+          derivationPath: `m/44'/1023'/0'/0/`
+        });
+      },
+      network_id: 1666700000, // 1666600000 for mainnet
+    },
+    testnetHar: {
+      provider: () => {
+        if (!privateKeyTest.trim()) {
+          throw new Error(
+            'Please enter a private key with funds, you can use the default one'
+          );
+        }
+        return new HDWalletProvider({
+          privateKeys: [privateKeyTest],
+          providerOrUrl: 'https://api.s0.b.hmny.io',
+        });
+      },
+      network_id: 1666700000,
     },
     // development: {
     //  host: "127.0.0.1",     // Localhost (default: none)
@@ -108,13 +130,13 @@ module.exports = {
   // $ truffle migrate --reset --compile-all
   //
   // db: {
-    // enabled: false,
-    // host: "127.0.0.1",
-    // adapter: {
-    //   name: "sqlite",
-    //   settings: {
-    //     directory: ".db"
-    //   }
-    // }
+  // enabled: false,
+  // host: "127.0.0.1",
+  // adapter: {
+  //   name: "sqlite",
+  //   settings: {
+  //     directory: ".db"
+  //   }
+  // }
   // }
 };

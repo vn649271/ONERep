@@ -135,6 +135,10 @@ const expandUserList = userListNested => {
                 }
                 setBadgeAddress(badgeAddress);
                 let userInfo = ret.data.data;
+                if (userInfo === undefined || userInfo === null) {
+                    window.location.href = "/";
+                    return;
+                }
                 dispatch({
                     type: USERS.CONNECT_WALLET,
                     payload: {

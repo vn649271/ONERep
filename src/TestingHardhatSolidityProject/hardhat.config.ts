@@ -21,13 +21,13 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-const HARMONY_PRIVATE_KEY = "4ab11c8e5db02d4a179e52becbf00fb6110241771bac4e3819e14303ec197902"
+
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
     testnet: {
       url: `https://api.s0.b.hmny.io`,
-      accounts: [`0x${HARMONY_PRIVATE_KEY}`]
+      accounts: [`${process.env.HARMONY_PRIVATE_KEY}`]
     },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",

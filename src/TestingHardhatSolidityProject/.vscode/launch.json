@@ -5,7 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "npx hardhat run scripts/deploy.ts",
+            "command": "npx hardhat run scripts/deploy.ts  --network testnet",
+            // "command": "npx hardhat run scripts/deploy.ts",
             "name": "Run deploy",
             "request": "launch",
             "type": "node-terminal"
