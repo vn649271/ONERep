@@ -178,8 +178,18 @@ const expandUserList = userListNested => {
     const handleCloseSettings = () => setShowSettings(false);
     const handleShow = (user) => {
         setCurUser(user);
-        setUserName(user.username.content.props.text);
-        setWallet(user.wallet.content);
+        let currentUserName = user.username ? 
+                                user.username.content ? 
+                                    user.username.content.props ? 
+                                        user.username.content.props.text ? 
+                                            user.username.content.props.text:
+                                        "":
+                                    "":
+                                "":
+                            "";
+        setUserName(currentUserName);
+        let currentUserWallet = user.wallet ? user.wallet.content ? user.wallet.content : "" : "";
+        setWallet(currentUserWallet);
         setShow(true);
     }
     const handleCloseMessageBox = () => {

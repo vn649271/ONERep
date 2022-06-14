@@ -115,11 +115,57 @@ const HomePageModule = (props) => {
     });
   };
 
+  const attachHarmoneyChain = (account) => {
+    try {
+      window.ethereum
+        .request({
+          method: "wallet_addEthereumChain",
+          params: [
+            // {
+            //   chainName: "Harmony TestNet",
+            //   chainId: utils.hexValue(1666700000),
+            //   nativeCurrency: {
+            //     name: "ONE",
+            //     symbol: "ONE",
+            //     decimals: 18,
+            //   },
+            //   blockExplorerUrls: ["https://explorer.pops.one/"],
+            //   rpcUrls: ["https://api.s0.b.hmny.io"],
+            // },
+            {
+              chainName: "Harmony DevNet",
+              chainId: utils.hexValue(1666900000),
+              nativeCurrency: {
+                name: "ONE",
+                symbol: "ONE",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://explorer.ps.hmny.io/"],
+              rpcUrls: ["https://api.s0.ps.hmny.io"],
+            },
+          ],
+        })
+        .then((res) => {
+          setdata({
+            address: account,
+          });
+          getbalance(account);
+          accountLogin(account);
+          return;
+        });
+    } catch (addError) {
+      console.error(addError);
+    }
+  }
   // Function for getting handling all events
   const accountChangeHandler = async account => {
     try {
       let web3 = new Web3(window.ethereum);
       let chainId = await web3.eth.net.getId();
+      if (chainId < 1666600000 || chainId > 1666900001) {
+        // If not Harmony chain
+        attachHarmoneyChain(account);
+      }
       localStorage.setItem("chainId", chainId);
 
       window.ethereum
@@ -137,35 +183,7 @@ const HomePageModule = (props) => {
         })
         .catch((error) => {
           if (error.code === 4902) {
-            try {
-              window.ethereum
-                .request({
-                  method: "wallet_addEthereumChain",
-                  params: [
-                    {
-                      chainName: "Harmony TestNet",
-                      chainId: utils.hexValue(1666700000),
-                      nativeCurrency: {
-                        name: "ONE",
-                        symbol: "ONE",
-                        decimals: 18,
-                      },
-                      blockExplorerUrls: ["https://explorer.pops.one/"],
-                      rpcUrls: ["https://api.s0.b.hmny.io"],
-                    },
-                  ],
-                })
-                .then((res) => {
-                  setdata({
-                    address: account,
-                  });
-                  getbalance(account);
-                  accountLogin(account);
-                  return;
-                });
-            } catch (addError) {
-              console.error(addError);
-            }
+            attachHarmoneyChain(account);
           }
         });
     } catch (error) { }
