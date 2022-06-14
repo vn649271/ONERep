@@ -334,7 +334,7 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      loadOneRepFiles(selectedDao.badgeAddress ? selectedDao.badgeAddress : null);
+      loadOneRepFiles(selectedDao ? selectedDao.badgeAddress ? selectedDao.badgeAddress : null : null);
       inform("Success", "Successfully Minted", "success");
     } catch (error) {
       setShowWatingModalForMint(false);
