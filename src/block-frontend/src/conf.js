@@ -6,6 +6,7 @@ module.exports = {
 					( deploy_mode === 1 ? 
 						"https://4557-116-202-24-219.ngrok.io":
 						// "http://52.221.179.43:3001" 
-						"https://52.221.179.43:3001" 
+						//"https://52.221.179.43:3001" 
+						"https://onerep.uniblocks.net:3001"
 					)
 };
