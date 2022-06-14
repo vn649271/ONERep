@@ -121,17 +121,6 @@ const HomePageModule = (props) => {
         .request({
           method: "wallet_addEthereumChain",
           params: [
-            // {
-            //   chainName: "Harmony TestNet",
-            //   chainId: utils.hexValue(1666700000),
-            //   nativeCurrency: {
-            //     name: "ONE",
-            //     symbol: "ONE",
-            //     decimals: 18,
-            //   },
-            //   blockExplorerUrls: ["https://explorer.pops.one/"],
-            //   rpcUrls: ["https://api.s0.b.hmny.io"],
-            // },
             {
               chainName: "Harmony DevNet",
               chainId: utils.hexValue(1666900000),
@@ -162,7 +151,7 @@ const HomePageModule = (props) => {
     try {
       let web3 = new Web3(window.ethereum);
       let chainId = await web3.eth.net.getId();
-      if (chainId < 1666600000 || chainId > 1666900001) {
+      if (chainId !== 1666900000) {
         // If not Harmony chain
         attachHarmoneyChain(account);
       }
