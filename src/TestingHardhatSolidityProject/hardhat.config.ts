@@ -25,8 +25,12 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
+    devnet: {
+      url: 'https://api.s0.ps.hmny.io/',
+      accounts: [`${process.env.HARMONY_PRIVATE_KEY}`]
+    },
     testnet: {
-      url: `https://api.s0.ps.hmny.io/`,
+      url: `https://api.s0.b.hmny.io`,
       accounts: [`${process.env.HARMONY_PRIVATE_KEY}`]
     },
     ropsten: {
