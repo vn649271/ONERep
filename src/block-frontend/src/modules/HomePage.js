@@ -9,7 +9,13 @@ import BasicModal from '../components/Modals/BasicModal';
 import OrSpinButton from '../components/OrSpinButton';
 import { orAlert } from "../service/utils";
 import axios from "axios";
-import { SERVER_URL } from "../conf";
+import { 
+  SERVER_URL,
+  CHAIN_NAME,
+  CHAIN_ID,
+  BLOCK_EXPLORER_URLS,
+  RPC_URLS
+} from "../conf";
 import Web3 from "web3";
 
 console.log("Server URL: ", SERVER_URL);
@@ -122,15 +128,15 @@ const HomePageModule = (props) => {
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainName: "Harmony DevNet",
-              chainId: utils.hexValue(1666900000),
+              chainName: CHAIN_NAME,
+              chainId: utils.hexValue(CHAIN_ID),
               nativeCurrency: {
                 name: "ONE",
                 symbol: "ONE",
                 decimals: 18,
               },
-              blockExplorerUrls: ["https://explorer.ps.hmny.io/"],
-              rpcUrls: ["https://api.s0.ps.hmny.io"],
+              blockExplorerUrls: BLOCK_EXPLORER_URLS,
+              rpcUrls: RPC_URLS,
             },
           ],
         })
@@ -151,7 +157,7 @@ const HomePageModule = (props) => {
     try {
       let web3 = new Web3(window.ethereum);
       let chainId = await web3.eth.net.getId();
-      if (chainId !== 1666900000) {
+      if (chainId !== CHAIN_ID) {
         // If not Harmony chain
         attachHarmoneyChain(account);
       }
