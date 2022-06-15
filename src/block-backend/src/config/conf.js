@@ -1,3 +1,3 @@
 module.exports={
-    DB_URL: "mongodb://localhost:27017/ntt1"
+    DB_URL: "mongodb://localhost:27017/ntt2"
 }
