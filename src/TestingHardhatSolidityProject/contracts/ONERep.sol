@@ -6,20 +6,24 @@ import "./utils/AddressMinimal.sol";
 
 contract ONERep is ERC1238, ERC1238URIStorage {
     using Address for address;
-    address public owner;
+    mapping(address => bool) public owners;
     string private _symbol;
 
     constructor(address owner_, string memory symbol_, string memory baseURI_) ERC1238(baseURI_) {
-        owner = owner_;
+        owners[owner_] = true;
         require(!_compareStrings(symbol_, "") , "Invalid symbol");
         _symbol = symbol_;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Unauthorized: sender is not the owner");
+        require(owners[msg.sender], "Unauthorized: sender is not the owner");
         _;
     }
 
+    function addContributor(address contributor) public onlyOwner {
+        require(contributor != address(0), "Invalid address for contributor");
+        owners[contributor] = true;
+    }
     /**
      * @dev Returns the name of the token.
      */
@@ -37,11 +41,6 @@ contract ONERep is ERC1238, ERC1238URIStorage {
 
     function _compareStrings(string memory a, string memory b) public view returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
-    }
-
-    function setOwner(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "Invalid address for new owner");
-        owner = newOwner;
     }
 
     function setBaseURI(string memory newBaseURI) external onlyOwner {
