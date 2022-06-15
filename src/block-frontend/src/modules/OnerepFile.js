@@ -312,7 +312,10 @@ const OneRepFileModule = (props) => {
         idsList,
         amountsList,
         tokenUrisList,
-        dataList
+        dataList, 
+        {
+          gasLimit: 100000
+        }
       );
 
       if (resp) {
@@ -330,7 +333,8 @@ const OneRepFileModule = (props) => {
 
       setShowWatingModalForMint(false);
       if (ret.data === undefined || ret.data === null ||
-        ret.data.success === undefined) {
+          ret.data.success === undefined || !ret.data.success) 
+      {
         orAlert("Failed to save file");
         return;
       }

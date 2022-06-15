@@ -202,28 +202,6 @@ const expandUserList = userListNested => {
     const handleCloseMessageBox = () => {
         setShowMessage(false);
     }
-    const _handleDelete = (user) => {
-        axios.post(SERVER_URL + '/users/delete', { wallet: user, master: localStorage.getItem("wallet") }).then(response => {
-            let success = response.data ? response.data.success ? response.data.success : false : false;
-            let retData = response.data ? response.data.data ? response.data.data : null : null;
-            if (success) {
-                if (retData === null || retData.length < 1) {
-                    window.location.href = "/";
-                    return;
-                }
-                setUsers(refineTableData(retData));
-                orAlert("Successfully deleted the user");
-                return;
-            }
-            orAlert(retData ? retData : "");
-        });
-    }
-    const handleDelete = (user) => {
-        openConfirm("Are you sure to delete this contributor?", {
-            onCloseWithYes: _handleDelete,
-            params: user
-        });
-    }
     const onClickSave = ev => {
         handleSave(ev);
     }
@@ -234,7 +212,7 @@ const expandUserList = userListNested => {
             signer = rpcProvider.getSigner();
         }
     }
-    const addContributor = async (contributorAddress) => {
+    const addContributorOnChain = async (contributorAddress) => {
         await InitWeb3();
         if (web3 == null || chainId == null) {
           orAlert("Initialization not complete yet. Please try again a while later");
@@ -254,24 +232,60 @@ const expandUserList = userListNested => {
                 orAlert("deployBadgeContract(): Failed to get the current value of gas price");
                 return null;
             }
-            // const result = await new web3.eth.Contract(ONERepDeployedInfo.abi).addContributor({ 
-            //     data: ONERepDeployedInfo.bytecode, 
+
+            const accounts = await web3.eth.getAccounts();
+            // const ret = await badgeTokenContract.addOwner({ 
+            //     // data: ONERepDeployedInfo.bytecode, 
             //     arguments:[
-            //         localStorage.getItem('wallet') , 
-            //         tokenSymbol, ''
+            //         contributorAddress
             //     ] 
             // }).send({ 
             //     from: accounts[0], 
             //     gasPrice: gasPrice 
             // });
-            let resp = await badgeTokenContract.connect(signer).addContributor(contributorAddress).send({ 
-                gasPrice: gasPrice 
+            let ret = await badgeTokenContract.connect(signer).addOwner(contributorAddress, {
+                gasLimit: 100000
             });
-            console.log("Onchain-function addContributor():", resp)
+            //
+            // console.log("Onchain-function addContributorOnChain():", ret)
+            return true;
         } catch (error) {
             orAlert("Failed to add contributor to on-chain:" + error.message);
+            return false;
         }
 
+    }
+    const removeContributorOnChain = async (contributorAddress) => {
+        await InitWeb3();
+        if (web3 == null || chainId == null) {
+          orAlert("Initialization not complete yet. Please try again a while later");
+          return;
+        }
+        if (badgeAddress === undefined ||
+            badgeAddress === null ||
+            badgeAddress === "") 
+        {
+            orAlert("Invalid badge token address");
+            return;
+        }
+        const badgeTokenContract = new ethers.Contract(badgeAddress, ONERepDeployedInfo.abi, rpcProvider);
+        try {
+            let gasPrice = await web3.eth.getGasPrice();
+            if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
+                orAlert("deployBadgeContract(): Failed to get the current value of gas price");
+                return null;
+            }
+            const accounts = await web3.eth.getAccounts();
+            let ret = await badgeTokenContract.connect(signer).removeOwner(contributorAddress, {
+                gasLimit: 100000
+            });
+            //
+            // console.log("Onchain-function addContributorOnChain():", ret)
+            return true;
+        } catch (error) {
+            orAlert("Failed to add contributor to on-chain:" + error.message);
+            return false;
+        }
     }
     const handleSave = async ev => {
         curUser.status = enable;
@@ -311,6 +325,12 @@ const expandUserList = userListNested => {
         }
 
         try {
+            if (_badgeAddress) {
+                let ret = await addContributorOnChain(curUser.wallet);
+                if (!ret) {
+                    return;
+                }
+            }
             let ret = await axios.post(
                 SERVER_URL + '/users/update',
                 {
@@ -321,9 +341,6 @@ const expandUserList = userListNested => {
             );
             console.log("response", ret);
             if (ret.data.success) {
-                if (_badgeAddress) {
-                    await addContributor(curUser.wallet);
-                }
                 setUsers(refineTableData(ret.data.users));
             } else {
                 alert(ret.data.error);
@@ -366,7 +383,39 @@ const expandUserList = userListNested => {
         handleShow(row)
     }
     const handleDeleteRow = row => {
+        if (row.wallet.content === localStorage.getItem('wallet')) {
+            showMessageBox("Warning", "Couldn't remove yourself");
+            return;
+        }
         handleDelete(row.wallet.content)
+    }
+    const handleDelete = (user) => {
+        openConfirm("Are you sure to delete this contributor?", {
+            onCloseWithYes: _handleDelete,
+            params: user
+        });
+    }
+    const _handleDelete = async user => {
+        let ret = await removeContributorOnChain(user);
+        if (!ret) {
+            showMessageBox("Warning", "Failed to remove specified contributor on-chain");
+            return;
+        }
+
+        axios.post(SERVER_URL + '/users/delete', { wallet: user, master: localStorage.getItem("wallet") }).then(response => {
+            let success = response.data ? response.data.success ? response.data.success : false : false;
+            let retData = response.data ? response.data.data ? response.data.data : null : null;
+            if (success) {
+                if (retData === null || retData.length < 1) {
+                    window.location.href = "/";
+                    return;
+                }
+                setUsers(refineTableData(retData));
+                orAlert("Successfully deleted the user");
+                return;
+            }
+            orAlert(retData ? retData : "");
+        });
     }
 
     return (

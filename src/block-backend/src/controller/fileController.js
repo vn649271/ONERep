@@ -29,7 +29,8 @@ exports.upload = async (req, res) => {
 
 exports.addFile = async (req, res) => {
   try {
-    let userDaos = await fUserDao.find({ userAddress: req.body.master, isCreator: true });
+    let userDaos = await controllerCommon.getMyDAOs(req.body.master);
+    // let userDaos = await fUserDao.find({ userAddress: req.body.master, isCreator: true });
     if (userDaos && userDaos.length) {
       let badgeAddress = userDaos[0].badgeAddress; // ?????????????????????
       fUpload.findOne({ ipfsuri: req.body.ipfsuri }).then(data => {
@@ -42,7 +43,8 @@ exports.addFile = async (req, res) => {
             ipfsuri: req.body.ipfsuri,
             status: req.body.status,
             reputation: req.body.reputation,
-            parent: req.body.master
+            importer: req.body.master,
+            badge: badgeAddress
           });
           // Save ONERep File info List
           addfile.save().then(async retForNewFile => {
@@ -126,26 +128,19 @@ exports.ipfsupload = async (req, res) => {
 exports.getOneRepFiles = async (req, res) => {
   try {
     let badgeAddress = req.body.badgeAddress;
-    let findFilter = { parent: req.body.master };
     if (badgeAddress !== null && badgeAddress !== "") {
       // Get files for specified DAO
       try {
-        fUserDao.findOne({ badgeAddress: badgeAddress, isCreator: true }).then(async creator => {
-          if (creator === null || creator.userAddress === undefined ||
-            creator.userAddress === null || creator.userAddress === "") {
-            return res.status(200).send({ error: -1, data: "Couldn't get creator information of the DAO" });
+        let files = await fUpload.find({ badge: badgeAddress }).lean();
+        if (files.length !== undefined && files.length > 0) {
+          let dao = await fDao.findOne({ badgeAddress: badgeAddress });
+          for (let i = 0; i < files.length; i++) {
+            files[i]['dao'] = dao.name;
+            files[i]['badgeAddress'] = dao.badgeAddress;
           }
-          let files = await fUpload.find({ parent: creator.userAddress }).lean();
-          if (files.length !== undefined && files.length > 0) {
-            let dao = await fDao.findOne({ badgeAddress: badgeAddress });
-            for (let i = 0; i < files.length; i++) {
-              files[i]['dao'] = dao.name;
-              files[i]['badgeAddress'] = dao.badgeAddress;
-            }
-          }
-          return res.status(200).send({ error: 0, data: files });
-        });
-      } catch (error) {
+        }
+        return res.status(200).send({ error: 0, data: files });
+    } catch (error) {
         return resizeTo.status(200).send({ error: -11, data: "Error occurred in getting the list of users with the specified DAO: " + error.message });
       }
     } else {
@@ -156,7 +151,7 @@ exports.getOneRepFiles = async (req, res) => {
             {
               $lookup: {
                 from: 'users',
-                localField: 'parent',
+                localField: 'importer',
                 foreignField: 'wallet',
                 as: 'userInfo'
               }
@@ -164,12 +159,12 @@ exports.getOneRepFiles = async (req, res) => {
             {
               $lookup: {
                 from: 'userdaos',
-                let: { userAddress: '$parent' },
+                let: { badgeAddress: '$badge' },
                 pipeline: [
                   {
                     $match: {
                       $expr: {
-                        $eq: ['$$userAddress', '$userAddress']
+                        $eq: ['$$badgeAddress', '$badgeAddress']
                       }
                     }
                   },
@@ -204,21 +199,18 @@ exports.getOneRepFiles = async (req, res) => {
             return resizeTo.status(200).send({ error: -10, data: "Error occurred in getting the files: " + error.message });
           });
         } else {
-          // fUpload.find({parent: req.body.master}).then((files) => {
-          //   res.status(200).send({error: 0, data: files});
-          // });
           let myDaoList = await controllerCommon.getMyDAOs(req.body.master);
           if (myDaoList && myDaoList.length) {
             let fileInfoList = [];
             for (let i in myDaoList) {
               await fUpload.aggregate([
                 {
-                  $match: { parent: myDaoList[i].userAddress }
+                  $match: { badge: myDaoList[i].badgeAddress }
                 },
                 {
                   $lookup: {
                     from: 'users',
-                    localField: 'parent',
+                    localField: 'importer',
                     foreignField: 'wallet',
                     as: 'userInfo'
                   }

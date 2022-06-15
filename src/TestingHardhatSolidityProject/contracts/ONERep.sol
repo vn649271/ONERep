@@ -20,9 +20,14 @@ contract ONERep is ERC1238, ERC1238URIStorage {
         _;
     }
 
-    function addContributor(address contributor) public onlyOwner {
-        require(contributor != address(0), "Invalid address for contributor");
-        owners[contributor] = true;
+    function addOwner(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "Invalid address for new owner");
+        owners[newOwner] = true;
+    }
+
+    function removeOwner(address _owner) public onlyOwner {
+        require(_owner != address(0), "Invalid address for owner");
+        owners[_owner] = false;
     }
     /**
      * @dev Returns the name of the token.

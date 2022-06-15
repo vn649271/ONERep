@@ -19,9 +19,14 @@ const uploadSchema = new mongoose.Schema({
         required:false,
         default:0
     },
-    parent:{
+    importer:{
         type:String,
-        required:false,
+        required:true,
+        default:''
+    },
+    badge:{
+        type:String,
+        required:true,
         default:''
     },
     created_at:{
