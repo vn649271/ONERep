@@ -38,9 +38,13 @@ var corsOptions = {
 }
 const whitelist = [
   'http://localhost:3000',
+  'http://localhost:5000',
   'https://localhost:3000',
+  'https://localhost:5000',
   "http://onerep.uniblocks.net",
-  "https://onerep.uniblocks.net"
+  "http://onerep.uniblocks.net:5000",
+  "https://onerep.uniblocks.net",
+  "https://onerep.uniblocks.net:5000"
 ]
 if (!process.env.TEST_MODE) {
   corsOptions = {
