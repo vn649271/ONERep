@@ -13,6 +13,13 @@ import SettingModule from './Settings';
 import OrConfirm from '../components/Modals/OrConfirm';
 import { orAlert } from "../service/utils";
 import OrTable from "../components/OrTable";
+import Web3 from "web3";
+import { ethers } from "ethers";
+import ONERepDeployedInfo from "../shared/ONERep.json";
+
+let web3 = null;
+let rpcProvider = null;
+let signer = null;
 
 /*
  *************************************** 
@@ -87,7 +94,7 @@ const expandUserList = userListNested => {
         status: false,
         badgeAddress: '0x0000000000000000000000000000000000000000'
     }
-    const [show, setShow] = useState(false);
+    const [showContributorEditDialog, setShowContributorEditDialog] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     // const [admin, setSAdmin] = useState(false);
     const [enable, setEnable] = useState(false);
@@ -102,7 +109,7 @@ const expandUserList = userListNested => {
     const [_userName, setUserName] = useState(null);
     const [_wallet, setWallet] = useState(null);
     const [inited, setInited] = useState(false);
-    // const [chainId, setChainId] = useState(0);
+    const [chainId, setChainId] = useState(0);
 
     const [confirmContext, setConfirmContext] = useState("");
     const [confirmText, setConfirmText] = useState("");
@@ -148,8 +155,8 @@ const expandUserList = userListNested => {
                         badgeTokenAddress: badgeAddress,
                     }
                 });
-                // setChainId(localStorage.getItem('chainId'));
             });
+            setChainId(localStorage.getItem('chainId'));
         }
         if (!users || users.length === undefined || !users.length) {
             getContributors();
@@ -174,7 +181,7 @@ const expandUserList = userListNested => {
         setMessageContent(content);
         setShowMessage(true);
     }
-    const handleClose = () => setShow(false);
+    const handleClose = () => setShowContributorEditDialog(false);
     const handleCloseSettings = () => setShowSettings(false);
     const handleShow = (user) => {
         setCurUser(user);
@@ -190,13 +197,13 @@ const expandUserList = userListNested => {
         setUserName(currentUserName);
         let currentUserWallet = user.wallet ? user.wallet.content ? user.wallet.content : "" : "";
         setWallet(currentUserWallet);
-        setShow(true);
+        setShowContributorEditDialog(true);
     }
     const handleCloseMessageBox = () => {
         setShowMessage(false);
     }
     const _handleDelete = (user) => {
-        axios.post(SERVER_URL + '/users/delete', { ...user, master: localStorage.getItem("wallet") }).then(response => {
+        axios.post(SERVER_URL + '/users/delete', { wallet: user, master: localStorage.getItem("wallet") }).then(response => {
             let success = response.data ? response.data.success ? response.data.success : false : false;
             let retData = response.data ? response.data.data ? response.data.data : null : null;
             if (success) {
@@ -220,10 +227,57 @@ const expandUserList = userListNested => {
     const onClickSave = ev => {
         handleSave(ev);
     }
+    const InitWeb3 = async () => {
+        if (web3 == null && window.ethereum) {
+            web3 = new Web3(window.ethereum);
+            rpcProvider = new ethers.providers.Web3Provider(window.ethereum)
+            signer = rpcProvider.getSigner();
+        }
+    }
+    const addContributor = async (contributorAddress) => {
+        await InitWeb3();
+        if (web3 == null || chainId == null) {
+          orAlert("Initialization not complete yet. Please try again a while later");
+          return;
+        }
+        if (badgeAddress === undefined ||
+            badgeAddress === null ||
+            badgeAddress === "") 
+        {
+            orAlert("Invalid badge token address");
+            return;
+        }
+        const badgeTokenContract = new ethers.Contract(badgeAddress, ONERepDeployedInfo.abi, rpcProvider);
+        try {
+            let gasPrice = await web3.eth.getGasPrice();
+            if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
+                orAlert("deployBadgeContract(): Failed to get the current value of gas price");
+                return null;
+            }
+            // const result = await new web3.eth.Contract(ONERepDeployedInfo.abi).addContributor({ 
+            //     data: ONERepDeployedInfo.bytecode, 
+            //     arguments:[
+            //         localStorage.getItem('wallet') , 
+            //         tokenSymbol, ''
+            //     ] 
+            // }).send({ 
+            //     from: accounts[0], 
+            //     gasPrice: gasPrice 
+            // });
+            let resp = await badgeTokenContract.connect(signer).addContributor(contributorAddress).send({ 
+                gasPrice: gasPrice 
+            });
+            console.log("Onchain-function addContributor():", resp)
+        } catch (error) {
+            orAlert("Failed to add contributor to on-chain:" + error.message);
+        }
+
+    }
     const handleSave = async ev => {
         curUser.status = enable;
         curUser.username = _userName;
         curUser.wallet = _wallet;
+        let _badgeAddress = null;
 
         try {
             let ret = await axios.post(
@@ -243,13 +297,12 @@ const expandUserList = userListNested => {
                 return;
             }
             curUser.userType = ret.data.data.userType;
-            setBadgeAddress(
-                ret.data.data.daoRelation ?
+            _badgeAddress = ret.data.data.daoRelation ?
                     ret.data.data.daoRelation.length ?
                         ret.data.data.daoRelation[0].badgeAddress :
                         null :
                     null
-            );
+            setBadgeAddress(_badgeAddress);
             // curUser.dao = ret.data.data.dao;
             // curUser.badge = ret.data.data.badge;
         } catch (error) {
@@ -262,12 +315,15 @@ const expandUserList = userListNested => {
                 SERVER_URL + '/users/update',
                 {
                     ...curUser,
-                    badgeAddress: badgeAddress,
+                    badgeAddress: _badgeAddress,
                     master: localStorage.getItem("wallet")
                 }
             );
             console.log("response", ret);
             if (ret.data.success) {
+                if (_badgeAddress) {
+                    await addContributor(curUser.wallet);
+                }
                 setUsers(refineTableData(ret.data.users));
             } else {
                 alert(ret.data.error);
@@ -310,7 +366,7 @@ const expandUserList = userListNested => {
         handleShow(row)
     }
     const handleDeleteRow = row => {
-        handleDelete(row)
+        handleDelete(row.wallet.content)
     }
 
     return (
@@ -361,7 +417,7 @@ const expandUserList = userListNested => {
                 </Modal.Body>
             </Modal>
 
-            <Modal centered show={show} onHide={handleClose}>
+            <Modal centered show={showContributorEditDialog} onHide={handleClose}>
                 <Modal.Body>
                     <div className="p-4">
                         <h5 className="text-center text-white">{curUser._id === '' ? "Add Contributor" : "Edit Contributor"}</h5>

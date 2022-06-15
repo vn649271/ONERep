@@ -234,7 +234,7 @@ function _groupBy(list, keyGetter) {
     return map;
 }
 
-exports.getUserList = async (req, res) => {
+const _getUserList = async (req, res) => {
     try {
         console.log("getUserList()");
         let user = await User.findOne({ wallet: req.body.master, status: true });
@@ -393,6 +393,10 @@ exports.getUserList = async (req, res) => {
     } catch (error) {
         res.status(200).send({ success: false, data: error.message });
     }
+}
+
+exports.getUserList = async (req, res) => {
+    _getUserList(req, res);
 }
 
 exports.getUserCount = async (req, res) => {
@@ -820,7 +824,7 @@ exports.delete = async (req, res) => {
         }
         if (user.userType === 0) {
             // Admin
-            User.deleteOne({ _id: req.body._id }).then((user) => {
+            User.deleteOne({ wallet: req.body.wallet }).then((user) => {
                 User.find({ parent: req.body.master, wallet: req.body.master }).then(async users => {
                     try {
                         let master = await User.findOne({ wallet: req.body.master });
@@ -834,27 +838,19 @@ exports.delete = async (req, res) => {
             });
         } else {
             // System Account user
-            User.deleteOne({ _id: req.body._id }).then(async user => {
+            User.deleteOne({ wallet: req.body.wallet }).then(async user => {
                 // Also delete User-Dao relation
-                await UserDao.deleteOne({ userAddress: req.body.wallet });
+                let ret = await UserDao.deleteOne({ userAddress: req.body.wallet });
+                if (ret) {
+                    console.log(ret);
+                }
                 // Refresh the user list
-                User.find({ parent: req.body.master, wallet: req.body.master }).then(async users => {
-                    try {
-                        let master = await User.findOne({ wallet: req.body.master });
-                        if (master) {
-                            users.push(master);
-                        }
-                    } catch (error) {
-                        console.log("Failed to get info for master: ", error.message)
-                        return res.status(200).send({ success: false, data: "Failed to get information for the master:" + error.message });
-                    }
-                    res.status(200).send({ success: true, data: users });
-                });
+                _getUserList(req, res);
             });
             // Also delete User-Dao relation
         }
     }).catch(error => {
-        res.status(200).send({ success: false, data: error.message });
+        return res.status(200).send({ success: false, data: error.message });
     });
 }
 
