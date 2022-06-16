@@ -189,6 +189,11 @@ exports.getLoggedInUserByWallet = async (req, res) => {
         lookupClause
     ]).then(users => {
         if (users && users.length) {
+            // let userInfo = users[0];
+            // if (userInfo.userType === 0) {
+            //     console.log("No need user-dao relation for admin");
+            //     userInfo.daoRelation = null;
+            // }
             return res.status(200).send({ error: 0, data: users[0] });
         } else {
             return res.status(200).send({ error: 1, data: null });
@@ -751,12 +756,12 @@ exports.update = async (req, res) => {
     req.body.wallet = req.body.wallet.toLowerCase();
     User.findOne({ wallet: req.body.wallet }).then(async user => {
         var puser = user;
+        let userType = 1;
         if (req.body._id == '') {
             // First registration
             if (user) {
                 return res.status(200).send({ error: "ETH address duplicated!", success: false });
             }
-            let userType = 1;
             try {
                 let ret = await User.findOne({ wallet: req.body.master });
                 userType = ret.userType;
@@ -776,7 +781,7 @@ exports.update = async (req, res) => {
             if (!puser) {
                 return res.status(200).send({ error: "This accout does not exist!", success: false });
             }
-            let userType = 2; // Contributor
+            userType = 2; // Contributor
             try {
                 let user = await User.findOne({ wallet: req.body.master });
                 userType = user.userType;
@@ -792,7 +797,7 @@ exports.update = async (req, res) => {
 
         puser.save().then(async result => {
             // In case of admin contributor, no need to add USER-DAO relation
-            if (req.body.badgeAddress) {
+            if (userType && req.body.badgeAddress) {
                 let userDao = new UserDao({
                     userAddress: result.wallet,
                     badgeAddress: req.body.badgeAddress,

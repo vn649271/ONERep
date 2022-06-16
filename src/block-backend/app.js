@@ -46,7 +46,7 @@ const whitelist = [
   "https://onerep.uniblocks.net",
   "https://onerep.uniblocks.net:5000"
 ]
-if (!process.env.TEST_MODE) {
+if (!process.env.TEST_MODE - 0) {
   corsOptions = {
     credentials: true,
     origin: function (origin, callback) {
@@ -70,14 +70,25 @@ console.log("ENV.PORT=", port);
 var privateKey = fs.readFileSync('key.pem');
 var certificate = fs.readFileSync('cert.pem');
 
-https.createServer({
-  key: privateKey,
-  cert: certificate
-}, app).listen(port, err => {
-// app.listen(port, err => {
-  if (err) {
-    console.log("Failed to start server", err);
-  } else {
-    console.log("Server started at port", port, "successfully")
-  }
-});
+if (process.env.HTTPS - 0) {
+  // HTTPS
+  https.createServer({
+    key: privateKey,
+    cert: certificate
+  }, app).listen(port, err => {
+    if (err) {
+      console.log("Failed to start server", err);
+    } else {
+      console.log("Server started at port", port, "with https successfully")
+    }
+  });
+} else {
+  // HTTP
+  app.listen(port, err => {
+    if (err) {
+      console.log("Failed to start server", err);
+    } else {
+      console.log("Server started at port", port, "with http successfully")
+    }
+  });
+}
