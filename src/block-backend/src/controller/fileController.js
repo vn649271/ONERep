@@ -52,7 +52,7 @@ exports.addFile = async (req, res) => {
               // Save each action 
               const addAction = new fAction({
                 name: row[1],
-                wallet: row[2],
+                wallet: row[2].toLowerCase(),
                 received: parseInt(row[3]),
                 badgeAddress: badgeAddress,
                 sent: parseInt(row[4]),
@@ -62,11 +62,11 @@ exports.addFile = async (req, res) => {
               });
               addAction.save().then(async retForNewAction => {
                 // Save each DAO user if not exist
-                let userInfo = await fUser.findOne({ wallet: row[2] });
+                let userInfo = await fUser.findOne({ wallet: row[2].toLowerCase() });
                 if (!userInfo) {
                   const addUser = new fUser({
                     username: row[1],
-                    wallet: row[2],
+                    wallet: row[2].toLowerCase(),
                     parent: req.body.master,
                     userType: 3, // DAO member
                   });
@@ -75,7 +75,7 @@ exports.addFile = async (req, res) => {
                 if (userInfo && userInfo.id) {
                   // Save User-DAO relation
                   const addUserDaoRelation = new fUserDao({
-                    userAddress: row[2],
+                    userAddress: row[2].toLowerCase(),
                     badgeAddress: badgeAddress,
                     received: parseInt(row[3]),
                     isCreator: false,
