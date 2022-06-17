@@ -169,7 +169,7 @@ const OneRepFileModule = (props) => {
               ];              
             }
             setDaoList(daos);
-            if (userInfo.userType === 1) {
+            if (userInfo.userType === 1 && daos.length) {
               handleDropDown(daos[0].name, daos);
             } else {
               handleDropDown('All');

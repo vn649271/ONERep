@@ -516,7 +516,10 @@ exports.getOneRepBoard = async (req, res) => {
     } else {    // System Account User
         if (!req.body.badgeAddress) {
             // Get board data for all the DAOs the user belongs to
-            leadDaoRels = await controllerCommon.getMyDAOs(req.body.master);
+            let leadDaoRels = await controllerCommon.getMyDAOs(req.body.master);
+            if (leadDaoRels === null) {
+                leadDaoRels = [];
+            }
             let resultArray = [];
             try {
                 for (let i = 0; i < leadDaoRels.length; i++) {
@@ -702,6 +705,9 @@ exports.getDaoData = async (req, res) => {
                     // Get all DAO for the user belongss to
                     try {
                         let myDaoList = await controllerCommon.getMyDAOs(req.body.master);
+                        if (myDaoList === null) {
+                            myDaoList = [];
+                        }
                         for (let i = 0; i < myDaoList.length; i++) {
                             myDaoList[i]['name'] = myDaoList[i].dao;
                         }
