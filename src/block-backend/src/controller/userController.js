@@ -328,7 +328,7 @@ const _getUserList = async (req, res) => {
                         }
                         ret.push(users[i]);
                     }
-                    _sort(ret, 'username', 1);
+                    controllerCommon.sort(ret, 'username', 1);
                     return res.status(200).send({ success: true, data: ret });
                 } catch (error) {
                     return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });
@@ -380,7 +380,7 @@ const _getUserList = async (req, res) => {
                                 });
                             }
                         }
-                        _sort(users, 'username', 1);
+                        controllerCommon.sort(users, 'username', 1);
                         res.status(200).send({ success: true, data: users });
                     } catch (error) {
                         return res.status(200).send({ success: false, data: "Error occurred in getting the files: " + error.message });
@@ -414,20 +414,7 @@ exports.getUserCount = async (req, res) => {
     }
 }
 
-const _getOneRepBoard = async (daos, sortOption) => { }
-const _sort = (arr, field, direction) => {
-    arr.sort((a, b) => {
-        if (a[field] === b[field]) {
-            return 0;
-        }
-        else {
-            return (a[field] < b[field]) ? -1 * direction : direction;
-        }
-    });
-}
-
 exports.getOneRepBoard = async (req, res) => {
-    console.log("getOneRepBoard()");
     let sortOption = req.body.sort ? req.body.sort : {};
     let user = await User.findOne({ wallet: req.body.master });
     const filters = [
@@ -483,7 +470,7 @@ exports.getOneRepBoard = async (req, res) => {
                 }
                 // Sort
                 for (let k in sortOption) {
-                    _sort(result, k, sortOption[k]);
+                    controllerCommon.sort(result, k, sortOption[k]);
                 }
                 return res.status(200).send({ success: true, data: result });
             } catch (error) {
@@ -506,7 +493,7 @@ exports.getOneRepBoard = async (req, res) => {
                 }
                 // Sort
                 for (let k in sortOption) {
-                    _sort(actions, k, sortOption[k]);
+                    controllerCommon.sort(actions, k, sortOption[k]);
                 }
                 return res.status(200).send({ success: true, data: actions });
             } catch (error) {
@@ -545,7 +532,7 @@ exports.getOneRepBoard = async (req, res) => {
                 }
                 // Sort
                 for (let k in sortOption) {
-                    _sort(resultArray, k, sortOption[k]);
+                    controllerCommon.sort(resultArray, k, sortOption[k]);
                 }
                 res.status(200).send({ success: true, data: resultArray });
             } catch (error) {
@@ -574,7 +561,7 @@ exports.getOneRepBoard = async (req, res) => {
                 }
                 // Sort
                 for (let k in sortOption) {
-                    _sort(actions, k, sortOption[k]);
+                    controllerCommon.sort(actions, k, sortOption[k]);
                 }
                 res.status(200).send({ success: true, data: actions });
             } catch (error) {
@@ -598,7 +585,6 @@ const _getTopParentUser = async wallet => {
 }
 /*******************************Get DAO data********************** */
 exports.getDaoData = async (req, res) => {
-    console.log("getDaoData()");
     try {
         let user = await User.findOne({ wallet: req.body.master });
         if (user.userType === 0) { // in case of super administrator
@@ -658,7 +644,7 @@ exports.getDaoData = async (req, res) => {
                             daos[i]['badge'] = (daoDetail ? daoDetail.badge : null);
                             daos[i]['badgeAddress'] = (daoDetail ? daoDetail.badgeAddress : null);
                         }
-                        _sort(daos, 'name', 1)
+                        controllerCommon.sort(daos, 'name', 1)
                         return res.status(200).send({ success: true, data: daos });
                     }).catch(error => {
                         return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });
@@ -711,7 +697,7 @@ exports.getDaoData = async (req, res) => {
                         for (let i = 0; i < myDaoList.length; i++) {
                             myDaoList[i]['name'] = myDaoList[i].dao;
                         }
-                        _sort(myDaoList, 'name', 1)
+                        controllerCommon.sort(myDaoList, 'name', 1)
                         return res.status(200).send({ success: true, data: myDaoList });
                     } catch (error) {
                         return res.status(200).send({ success: false, error: "Failed to find DAO: " + error.message });

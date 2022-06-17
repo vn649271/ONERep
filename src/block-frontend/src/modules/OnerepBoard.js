@@ -19,6 +19,7 @@ const { SERVER_URL } = require("../conf");
  const OneRepBoardModule = (props) => {
   const [show, setShow] = useState(false);
   const [boardData, setBoardData] = useState([]);
+  const [sort_dao, setSortDao] = useState(1);
   const [sort_name, setSortName] = useState(1);
   const [sort_badge, setSortBadge] = useState(1);
   const [sort_id, setSortId] = useState(1);
@@ -116,6 +117,10 @@ const { SERVER_URL } = require("../conf");
   }, [show, sortOption]);
 
   useEffect(() => {
+    setSortOption({dao: sort_dao});
+  }, [sort_dao]);
+
+  useEffect(() => {
     setSortOption({name: sort_name});
   }, [sort_name]);
 
@@ -124,7 +129,7 @@ const { SERVER_URL } = require("../conf");
   }, [sort_badge]);
 
   useEffect(() => {
-    setSortOption({wallet: sort_wallet});
+    setSortOption({_id: sort_wallet});
   }, [sort_wallet]);
 
   useEffect(() => {
@@ -168,6 +173,10 @@ const { SERVER_URL } = require("../conf");
   //     setSelectData(response.data);
   //   });
   // };
+  const onSortDao = ev => {
+    setSortDao(-sort_dao);
+    console.log(-sort_dao);
+  }
   const onSortName = ev => {
     setSortName(-sort_name);
     console.log(-sort_name);
@@ -191,7 +200,7 @@ const { SERVER_URL } = require("../conf");
    ****************************************** 
    */
   const boardDataTableHeaderInfo = [
-    { label: "DAO", name: "dao" },
+    { label: "DAO", name: "dao", sortable: true, clickHandler: onSortDao },
     { label: "BADGE", name: "badge", sortable: true, clickHandler: onSortBadge },
     { label: "Name", name: "name", sortable: true, clickHandler: onSortName },
     { label: "Wallet", name: "wallet", className: "text-center", sortable: true, clickHandler: onSortWallet },
