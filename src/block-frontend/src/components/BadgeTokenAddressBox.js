@@ -16,7 +16,16 @@ const BadgeTokenAddressBox = props => {
 			setBadgeTokenAddress(badgeTokenAddress);
 		}
 	}, [badgeTokenAddress]);
-	const onClick = ev => {
+	const onClick = async ev => {
+		const queryOpts = { name: 'clipboard-read', allowWithoutGesture: false };
+		const permissionStatus = await navigator.permissions.query(queryOpts);
+		// Will be 'granted', 'denied' or 'prompt':
+		console.log(permissionStatus.state);
+
+		// Listen for changes to the permission state
+		permissionStatus.onchange = () => {
+		  console.log(permissionStatus.state);
+		};
 		if (navigator.clipboard) {
 			navigator.clipboard.writeText(_badgeTokenAddress).then(function() {
 				console.log('Async: Copying to clipboard was successful!');

@@ -12,33 +12,6 @@ import OrTable from "../components/OrTable";
 const { SERVER_URL } = require("../conf");
 
 /*
- ******************************************
- * Data definition for ONERep Board Table 
- ****************************************** 
- */
-const boardDataTableHeaderInfo = [
-  { label: "DAO", name: "dao" },
-  { label: "BADGE", name: "badge" },
-  { label: "Name", name: "name" },
-  { label: "Wallet", name: "wallet", className: "text-center" },
-  { label: "ONEREP TOKENS", name: "sum", className: "text-right" },
-];
-const refineTableData = rawTableData => {
-  let _boardDataList = [];
-  for (let i in rawTableData) {
-      let r = rawTableData[i];
-      _boardDataList.push({
-          "dao": { content: r.dao },
-          "badge": { content: r.badge },
-          "name": { content: r.name },
-          "wallet": { className: "text-center", content: r._id },
-          "sum": { className: "text-right", content: r.sum },
-      });
-  }
-  return _boardDataList;
-}
-
-/*
  ***************************************
  ********* ONERep Board page  **********
  *************************************** 
@@ -46,10 +19,12 @@ const refineTableData = rawTableData => {
  const OneRepBoardModule = (props) => {
   const [show, setShow] = useState(false);
   const [boardData, setBoardData] = useState([]);
+  const [sort_dao, setSortDao] = useState(1);
   const [sort_name, setSortName] = useState(1);
   const [sort_badge, setSortBadge] = useState(1);
   const [sort_id, setSortId] = useState(1);
   const [sort_sum, setSortSum] = useState(1);
+  const [sort_wallet, setSortWallet] = useState(1);
   const [sortOption, setSortOption] = useState({ sum: -1 });
   const [daoList, setDaoList] = useState([]);
   const [selectedDao, setSelectedDao] = useState(null);
@@ -116,7 +91,7 @@ const refineTableData = rawTableData => {
             }
             setDaoList(daos);
             // if (daos.length && daos.length > 1) { // 
-            if (userInfo.userType === 1) { // System User
+            if (userInfo.userType === 1 && daos.length) { // System User
               handleDropDown(daos[0].name);
             } else {
               handleDropDown('All');
@@ -140,6 +115,26 @@ const refineTableData = rawTableData => {
       return;
     }
   }, [show, sortOption]);
+
+  useEffect(() => {
+    setSortOption({dao: sort_dao});
+  }, [sort_dao]);
+
+  useEffect(() => {
+    setSortOption({name: sort_name});
+  }, [sort_name]);
+
+  useEffect(() => {
+    setSortOption({badge: sort_badge});
+  }, [sort_badge]);
+
+  useEffect(() => {
+    setSortOption({_id: sort_wallet});
+  }, [sort_wallet]);
+
+  useEffect(() => {
+    setSortOption({sum: sort_sum});
+  }, [sort_sum]);
 
   useEffect(() => {
     loadBoardData(
@@ -178,6 +173,54 @@ const refineTableData = rawTableData => {
   //     setSelectData(response.data);
   //   });
   // };
+  const onSortDao = ev => {
+    setSortDao(-sort_dao);
+    console.log(-sort_dao);
+  }
+  const onSortName = ev => {
+    setSortName(-sort_name);
+    console.log(-sort_name);
+  }
+  const onSortBadge = ev => {
+    setSortBadge(-sort_badge);
+    console.log(-sort_badge);
+  }
+  const onSortSum = ev => {
+    setSortSum(-sort_sum);
+    console.log(-sort_sum);
+  }
+  const onSortWallet = ev => {
+    setSortWallet(-sort_wallet);
+    console.log(-sort_wallet);
+  }
+
+  /*
+   ******************************************
+   * Data definition for ONERep Board Table 
+   ****************************************** 
+   */
+  const boardDataTableHeaderInfo = [
+    { label: "DAO", name: "dao", sortable: true, clickHandler: onSortDao },
+    { label: "BADGE", name: "badge", sortable: true, clickHandler: onSortBadge },
+    { label: "Name", name: "name", sortable: true, clickHandler: onSortName },
+    { label: "Wallet", name: "wallet", className: "text-center", sortable: true, clickHandler: onSortWallet },
+    { label: "ONEREP TOKENS", name: "sum", className: "text-right", sortable: true, clickHandler: onSortSum },
+  ];
+  const refineTableData = rawTableData => {
+    let _boardDataList = [];
+    for (let i in rawTableData) {
+        let r = rawTableData[i];
+        _boardDataList.push({
+            "dao": { content: r.dao },
+            "badge": { content: r.badge },
+            "name": { content: r.name },
+            "wallet": { className: "text-center", content: r._id },
+            "sum": { className: "text-right", content: r.sum },
+        });
+    }
+    return _boardDataList;
+  }
+
   const handleDropDown = async (selectedDaoName = 'All') => {
     try {
       let getDaoDataReqParam = {
@@ -272,5 +315,6 @@ const refineTableData = rawTableData => {
     </section>
   );
 };
+
 const mapStoreToProps = ({ userAction }) => ({});
 export default connect(mapStoreToProps, null)(OneRepBoardModule);

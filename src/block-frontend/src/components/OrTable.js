@@ -31,7 +31,14 @@ const OrTable = props => {
         if (columns && columns.length) {
             for (let c in columns) {
                 _headers.push(
-                    <th key={columns[c].name} className={`${columns[c].className ? columns[c].className : ""}`}>
+                    <th 
+                        key={columns[c].name} 
+                        className={
+                            `${columns[c].className? columns[c].className : ""}` +
+                            (columns[c].sortable ? " or-table-sortable-column" : "")
+                        }
+                        onClick={columns[c].clickHandler}
+                    >
                         {columns[c].label}
                     </th>
                 );

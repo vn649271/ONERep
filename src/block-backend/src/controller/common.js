@@ -38,3 +38,14 @@ exports.getMyDAOs = async myAddress => {
     }
 }
 
+exports.sort = (arr, field, direction) => {
+    arr.sort((a, b) => {
+        if (a[field] === b[field]) {
+            return 0;
+        }
+        else {
+            return (a[field] < b[field]) ? -1 * direction : direction;
+        }
+    });
+}
+

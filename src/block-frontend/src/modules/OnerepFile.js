@@ -21,41 +21,6 @@ import OrTable from "../components/OrTable";
 const { SERVER_URL } = require("../conf");
 
 /*
- ******************************************
- * Data definition for ONERep Board Table 
- ****************************************** 
- */
-const fileTableHeaderInfo = [
-  { label: "DAO", name: "dao" },
-  { label: "File Name", name: "fileName" },
-  { label: "IPFS URI", name: "ipfsUrl", className: "text-center" },
-  { label: "Reputation", name: "reputation", className: "text-right" },
-  { label: "Status", name: "status", className: "text-center" },
-  { label: "Date", name: "created_at", className: "text-center" },
-];
-const refineTableData = rawTableData => {
-  let _boardDataList = [];
-  for (let i in rawTableData) {
-    let r = rawTableData[i];
-    _boardDataList.push({
-      "dao": { content: r.dao },
-      "fileName": { content: r.filename },
-      "ipfsUrl": { content: <a href={`${SERVER_URL}/uploads/${r.ipfsuri}`}>{r.ipfsuri}</a> },
-      "reputation": { className: "text-right", content: r.reputation },
-      "status": { className: "text-center", content: r.status ? "Completed" : "Failed" },
-      "created_at": {
-        className: "text-center",
-        content: new Date(r.created_at).toLocaleDateString() +
-          " " +
-          new Date(r.created_at).toLocaleTimeString()
-      },
-    });
-  }
-  return _boardDataList;
-}
-
-
-/*
  ***************************************
  ********* ONERep File page  **********
  *************************************** 
@@ -75,6 +40,13 @@ const OneRepFileModule = (props) => {
   const [ipfsName, setipfsName] = useState("");
   const [reputation, setReputation] = useState(0);
   const [showWatingModalForMint, setShowWatingModalForMint] = useState(false);
+  const [sort_dao, setSortDao] = useState(1);
+  const [sort_filename, setSortFileName] = useState(1);
+  const [sort_uri, setSortUri] = useState(1);
+  const [sort_reputation, setSortReputation] = useState(1);
+  const [sort_status, setSortStatus] = useState(1);
+  const [sort_date, setSortDate] = useState(1);
+  const [sort_option, setSortOption] = useState({ reputation: -1 });
   // const [images, setImages] = useState({ cid: CID, path: "" });
   // const [totalMint, setTotalMint] = useState(0);
   // const [file, setFile] = useState(null);
@@ -169,7 +141,7 @@ const OneRepFileModule = (props) => {
               ];              
             }
             setDaoList(daos);
-            if (userInfo.userType === 1) {
+            if (userInfo.userType === 1 && daos.length) {
               handleDropDown(daos[0].name, daos);
             } else {
               handleDropDown('All');
@@ -195,6 +167,77 @@ const OneRepFileModule = (props) => {
   //     return;
   //   }
   // }, [step]);
+
+  useEffect(() => {
+    setSortOption({dao: sort_dao});
+  }, [sort_dao]);
+  useEffect(() => {
+    setSortOption({filename: sort_filename});
+  }, [sort_filename]);
+  useEffect(() => {
+    setSortOption({ipfsuri: sort_uri});
+  }, [sort_uri]);
+  useEffect(() => {
+    setSortOption({reputation: sort_reputation});
+  }, [sort_reputation]);
+  useEffect(() => {
+    setSortOption({status: sort_status});
+  }, [sort_status]);
+  useEffect(() => {
+    setSortOption({created_at: sort_date});
+  }, [sort_date]);
+
+  const onSortDao = ev => {
+    setSortDao(-sort_dao);
+  }
+  const onSortFileName = ev => {
+    setSortFileName(-sort_filename);
+  }
+  const onSortUri = ev => {
+    setSortUri(-sort_uri);
+  }
+  const onSortReputation = ev => {
+    setSortReputation(-sort_reputation);
+  }
+  const onSortStatus = ev => {
+    setSortStatus(-sort_status);
+  }
+  const onSortDate = ev => {
+    setSortDate(-sort_date);
+  }
+  /*
+  ******************************************
+  * Data definition for ONERep Board Table 
+  ****************************************** 
+  */
+  const fileTableHeaderInfo = [
+    { label: "DAO", name: "dao", sortable: true, clickHandler: onSortDao },
+    { label: "File Name", name: "fileName", sortable: true, clickHandler: onSortFileName },
+    { label: "IPFS URI", name: "ipfsUrl", className: "text-center", sortable: true, clickHandler: onSortUri },
+    { label: "Reputation", name: "reputation", className: "text-right", sortable: true, clickHandler: onSortReputation },
+    { label: "Status", name: "status", className: "text-center", sortable: true, clickHandler: onSortStatus },
+    { label: "Date", name: "created_at", className: "text-center", sortable: true, clickHandler: onSortDate },
+  ];
+  const refineTableData = rawTableData => {
+    let _boardDataList = [];
+    for (let i in rawTableData) {
+      let r = rawTableData[i];
+      _boardDataList.push({
+        "dao": { content: r.dao },
+        "fileName": { content: r.filename },
+        "ipfsUrl": { content: <a href={`${SERVER_URL}/uploads/${r.ipfsuri}`}>{r.ipfsuri}</a> },
+        "reputation": { className: "text-right", content: r.reputation },
+        "status": { className: "text-center", content: r.status ? "Completed" : "Failed" },
+        "created_at": {
+          className: "text-center",
+          content: new Date(r.created_at).toLocaleDateString() +
+            " " +
+            new Date(r.created_at).toLocaleTimeString()
+        },
+      });
+    }
+    return _boardDataList;
+  }
 
   const logout = async () => {
     localStorage.setItem("wallet", "");
@@ -357,7 +400,8 @@ const OneRepFileModule = (props) => {
       SERVER_URL + "/files",
       {
         master: localStorage.getItem("wallet"),
-        badgeAddress: badgeAddressForSelectedDao
+        badgeAddress: badgeAddressForSelectedDao,
+        sortOption: sort_option
       }
     ).then((response) => {
       setLoading(false);
