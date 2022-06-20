@@ -349,6 +349,12 @@ const OneRepFileModule = (props) => {
         dataList.push(ret.fullSignature);
         idsList.push([1]);
       }
+      let gasPrice = await web3.eth.getGasPrice();
+      if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
+        orAlert("deployBadgeContract(): Failed to get the current value of gas price");
+        return null;
+      }
+      gasPrice = gasPrice * 1.5;
 
       let resp = await badgeTokenContract.connect(signer).mintBundle(
         toList,
@@ -357,15 +363,22 @@ const OneRepFileModule = (props) => {
         tokenUrisList,
         dataList, 
         {
-          gasLimit: 100000
+          gasLimit: 1000000
         }
       );
 
-      if (resp) {
-        console.log(resp);
+      if (resp === undefined || resp === null ||
+        resp.wait === undefined || resp.wait === null) 
+      {
+        setShowWatingModalForMint(false);
+        handleShowFailure("Failed to mint badge token. Please contact administrator.");
+        return;
       }
+      let ret = await resp.wait();
+      console.log(ret);
+      setShowWatingModalForMint(false);
       /****************************adding information of uploaded files in the mongodb */
-      let ret = await axios.post(SERVER_URL + "/files/add", {
+      ret = await axios.post(SERVER_URL + "/files/add", {
         filename: ipfsName,
         ipfsuri: ipfsPath,
         status: true,
@@ -374,7 +387,6 @@ const OneRepFileModule = (props) => {
         master: minter,
       });
 
-      setShowWatingModalForMint(false);
       if (ret.data === undefined || ret.data === null ||
           ret.data.success === undefined || !ret.data.success) 
       {
@@ -617,9 +629,9 @@ const OneRepFileModule = (props) => {
               Failed to Mint
             </h4>
             <br />
-            <p className="main-text-color text-center">
+            <div className="main-text-color text-center overflow-scroll">
               {mintFailureReason}
-            </p>
+            </div>
             <br />
             <div className="text-center">
               <button
