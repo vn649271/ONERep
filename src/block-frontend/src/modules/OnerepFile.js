@@ -350,11 +350,27 @@ const OneRepFileModule = (props) => {
       }
       let gasPrice = await web3.eth.getGasPrice();
       if (gasPrice === null || gasPrice === "" || parseInt(gasPrice) <= 0) {
+        setShowWatingModalForMint(false);
         orAlert("deployBadgeContract(): Failed to get the current value of gas price");
         return null;
       }
       gasPrice = gasPrice * 1.5;
-
+      let estimatedGas = await badgeTokenContract.connect(signer).estimateGas.mintBundle(
+        toList,
+        idsList,
+        amountsList,
+        tokenUrisList,
+        dataList
+      );
+      if (estimatedGas === undefined ||
+          estimatedGas === null ||
+          isNaN(estimatedGas.toString())) 
+      {
+        setShowWatingModalForMint(false);
+        orAlert("deployBadgeContract(): Failed to get the current value of gas limitation");
+        return null;
+      }
+      estimatedGas = (estimatedGas.toString() - 0) * 2;
       let resp = await badgeTokenContract.connect(signer).mintBundle(
         toList,
         idsList,
@@ -362,7 +378,7 @@ const OneRepFileModule = (props) => {
         tokenUrisList,
         dataList, 
         {
-          gasLimit: 100000,
+          gasLimit: estimatedGas,
           gasPrice: gasPrice
         }
       );
