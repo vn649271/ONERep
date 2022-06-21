@@ -392,7 +392,6 @@ const OneRepFileModule = (props) => {
       }
       let ret = await resp.wait();
       console.log(ret);
-      setShowWatingModalForMint(false);
       /****************************adding information of uploaded files in the mongodb */
       ret = await axios.post(SERVER_URL + "/files/add", {
         filename: ipfsName,
@@ -410,6 +409,7 @@ const OneRepFileModule = (props) => {
         return;
       }
       handleDropDown(daoList[0].name, daoList);
+      setShowWatingModalForMint(false);
       // loadOneRepFiles(selectedDao ? selectedDao.badgeAddress ? selectedDao.badgeAddress : null : null);
       inform("Success", "Successfully Minted", "success");
 
