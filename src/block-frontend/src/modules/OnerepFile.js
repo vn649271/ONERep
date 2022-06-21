@@ -405,6 +405,7 @@ const OneRepFileModule = (props) => {
       if (ret.data === undefined || ret.data === null ||
           ret.data.success === undefined || !ret.data.success) 
       {
+        setShowWatingModalForMint(false);
         orAlert("Failed to save file");
         return;
       }
