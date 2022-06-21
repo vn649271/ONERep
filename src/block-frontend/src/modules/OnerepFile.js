@@ -409,7 +409,8 @@ const OneRepFileModule = (props) => {
         orAlert("Failed to save file");
         return;
       }
-      loadOneRepFiles(selectedDao ? selectedDao.badgeAddress ? selectedDao.badgeAddress : null : null);
+      handleDropDown(daoList[0].name, daoList);
+      // loadOneRepFiles(selectedDao ? selectedDao.badgeAddress ? selectedDao.badgeAddress : null : null);
       inform("Success", "Successfully Minted", "success");
 
     } catch (error) {
@@ -454,57 +455,53 @@ const OneRepFileModule = (props) => {
     setipfsPath(prefix + files[0].name);
     UploadService.upload(files[0], prefix, (event) => {
       // setProgress(Math.round((100 * event.loaded) / event.total));
-    })
-      .then((response) => {
-        inform("Success", response.data.message, "success");
-        step1Completed = true;
-        Papa.parse(files[0], {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const rowsArray = [];
-            const valuesArray = [];
+    }).then((response) => {
+      inform("Success", response.data.message, "success");
+      step1Completed = true;
+      Papa.parse(files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          const rowsArray = [];
+          const valuesArray = [];
 
-            setCSVData(results.data);
+          setCSVData(results.data);
 
-            // Iterating data to get column name and their values
-            let rep = 0;
-            results.data.map((d) => {
-              rowsArray.push(Object.keys(d));
-              valuesArray.push(Object.values(d));
-              rep += parseInt(d.received);
-              return true;
-            });
-            setReputation(rep);
-            // Parsed Data Response in array format
-            setParsedData(results.data);
+          // Iterating data to get column name and their values
+          let rep = 0;
+          results.data.map((d) => {
+            rowsArray.push(Object.keys(d));
+            valuesArray.push(Object.values(d));
+            rep += parseInt(d.received);
+            return true;
+          });
+          setReputation(rep);
+          // Parsed Data Response in array format
+          setParsedData(results.data);
 
-            // Filtered Column Names
-            setTableRows(rowsArray[0]);
+          // Filtered Column Names
+          setTableRows(rowsArray[0]);
 
-            // Filtered Values
-            // setValues([...values, ...valuesArray]);
-            setValues(valuesArray);
-          },
-        });
-
-        // this.setState({
-        // message: response.data.message,
-        // });
-        // return UploadService.getFiles("data");
-      })
-      .then((files) => {
-        // this.setState({
-        // fileInfos: files.data,
-        // });
-      })
-      .catch((err) => {
-        this.setState({
-          progress: 0,
-          message: "Could not upload the file!",
-          currentFile: undefined,
-        });
+          // Filtered Values
+          // setValues([...values, ...valuesArray]);
+          setValues(valuesArray);
+        },
       });
+      // this.setState({
+      // message: response.data.message,
+      // });
+      // return UploadService.getFiles("data");
+    }).then((files) => {
+      // this.setState({
+      // fileInfos: files.data,
+      // });
+    }).catch((err) => {
+      this.setState({
+        progress: 0,
+        message: "Could not upload the file!",
+        currentFile: undefined,
+      });
+    });
   };
   const onChangedFileUploadInput = (ev) => {
     onSubmitHandler(ev);
