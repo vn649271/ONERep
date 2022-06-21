@@ -244,7 +244,7 @@ const expandUserList = userListNested => {
             //     gasPrice: gasPrice 
             // });
             let ret = await badgeTokenContract.connect(signer).addOwner(contributorAddress, {
-                gasLimit: 100000
+                gasLimit: 1000000
             });
             //
             // console.log("Onchain-function addContributorOnChain():", ret)

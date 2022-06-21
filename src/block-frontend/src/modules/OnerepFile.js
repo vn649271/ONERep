@@ -631,7 +631,7 @@ const OneRepFileModule = (props) => {
               Failed to Mint
             </h4>
             <br />
-            <div className="main-text-color text-center overflow-scroll">
+            <div className="main-text-color text-center modal-msg-body-layout">
               {mintFailureReason}
             </div>
             <br />
