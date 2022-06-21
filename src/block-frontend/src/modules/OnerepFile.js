@@ -14,7 +14,7 @@ import axios from "axios";
 import "react-step-progress/dist/index.css";
 import Web3 from "web3";
 import { ethers } from "ethers";
-import { getMintBatchApprovalSignature, orAlert } from "../service/utils";
+import { getMintBatchApprovalSignature, orAlert, handleDST } from "../service/utils";
 import BasicModal from "../components/Modals/BasicModal";
 import OrSpinner from "../components/OrSpinner";
 import OrTable from "../components/OrTable";
@@ -150,10 +150,9 @@ const OneRepFileModule = (props) => {
             alert("Failed to get DAO data");
           }
         });
-      })
-        .catch(error => {
-          orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
-        });
+      }).catch(error => {
+        orAlert("OneRepFile: Failed to get information for logged in user: " + error.message);
+      });
     }
   });
   // useEffect(() => {
@@ -363,7 +362,8 @@ const OneRepFileModule = (props) => {
         tokenUrisList,
         dataList, 
         {
-          gasLimit: 1000000
+          gasLimit: 100000,
+          gasPrice: gasPrice
         }
       );
 
@@ -395,7 +395,9 @@ const OneRepFileModule = (props) => {
       }
       loadOneRepFiles(selectedDao ? selectedDao.badgeAddress ? selectedDao.badgeAddress : null : null);
       inform("Success", "Successfully Minted", "success");
+
     } catch (error) {
+
       setShowWatingModalForMint(false);
       let msg = filterContractMessage(error.message);
       handleShowFailure(msg);

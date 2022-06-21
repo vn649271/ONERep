@@ -14,6 +14,7 @@ exports.registerDao = async (req, res) => {
             name: req.body.name,
             badge: req.body.badge,
             badgeAddress: req.body.badgeAddress,
+            created_at: Date.now()
         })
         let newDao = await dao.save();
         return res.status(200).send({ success: true, data: newDao.id });
@@ -91,6 +92,7 @@ exports.register = async (req, res) => {
                     wallet: req.body.wallet,
                     userType: 0,    // Super Administrator
                     isRoot: true,
+                    created_at: Date.now()
                 });
             } else {
                 // System Account User Registration
@@ -99,6 +101,7 @@ exports.register = async (req, res) => {
                     wallet: req.body.wallet,
                     userType: 1,    // System Account User
                     isRoot: false,
+                    created_at: Date.now()
                 });
             }
             try {
@@ -111,7 +114,8 @@ exports.register = async (req, res) => {
                             userAddress: ret.wallet,
                             badgeAddress: dao.badgeAddress,
                             received: 0,
-                            isCreator: true
+                            isCreator: true,
+                            created_at: Date.now()
                         });
                         userDao.save().then(result => {
                             return res.redirect(req.headers.origin + '/admin');
@@ -767,6 +771,7 @@ exports.update = async (req, res) => {
                 wallet: req.body.wallet,
                 userType: userType,
                 status: req.body.status,
+                created_at: Date.now()
             });
         } else {
             // In case of adding new contributor
@@ -794,7 +799,8 @@ exports.update = async (req, res) => {
                     userAddress: result.wallet,
                     badgeAddress: req.body.badgeAddress,
                     received: 0,
-                    isCreator: false
+                    isCreator: false,
+                    created_at: Date.now()
                 });
                 let ret = await userDao.save();
                 if (ret) {

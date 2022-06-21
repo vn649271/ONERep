@@ -44,7 +44,8 @@ exports.addFile = async (req, res) => {
             status: req.body.status,
             reputation: req.body.reputation,
             importer: req.body.master,
-            badge: badgeAddress
+            badge: badgeAddress,
+            created_at: Date.now()
           });
           // Save ONERep File info List
           addfile.save().then(async retForNewFile => {
@@ -58,7 +59,8 @@ exports.addFile = async (req, res) => {
                 sent: parseInt(row[4]),
                 epoch_number: row[5],
                 date: row[6],
-                recipientContractAddress: row[7]
+                recipientContractAddress: row[7],
+                created_at: Date.now()
               });
               addAction.save().then(async retForNewAction => {
                 // Save each DAO user if not exist
@@ -69,6 +71,7 @@ exports.addFile = async (req, res) => {
                     wallet: row[2].toLowerCase(),
                     parent: req.body.master,
                     userType: 3, // DAO member
+                    created_at: Date.now()
                   });
                   userInfo = await addUser.save();
                 }
@@ -79,6 +82,7 @@ exports.addFile = async (req, res) => {
                     badgeAddress: badgeAddress,
                     received: parseInt(row[3]),
                     isCreator: false,
+                    created_at: Date.now()
                   });
                   let ret = await addUserDaoRelation.save();
                   console.log("Successfully addUserDaoRelation.save(): ", ret);

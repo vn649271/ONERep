@@ -15,6 +15,38 @@ const MintBatchApprovalTypes = {
   ],
 };
 
+export const handleDST = dtStr => {
+  Date.prototype.stdTimezoneOffset = function() {
+    var fy = this.getFullYear();
+    if (!Date.prototype.stdTimezoneOffset.cache.hasOwnProperty(fy)) {
+        var maxOffset = new Date(fy, 0, 1).getTimezoneOffset();
+        var monthsTestOrder = [6,7,5,8,4,9,3,10,2,11,1];
+
+        for(var mi = 0; mi < 12; mi++) {
+            var offset = new Date(fy, monthsTestOrder[mi], 1).getTimezoneOffset();
+            if (offset != maxOffset) { 
+                maxOffset = Math.max(maxOffset,offset);
+                break;
+            }
+        }
+        Date.prototype.stdTimezoneOffset.cache[fy] = maxOffset;
+    }
+    return Date.prototype.stdTimezoneOffset.cache[fy];
+  };
+
+  Date.prototype.stdTimezoneOffset.cache = {};
+
+  Date.prototype.isDST = function() {
+    return this.getTimezoneOffset() < this.stdTimezoneOffset(); 
+  };
+  const d = new Date(dtStr)
+  const estOffset = d.isDST() ? 1 : 0;
+  const consideredDST = d.valueOf() + (3600 * 1000 * estOffset)
+  console.log(new Date(consideredDST).toLocaleString());
+  // convert msec value to date string
+  return consideredDST
+}
+
 const getDomain = (web3, chainId, verifyingContract) => ({
   name: web3.utils.keccak256("ERC1238 Mint Approval"),
   version: web3.utils.keccak256("1"),
