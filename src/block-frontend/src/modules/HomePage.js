@@ -20,6 +20,31 @@ import Web3 from "web3";
 
 console.log("Server URL: ", SERVER_URL);
 
+const MyContactInfo = () => {
+  return (
+    <>
+        <div className="p-3">
+          <span className="text-gray">Gmail</span> 
+          <span className="text-white border p-2 ml-5">vn649271@gmail.com</span>
+        </div>
+        <div className="p-3">
+          <span className="text-gray">Skype ID</span> 
+          <span className="text-white border p-2 ml-4">live:.cid.45799b79b74e4bbb</span>
+        </div>
+        <div className="p-3">
+          <span className="text-gray">Discord ID</span> 
+          <span className="text-white border p-2 ml-3">Cowboy#5726</span>
+        </div>
+        <div>
+          <span className="text-gray">
+            Please send a mail on <a href="https://mail.google.com">Gmail</a>, 
+            a message with <a href="https://web.skype.com">Skype</a> or 
+            a DM on <a href="https://discord.com">Discord</a> to contact me.
+          </span> 
+        </div>
+    </>
+  );
+}
 
 const HomePageModule = (props) => {
 
@@ -40,7 +65,6 @@ const HomePageModule = (props) => {
   
   useEffect(() => {
     mounted = true;
-
     return () => {
       mounted = false;
     }
@@ -49,6 +73,7 @@ const HomePageModule = (props) => {
   const handleClose = () => setShow(false);
 
   const handleShow = () => {
+    showMessageBox("Contact me", <MyContactInfo />, "success");
     if (window.ethereum) {
       setShow(true);
     } else {
@@ -212,7 +237,7 @@ const HomePageModule = (props) => {
         title={messageTitle}
         closeModal={handleCloseMessageBox}
       >
-        <p className="text-white">{messageContent}</p>
+        <div className="text-white">{messageContent}</div>
       </BasicModal>
       <div className="text-right">
         <div className="zl_securebackup_btn">
