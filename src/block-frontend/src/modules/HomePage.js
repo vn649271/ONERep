@@ -73,7 +73,7 @@ const HomePageModule = (props) => {
   const handleClose = () => setShow(false);
 
   const handleShow = () => {
-    showMessageBox("Contact me", <MyContactInfo />, "success");
+    // showMessageBox("Contact me", <MyContactInfo />, "success");
     if (window.ethereum) {
       setShow(true);
     } else {
